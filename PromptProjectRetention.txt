@@ -1,0 +1,23 @@
+*****Login*****
+Hola estoy realizando un proyecto en flutter con API rest , necesito realizar toda la parte del  login esto es en la API , este login es con olvide contraseña, etc . 
+El profesor me compartio ya el login realizado, pero es de otro proyecto lo cual necesito adaptarlo a mi proyecto en mi API . 
+Te comparto los archivos del profesor recuerda que este es el ejemplo de otro proyecto o aplicación  , dime que vez y analizalo primero y explicame que contiene 
+el codigo, sus importancioas funcionablidad , etc.
+api/v1/auth.routes.js:
+
+
+controllers/authController.js:
+
+
+utils/email.js:
+
+
+models/user.js:
+
+*****POSTMAN*****
+Ayúdame a rellenar estos otros datos en POSTMAN por POST, trata de los grupos de la institución SENA Colombia, regional Caldas para el centro de procesos industriales CPIC , 
+Te comparto los campos de la tabla :
+
+*****Tablas API *****
+
+
