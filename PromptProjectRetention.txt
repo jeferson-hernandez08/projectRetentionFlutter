@@ -19,5 +19,10 @@ Ayúdame a rellenar estos otros datos en POSTMAN por POST, trata de los grupos d
 Te comparto los campos de la tabla :
 
 *****Tablas API *****
+Hola estoy realizando un proyecto en API rest sequelize, necesito que autocompletes este archivo apprenticeController.js que quede exactamente igual que este archivo groupController.php 
+si no que con los campos y tabla de apprenticeController.js, muy importante que también me conserves los comentarios del groupController.php pero para el nuevo archivo apprenticeController.js,
+es decir que quede exactamente igual pero con este nuevo archivo que es una nueva tabla y campos. 
+Te comparto la tabla y los campos para el apprenticeController.js.
+
 
 
