@@ -1,4 +1,4 @@
-*****Login*****
+***************Login*****************
 Hola estoy realizando un proyecto en flutter con API rest , necesito realizar toda la parte del  login esto es en la API , este login es con olvide contraseña, etc . 
 El profesor me compartio ya el login realizado, pero es de otro proyecto lo cual necesito adaptarlo a mi proyecto en mi API . 
 Te comparto los archivos del profesor recuerda que este es el ejemplo de otro proyecto o aplicación  , dime que vez y analizalo primero y explicame que contiene 
@@ -14,17 +14,19 @@ utils/email.js:
 
 models/user.js:
 
-*****POSTMAN*****
+**************POSTMAN***************
 Ayúdame a rellenar estos otros datos en POSTMAN por POST, trata de los grupos de la institución SENA Colombia, regional Caldas para el centro de procesos industriales CPIC , 
 Te comparto los campos de la tabla :
 
-*****Tablas API *****
+
+**************Tablas API **************
 Controller:
 Hola estoy realizando un proyecto en API rest sequelize, necesito que autocompletes este archivo apprenticeController.js que quede exactamente igual que este archivo groupController.php 
 si no que con los campos y tabla de apprenticeController.js, muy importante que también me conserves los comentarios del groupController.php pero para el nuevo archivo apprenticeController.js,
 es decir que quede exactamente igual pero con este nuevo archivo que es una nueva tabla y campos. 
 Te comparto la tabla y los campos para el apprenticeController.js.
 modelo:
+
 
 migracion:
 
@@ -38,10 +40,36 @@ es decir que quede exactamente igual pero con este nuevo archivo que es una nuev
 Te comparto la tabla y los campos para el apprenticeService.js.
 modelo:
 
+
 migracion:
 
 
 groupService.js:
+
+
+
+************Seeders******************
+Ayúdame a rellenar estos otros datos en POSTMAN por POST, es para la base de datos de postgres , la creación de estos datos es para los seeders de la API node.js con sequelize de la tabla training_programs ayúdame a crear seeders trata de los programas de formación de la institución SENA Colombia, regional Caldas para el centro de procesos industriales CPIC ,   
+Te comparto los campos de la tabla :
+
+
+Te comparto el archivo para realizar los seeders: 
+
+
+Y archivo de  :
+
+
+
+******** Adaptacion de campos Flutter **********
+Hola estoy realizando un proyecto en flutter con API rest , necesito que autocompletes este archivo viewItemUser.dart que quede exactamente igual que este archivo mismo , es decir , ya que este archivo es de otro user de otra tabla , necesito que quede con los campos de la nueva tabla users  que te compartiré,  muy importante que también me conserves los comentarios  para este nuevo archivo tabla  pero para el nuevo archivo,
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla user . 
+Te comparto la tabla y los campos del la nueva tabla user.: 
+
+
+archivo antiguo del edit para que me adaptes los nuevos campos de user en esta :
+
+
+
 
 
 
