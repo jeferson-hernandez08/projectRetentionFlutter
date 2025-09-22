@@ -1,6 +1,7 @@
 import 'package:app_projectretention_711_v1/api/apiRetention.dart';
 import 'package:app_projectretention_711_v1/views/login/viewLogin.dart';
 import 'package:app_projectretention_711_v1/views/rols/editNewRol.dart';
+import 'package:app_projectretention_711_v1/views/trainingPrograms/editNewTrainingProgram.dart';
 import 'package:app_projectretention_711_v1/views/users/editNewUser.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
@@ -59,7 +60,7 @@ class _InicioState extends State<Inicio> {
               } else if(page == 2) {  // Crear editar users
                 modalEditNewUser(context, "new", null);
               } else if (page == 3) {   // Crear editar category
-                // modalEditNewCategory(context, "new", null);
+                modalEditNewTrainingProgram(context, "new", null);
               } else if (page == 4) {    // Crear editar events
                 // modalEditNewEvent(context, "new", null);
               }
@@ -123,17 +124,17 @@ class _InicioState extends State<Inicio> {
               ),
               Divider(),
 
-              // ListTile(
-              //   title: Text('Listado de Categorias de Eventos CPIC'),
-              //   leading: Icon(Icons.category),
-              //   trailing: Icon(Icons.arrow_forward_ios),
-              //   onTap: (){
-              //     myReactController.setTituloAppBar('Listado Categorias CPIC');
-              //     myReactController.setPagina(3);   // Aqui se trae en main el array List menuPages = [
-              //     Get.back();
-              //   },
-              // ),
-              // Divider(),
+              ListTile(
+                title: Text('Programas de Formacion'),
+                leading: Icon(Icons.school),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: (){
+                  myReactController.setTituloAppBar('Listado Programas de Formacion CPIC');
+                  myReactController.setPagina(3);   // Aqui se trae en main el array List menuPages = [
+                  Get.back();
+                },
+              ),
+              Divider(),
 
               // ListTile(
               //   title: Text('Listado de Eventos CPIC'),
