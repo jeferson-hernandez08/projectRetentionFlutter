@@ -70,6 +70,32 @@ archivo antiguo del edit para que me adaptes los nuevos campos de user en esta :
 
 
 
+____________________Adaptacion CRUDS de cada uno_____________________________________
+
+Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewTrainingProgram.dart que quede exactamente igual que este archivo viewUser.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla training_programs que te compartiré, muy importante que también me conserves los comentarios de este archivo viewUser.dart  pero para este nuevo archivo viewTrainingProgram.dart  ,
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla training_programs . 
+Te comparto la tabla y los campos del la nueva tabla training_programs: 
+Modelo:
+
+
+Migracion:
+
+
+
+Archivo del viewUser.dart para que me adaptes al nuevo archivo viewTrainingPrograms.dart :
+
+
+
+___________________CRUDS apiProjectRetention.dart_________________________
+Hola estoy realizando un proyecto en flutter con API rest , necesito que autocompletes este archivo viewItemUser.dart que quede exactamente igual que este archivo mismo , es decir , ya que este archivo es de otro user de otra tabla , necesito que quede con los campos de la nueva tabla users  que te compartiré,  muy importante que también me conserves los comentarios  para este nuevo archivo tabla  pero para el nuevo archivo,
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla user . 
+Te comparto la tabla y los campos del la nueva tabla user.: 
+
+
+archivo antiguo del edit para que me adaptes los nuevos campos de user en esta :
+
+
+
 
 
 
