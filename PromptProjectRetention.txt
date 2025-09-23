@@ -82,7 +82,15 @@ Migracion:
 
 
 
-Archivo del viewUser.dart para que me adaptes al nuevo archivo viewTrainingPrograms.dart :
+Archivo del viewUser.dart para que me adaptes al nuevo archivo viewTrainingPrograms.dart :  
+
+
+Te comparto los datos que hay disponibles en seeders para que te guíes y entiendas mejor:
+
+
+En el campo adressing (Direccionamiento) son dos campos o opciones coordinador académico o coordinador de formación.
+
+
 
 
 
@@ -96,16 +104,15 @@ Model:
 Migracion:
 
 
-CRUD de users para que me adaptes a CRUD training_programs   :
+CRUD de users para que me adaptes a CRUD training_programs :
 
 
 
 
 *** eliminar
-
-Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewCategories.dart que quede exactamente igual que este archivo viewGroups.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla categories que te compartiré, muy importante que también me conserves los comentarios de este archivo viewGroups.dart  pero para este nuevo archivo viewCategories.dart  ,
-es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla categories . 
-Te comparto la tabla y los campos del la nueva tabla categories : 
+Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo editNewCause.dart que quede exactamente igual que este archivo editNewUser.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla causes que te compartiré, muy importante que también me conserves los comentarios de este archivo editNewUser.dart  pero para este nuevo archivo editNewCause.dart  , 
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla causes . 
+Te comparto la tabla y los campos del la nueva tabla causes : 
 Modelo:
 
 
@@ -113,256 +120,11 @@ Migracion:
 
 
 
-Archivo del viewGroups.dart para que me adaptes al nuevo archivo viewCategories.dart :
+Archivo del editNewUser.dart para que me adaptes al nuevo archivo editNewCause.dart :  
 
 
-*********
-Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewDeleteCategory.dart que quede exactamente igual que este archivo viewDeleteGroup.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla categories que te compartiré, muy importante que también me conserves los comentarios de este archivo viewDeleteGroup.dart  pero para este nuevo archivo viewDeleteCategory.dart  ,
-es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla categories . 
-Te comparto la tabla y los campos del la nueva tabla categories : 
-Modelo:
-'use strict';
-const {
-  Model
-} = require('sequelize');
-module.exports = (sequelize, DataTypes) => {
-  class Categories extends Model {
-    /**
-     * Helper method for defining associations.
-     * This method is not a part of Sequelize lifecycle.
-     * The `models/index` file will call this method automatically.
-     */
-    static associate(models) {
-      // define association here
+Te comparto los datos que hay disponibles en seeders para que te guíes y entiendas mejor:
 
-      // 👇 Una categoria tiene muchas causas
-      Categories.hasMany(models.Causes, {
-        foreignKey: 'fkIdCategories',       // Llave foránea en la tabla causas
-        as: 'causes'                   // Alias para acceder a las causas desde un categoria | Capturamos las causas desde una categoria (Opcional)
-      });
-
-       // 👇 Una categoria tiene muchas estrategias
-      Categories.hasMany(models.Strategies, {
-        foreignKey: 'fkIdCategories',       // Llave foránea en la tabla estrategias
-        as: 'strategies'                   // Alias para acceder a las estrategias desde un categoria | Capturamos las estartegias desde una categoria (Opcional)
-      });
-
-    }
-  }
-  Categories.init({
-    name: DataTypes.STRING,
-    description: DataTypes.STRING,
-    addressing: DataTypes.STRING
-  }, {
-    sequelize,
-    modelName: 'Categories',     // Nombre del modelo JavaScript
-    tableName: 'categories'      // Nombre de la tabla física en BD
-  });
-  return Categories;
-};
-
-Migracion:
-'use strict';
-/** @type {import('sequelize-cli').Migration} */
-module.exports = {
-  async up(queryInterface, Sequelize) {
-    await queryInterface.createTable('categories', {
-      id: {
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true,
-        type: Sequelize.INTEGER
-      },
-      name: {
-        type: Sequelize.STRING
-      },
-      description: {
-        type: Sequelize.STRING
-      },
-      addressing: {
-        type: Sequelize.STRING
-      },
-      createdAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      },
-      updatedAt: {
-        allowNull: false,
-        type: Sequelize.DATE
-      }
-    });
-  },
-  async down(queryInterface, Sequelize) {
-    await queryInterface.dropTable('categories');
-  }
-};
-
-
-Archivo del viewDeleteGroup.dart para que me adaptes al nuevo archivo viewDeleteCategory.dart :
-import 'package:app_projectretention_711_v1/api/apiRetention.dart';
-import 'package:flutter/material.dart';
-import 'package:get/get.dart';
-import 'package:get/get_core/src/get_main.dart';
-
-viewDeleteGroup(context, itemList) {
-  showModalBottomSheet(
-    context: context,
-    isScrollControlled: true,  
-    builder: (context) {
-      return Scaffold(
-        backgroundColor: Colors.grey[100],
-        appBar: AppBar(
-          title: Text('Confirmar Eliminación del Grupo'),
-          backgroundColor: Colors.red,
-          foregroundColor: Colors.white,
-          centerTitle: true,     // Propiedad para centrar el titulo
-        ),
-        body: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              // Creación de tarjeta de confirmación junto con los botones de confirmación
-              Card(
-                elevation: 5,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(15.0),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(20.0),
-                  child: Column(
-                    children: [
-                      // Icono de advertencia
-                      const Icon(
-                        Icons.warning_amber_rounded,
-                        size: 60,
-                        color: Colors.orange,
-                      ),
-                      const SizedBox(height: 20),
-                      
-                      // Título
-                      const Text(
-                        '¿Eliminar este grupo?',
-                        style: TextStyle(
-                          fontSize: 20,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.red,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 15),
-                      
-                      // Nombre del grupo (archivo y nombre del coordinador)
-                      Text(
-                        'Ficha: ${itemList['file'] ?? 'No disponible'}\nCoordinador: ${itemList['managerName'] ?? 'No disponible'}',
-                        style: const TextStyle(
-                          fontSize: 18,
-                          fontWeight: FontWeight.w600,
-                        ),
-                        textAlign: TextAlign.center,
-                      ),
-                      const SizedBox(height: 10),
-                      
-                      // ID del grupo
-                      Text(
-                        'ID: ${itemList['id']}',
-                        style: TextStyle(
-                          fontSize: 16,
-                          color: Colors.grey[600],
-                        ),
-                      ),
-                      const SizedBox(height: 25),
-                      
-                      // Botones de acción
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          // Botón Cancelar
-                          Expanded(
-                            child: OutlinedButton(
-                              onPressed: () => Navigator.pop(context),
-                              style: OutlinedButton.styleFrom(
-                                padding: const EdgeInsets.symmetric(vertical: 15),
-                                side: const BorderSide(color: Colors.blue),
-                              ),
-                              child: const Text(
-                                'Cancelar',
-                                style: TextStyle(color: Colors.blue),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 15),
-                          
-                          // Botón Eliminar
-                          Expanded(
-                            child: ElevatedButton(
-                              onPressed: () async {
-                                try {
-                                  // Lógica para eliminar el grupo | Llamamos la función API apiRetention.dart
-                                  await deleteGroupApi(itemList['id']);  
-                                  
-                                  // Cerrar el modal
-                                  Navigator.pop(context);
-                                  
-                                  // Mostramos mensaje de éxito
-                                  Get.snackbar(
-                                    'Éxito',
-                                    'Grupo eliminado correctamente',
-                                    backgroundColor: Colors.green,
-                                    colorText: Colors.white,
-                                    duration: const Duration(seconds: 2),
-                                  );
-                                  
-                                  // Actualizamos la lista de grupos
-                                  fetchAPIGroups();
-                                  
-                                } catch (e) {
-                                  Get.snackbar(
-                                    'Error',
-                                    'Error al eliminar grupo: ${e.toString()}',
-                                    backgroundColor: Colors.red,
-                                    colorText: Colors.white,
-                                  );
-                                }
-                              },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: Colors.red,
-                                padding: const EdgeInsets.symmetric(vertical: 15),
-                              ),
-                              child: const Text(
-                                'Eliminar',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
-                ),
-
-              ),
-
-              // Información adicional
-              Padding(
-                padding: const EdgeInsets.only(top: 20.0),
-                child: Text(
-                  'Después de eliminar, esta acción no se puede deshacer.',
-                  style: TextStyle(
-                    fontSize: 14,
-                    color: Colors.grey[600],
-                    fontStyle: FontStyle.italic,
-                  ),
-                ),
-              ),
-
-            ],
-          ),
-        ),
-      );
-    }
-  );
-}
 
 
 
