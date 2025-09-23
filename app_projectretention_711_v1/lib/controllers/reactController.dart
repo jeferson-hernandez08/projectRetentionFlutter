@@ -54,7 +54,7 @@ class ReactController extends GetxController  {
   List get getListTrainingPrograms => _listTrainingPrograms.value;     
   List get getListGroups => _listGroups.value;     
   List get getListApprentices => _listApprentices.value;     
-  List get getListCategories => _listApprentices.value;     
+  List get getListCategories => _listCategories.value;     
 
  
   String get getToken => _token.value;
