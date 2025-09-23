@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-viewDeleteCategory(context, itemList) {
+viewDeleteCause(context, itemList) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,  
@@ -11,10 +11,10 @@ viewDeleteCategory(context, itemList) {
       return Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
-          title: Text('Confirmar Eliminación de la Categoría'),
+          title: const Text('Confirmar Eliminación de la Causa'),
           backgroundColor: Colors.red,
           foregroundColor: Colors.white,
-          centerTitle: true,     // Propiedad para centrar el titulo
+          centerTitle: true,     // Propiedad para centrar el título
         ),
         body: Padding(
           padding: const EdgeInsets.all(20.0),
@@ -41,7 +41,7 @@ viewDeleteCategory(context, itemList) {
                       
                       // Título
                       const Text(
-                        '¿Eliminar esta categoría?',
+                        '¿Eliminar esta causa?',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -51,9 +51,9 @@ viewDeleteCategory(context, itemList) {
                       ),
                       const SizedBox(height: 15),
                       
-                      // Nombre de la categoría (nombre y direccionamiento)
+                      // Nombre de la causa
                       Text(
-                        'Nombre: ${itemList['name'] ?? 'No disponible'}\nDireccionamiento: ${itemList['addressing'] ?? 'No disponible'}',
+                        itemList['cause'] ?? 'Causa no disponible',
                         style: const TextStyle(
                           fontSize: 18,
                           fontWeight: FontWeight.w600,
@@ -62,7 +62,7 @@ viewDeleteCategory(context, itemList) {
                       ),
                       const SizedBox(height: 10),
                       
-                      // ID de la categoría
+                      // ID de la causa
                       Text(
                         'ID: ${itemList['id']}',
                         style: TextStyle(
@@ -97,8 +97,8 @@ viewDeleteCategory(context, itemList) {
                             child: ElevatedButton(
                               onPressed: () async {
                                 try {
-                                  // Lógica para eliminar la categoría | Llamamos la función API apiRetention.dart
-                                  await deleteCategoryApi(itemList['id']);  
+                                  // Lógica para eliminar la causa | Llamamos la función API apiRetention.dart
+                                  await deleteCauseApi(itemList['id']);  
                                   
                                   // Cerrar el modal
                                   Navigator.pop(context);
@@ -106,19 +106,19 @@ viewDeleteCategory(context, itemList) {
                                   // Mostramos mensaje de éxito
                                   Get.snackbar(
                                     'Éxito',
-                                    'Categoría eliminada correctamente',
+                                    'Causa eliminada correctamente',
                                     backgroundColor: Colors.green,
                                     colorText: Colors.white,
                                     duration: const Duration(seconds: 2),
                                   );
                                   
-                                  // Actualizamos la lista de categorías
-                                  fetchAPICategories();
+                                  // Actualizamos la lista de causas
+                                  fetchAPICauses();
                                   
                                 } catch (e) {
                                   Get.snackbar(
                                     'Error',
-                                    'Error al eliminar categoría: ${e.toString()}',
+                                    'Error al eliminar causa: ${e.toString()}',
                                     backgroundColor: Colors.red,
                                     colorText: Colors.white,
                                   );
@@ -139,7 +139,6 @@ viewDeleteCategory(context, itemList) {
                     ],
                   ),
                 ),
-
               ),
 
               // Información adicional
@@ -154,7 +153,6 @@ viewDeleteCategory(context, itemList) {
                   ),
                 ),
               ),
-
             ],
           ),
         ),

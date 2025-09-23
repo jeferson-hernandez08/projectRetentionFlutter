@@ -1,4 +1,5 @@
 import 'package:app_projectretention_711_v1/views/apprentices/viewApprentices.dart';
+import 'package:app_projectretention_711_v1/views/categories/viewCategories.dart';
 import 'package:app_projectretention_711_v1/views/groups/viewGroups.dart';
 import 'package:app_projectretention_711_v1/views/interface/homePrincipal.dart';
 import 'package:app_projectretention_711_v1/views/login/viewLogin.dart';
@@ -26,7 +27,8 @@ List menuPages = [
   ViewUsersCPIC(),              // 2 View user CPIC
   ViewTrainingProgramsCPIC(),   // 3 View training_programs CPIC
   ViewGroupsCPIC(),             // 4 View groups CPIC
-  ViewApprenticesCPIC()         // 5 View apprentices CPIC
+  ViewApprenticesCPIC(),        // 5 View apprentices CPIC
   ViewCategoriesCPIC()          // 6 View categories CPIC
+  ViewCausesCPIC()              // 7 View causes CPIC
  
 ];

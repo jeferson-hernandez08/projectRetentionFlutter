@@ -478,6 +478,98 @@ Future deleteApprenticeApi(int id) async {
   }
 }
 
+//**********CRUD Tabla Categories**********//
+
+// Traer todas las categorías desde la API
+Future fetchAPICategories() async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/categories';
+  print(url);
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    print("Respuesta API: ${response.body}"); // imprime lo que devuelve la API
+    //print(jsonDecode(response.body)['data']);
+    myReactController.setListCategories(jsonDecode(response.body)['data']);
+  } else {
+    throw Exception('Error al traer los datos de API categories');
+  }
+}
+
+// Crear una nueva categoría en la API
+Future newCategoryApi(newName, newDescription, newAddressing) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'name': newName,
+    'description': newDescription,
+    'addressing': newAddressing,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/categories');
+  print('URL: $url');
+
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 201) {
+    // Si la respuesta es exitosa, actualizamos la lista de categorías
+    await fetchAPICategories();
+    return true; // Retornamos true si se creó correctamente
+  } else {
+    //throw Exception('Error al crear la nueva categoría');
+    return false; // Retornamos false si hubo un error
+  }
+}
+
+// Editar una categoría existente en la API
+Future editCategoryApi(id, newName, newDescription, newAddressing) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'name': newName,
+    'description': newDescription,
+    'addressing': newAddressing,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/categories/$id');
+
+  final response = await http.put(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 200) {
+    // Si la respuesta es exitosa, actualizamos la lista de categorías
+    await fetchAPICategories();
+    return true; // Retornamos true si se editó correctamente
+  } else {
+    //throw Exception('Error al editar la categoría');
+    return false; // Retornamos false si hubo un error
+  }
+}
+
+// Eliminar una categoría de la API
+Future deleteCategoryApi(int id) async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/categories/$id'; // Recibir la URL con id de categoría a eliminar
+  final response = await http.delete(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // Actualizamos la lista de categorías después de eliminar una
+    await fetchAPICategories();
+  } else {
+    throw Exception('Error al eliminar la categoría con ID: $id');
+  }
+}
+
+
 // ************ Login *************//
 Future<bool> loginApi(String email, String password) async {
   const headers = {

@@ -1,5 +1,6 @@
 import 'package:app_projectretention_711_v1/api/apiRetention.dart';
 import 'package:app_projectretention_711_v1/views/apprentices/editNewApprentice.dart';
+import 'package:app_projectretention_711_v1/views/categories/editNewCategory.dart';
 import 'package:app_projectretention_711_v1/views/groups/editNewGroup.dart';
 import 'package:app_projectretention_711_v1/views/login/viewLogin.dart';
 import 'package:app_projectretention_711_v1/views/rols/editNewRol.dart';
@@ -52,7 +53,9 @@ class _InicioState extends State<Inicio> {
         floatingActionButton: Visibility(       // Aquí comentar para probar la otra opcion realizada de viewCreateAmbient.dart
           visible: (myReactController.getPagina == 1 || myReactController.getPagina == 2 || 
                     myReactController.getPagina == 3 || myReactController.getPagina == 4 ||
-                    myReactController.getPagina == 5       ) ? true : false,
+                    myReactController.getPagina == 5 || myReactController.getPagina == 6 ||    
+                    myReactController.getPagina == 7
+                    ) ? true : false,
           child: FloatingActionButton(    
             backgroundColor: Colors.amber,
             foregroundColor: Colors.white,
@@ -69,6 +72,8 @@ class _InicioState extends State<Inicio> {
                 modalEditNewGroup(context, "new", null);
               } else if (page == 5) {    // Crear editar apprentices
                 modalEditNewApprentice(context, "new", null);
+              } else if (page == 7) {    // Crear editar causas  0000000000000000
+                modalEditNewCategory(context, "new", null);
               } 
             }),
         ),
@@ -161,6 +166,18 @@ class _InicioState extends State<Inicio> {
                 onTap: (){
                   myReactController.setTituloAppBar('Listado Aprendices CPIC');
                   myReactController.setPagina(5);   // Aqui se trae en main el array List menuPages = [
+                  Get.back();
+                },
+              ),
+              Divider(),
+
+              ListTile(
+                title: Text('Listado de Categorias'),
+                leading: Icon(Icons.category, color: Colors.purple),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: (){
+                  myReactController.setTituloAppBar('Listado Categorias CPIC');
+                  myReactController.setPagina(6);   // Aqui se trae en main el array List menuPages = [
                   Get.back();
                 },
               ),
