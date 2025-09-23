@@ -107,7 +107,7 @@ Future fetchAPIUsers() async {
   }
 }
 
-Future newUserApi(newFirstName, newLastName, newEmail, newPhone, newDocument, newPassword, newCoordinadorType, newManager, newRolId) async {
+Future newUserApi(newFirstName, newLastName, newEmail, newPhone, newDocument, newPassword, newCoordinadorType, newManager, newFkIdRols) async {
   const headers = {
     'Content-Type': 'application/json',
   };
@@ -121,7 +121,7 @@ Future newUserApi(newFirstName, newLastName, newEmail, newPhone, newDocument, ne
     'password': newPassword,
     'coordinadorType': newCoordinadorType, 
     'manager': newManager,
-    'rolId': newRolId,
+    'fkIdRols': newFkIdRols,
     //'passwordResetToken': newPasswordResetToken,
     //'passwordResetExpires': newPasswordResetExpires
   };
@@ -146,7 +146,7 @@ final response = await http.post(
 
 }
 
-Future editUserApi(id, newFirstName, newLastName, newEmail, newPhone, newDocument, newPassword, newCoordinadorType, newManager, newRolId) async {
+Future editUserApi(id, newFirstName, newLastName, newEmail, newPhone, newDocument, newPassword, newCoordinadorType, newManager, newFkIdRols) async {
   const headers = {
     'Content-Type': 'application/json',
   };
@@ -160,7 +160,7 @@ Future editUserApi(id, newFirstName, newLastName, newEmail, newPhone, newDocumen
     'password': newPassword,
     'coordinadorType': newCoordinadorType, 
     'manager': newManager,
-    'rolId': newRolId,
+    'fkIdRols': newFkIdRols,
     // 'passwordResetToken': newPasswordResetToken,
     // 'passwordResetExpires': newPasswordResetExpires
   };
@@ -279,6 +279,202 @@ Future deleteTrainingProgramApi(int id) async {
     await fetchAPITrainingPrograms();
   } else {
     throw Exception('Error al eliminar el programa de formación con ID: $id');
+  }
+}
+
+//**********CRUD Tabla Groups**********//
+Future fetchAPIGroups() async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/groups';
+  print(url);
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    print("Respuesta API: ${response.body}"); // imprime lo que devuelve la API
+    //print(jsonDecode(response.body)['data']);
+    myReactController.setListGroups(jsonDecode(response.body)['data']);
+  } else {
+    throw Exception('Error al traer los datos de API groups');
+  }
+}
+
+Future newGroupApi(newFile, newTrainingStart, newTrainingEnd, newPracticeStart, newPracticeEnd, newManagerName, newShift, newModality, newFkIdTrainingPrograms) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'file': newFile,
+    'trainingStart': newTrainingStart,
+    'trainingEnd': newTrainingEnd,
+    'practiceStart': newPracticeStart,
+    'practiceEnd': newPracticeEnd,
+    'managerName': newManagerName,
+    'shift': newShift,
+    'modality': newModality,
+    'fkIdTrainingPrograms': newFkIdTrainingPrograms,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/groups');
+  print('URL: $url');
+
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 201) {
+    // Si la respuesta es exitosa, actualizamos la lista de groups
+    await fetchAPIGroups();
+    return true;  // Retornamos true si se creó correctamente
+  } else {
+    //throw Exception('Error al crear el nuevo grupo');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+Future editGroupApi(id, newFile, newTrainingStart, newTrainingEnd, newPracticeStart, newPracticeEnd, newManagerName, newShift, newModality, newFkIdTrainingPrograms) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'file': newFile,
+    'trainingStart': newTrainingStart,
+    'trainingEnd': newTrainingEnd,
+    'practiceStart': newPracticeStart,
+    'practiceEnd': newPracticeEnd,
+    'managerName': newManagerName,
+    'shift': newShift,
+    'modality': newModality,
+    'fkIdTrainingPrograms': newFkIdTrainingPrograms,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/groups/$id');
+
+  final response = await http.put(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 200) {
+    // Si la respuesta es exitosa, actualizamos la lista de groups
+    await fetchAPIGroups();
+    return true;  // Retornamos true si se editó correctamente
+  } else {
+    //throw Exception('Error al editar el grupo');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+Future deleteGroupApi(int id) async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/groups/$id';   // Recibir el url con id del grupo a eliminar
+  final response = await http.delete(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // Actualizamos la lista de groups después de eliminar
+    await fetchAPIGroups();
+  } else {
+    throw Exception('Error al eliminar el grupo con ID: $id');
+  }
+}
+
+//**********CRUD Tabla Apprentices**********//
+Future fetchAPIApprentices() async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/apprentices';
+  print(url);
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    print("Respuesta API: ${response.body}"); // imprime lo que devuelve la API
+    //print(jsonDecode(response.body)['data']);
+    myReactController.setListApprentices(jsonDecode(response.body)['data']);
+  } else {
+    throw Exception('Error al traer los datos de API apprentices');
+  }
+}
+
+Future newApprenticeApi(newDocumentType, newDocument, newFirtsName, newLastName, newPhone, newEmail, newStatus, newQuarter, newFkIdGroups) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'documentType': newDocumentType,
+    'document': newDocument,
+    'firtsName': newFirtsName,
+    'lastName': newLastName,
+    'phone': newPhone,
+    'email': newEmail,
+    'status': newStatus,
+    'quarter': newQuarter,
+    'fkIdGroups': newFkIdGroups,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/apprentices');
+  print('URL: $url');
+
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 201) {
+    // Si la respuesta es exitosa, actualizamos la lista de apprentices
+    await fetchAPIApprentices();
+    return true;  // Retornamos true si se creó correctamente
+  } else {
+    //throw Exception('Error al crear el nuevo aprendiz');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+Future editApprenticeApi(id, newDocumentType, newDocument, newFirtsName, newLastName, newPhone, newEmail, newStatus, newQuarter, newFkIdGroups) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'documentType': newDocumentType,
+    'document': newDocument,
+    'firtsName': newFirtsName,
+    'lastName': newLastName,
+    'phone': newPhone,
+    'email': newEmail,
+    'status': newStatus,
+    'quarter': newQuarter,
+    'fkIdGroups': newFkIdGroups,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/apprentices/$id');
+
+  final response = await http.put(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 200) {
+    // Si la respuesta es exitosa, actualizamos la lista de apprentices
+    await fetchAPIApprentices();
+    return true;  // Retornamos true si se editó correctamente
+  } else {
+    //throw Exception('Error al editar el aprendiz');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+Future deleteApprenticeApi(int id) async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/apprentices/$id';   // Recibir el url con id del aprendiz a eliminar
+  final response = await http.delete(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // Actualizamos la lista de apprentices después de eliminar
+    await fetchAPIApprentices();
+  } else {
+    throw Exception('Error al eliminar el aprendiz con ID: $id');
   }
 }
 

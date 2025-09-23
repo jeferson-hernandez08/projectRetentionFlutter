@@ -1,4 +1,6 @@
 import 'package:app_projectretention_711_v1/api/apiRetention.dart';
+import 'package:app_projectretention_711_v1/views/apprentices/editNewApprentice.dart';
+import 'package:app_projectretention_711_v1/views/groups/editNewGroup.dart';
 import 'package:app_projectretention_711_v1/views/login/viewLogin.dart';
 import 'package:app_projectretention_711_v1/views/rols/editNewRol.dart';
 import 'package:app_projectretention_711_v1/views/trainingPrograms/editNewTrainingProgram.dart';
@@ -48,7 +50,9 @@ class _InicioState extends State<Inicio> {
         ),
         body: menuPages[myReactController.getPagina],
         floatingActionButton: Visibility(       // Aquí comentar para probar la otra opcion realizada de viewCreateAmbient.dart
-          visible: (myReactController.getPagina == 1 || myReactController.getPagina == 2 || myReactController.getPagina == 3 || myReactController.getPagina == 4 ) ? true : false,
+          visible: (myReactController.getPagina == 1 || myReactController.getPagina == 2 || 
+                    myReactController.getPagina == 3 || myReactController.getPagina == 4 ||
+                    myReactController.getPagina == 5       ) ? true : false,
           child: FloatingActionButton(    
             backgroundColor: Colors.amber,
             foregroundColor: Colors.white,
@@ -59,11 +63,13 @@ class _InicioState extends State<Inicio> {
                 modalEditNewRol(context, "new", null);
               } else if(page == 2) {  // Crear editar users
                 modalEditNewUser(context, "new", null);
-              } else if (page == 3) {   // Crear editar category
+              } else if (page == 3) {   // Crear editar training_programs
                 modalEditNewTrainingProgram(context, "new", null);
-              } else if (page == 4) {    // Crear editar events
-                // modalEditNewEvent(context, "new", null);
-              }
+              } else if (page == 4) {    // Crear editar groups
+                modalEditNewGroup(context, "new", null);
+              } else if (page == 5) {    // Crear editar apprentices
+                modalEditNewApprentice(context, "new", null);
+              } 
             }),
         ),
         drawer: Drawer(
@@ -136,17 +142,29 @@ class _InicioState extends State<Inicio> {
               ),
               Divider(),
 
-              // ListTile(
-              //   title: Text('Listado de Eventos CPIC'),
-              //   leading: Icon(Icons.event),
-              //   trailing: Icon(Icons.arrow_forward_ios),
-              //   onTap: (){
-              //     myReactController.setTituloAppBar('Listado Eventos CPIC');
-              //     myReactController.setPagina(4);   // Aqui se trae en main el array List menuPages = [
-              //     Get.back();
-              //   },
-              // ),
-              // Divider(),
+              ListTile(
+                title: Text('Listado de Grupos'),
+                leading: Icon(Icons.groups),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: (){
+                  myReactController.setTituloAppBar('Listado Grupos CPIC');
+                  myReactController.setPagina(4);   // Aqui se trae en main el array List menuPages = [
+                  Get.back();
+                },
+              ),
+              Divider(),
+
+              ListTile(
+                title: Text('Listado de Aprendices'),
+                leading: Icon(Icons.person, color: Colors.orange),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: (){
+                  myReactController.setTituloAppBar('Listado Aprendices CPIC');
+                  myReactController.setPagina(5);   // Aqui se trae en main el array List menuPages = [
+                  Get.back();
+                },
+              ),
+              Divider(),
 
               // Opción para cerrar sesión
               ListTile(

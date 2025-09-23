@@ -1,24 +1,24 @@
 import 'package:app_projectretention_711_v1/api/apiRetention.dart';
 import 'package:app_projectretention_711_v1/main.dart';
-import 'package:app_projectretention_711_v1/views/groups/editNewGroup.dart';
-import 'package:app_projectretention_711_v1/views/groups/viewDeleteGroup.dart';
-import 'package:app_projectretention_711_v1/views/groups/viewItemGroup.dart';
+import 'package:app_projectretention_711_v1/views/apprentices/editNewApprentice.dart';
+import 'package:app_projectretention_711_v1/views/apprentices/viewDeleteApprentice.dart';
+import 'package:app_projectretention_711_v1/views/apprentices/viewItemApprentice.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ViewGroupsCPIC extends StatefulWidget {
-  const ViewGroupsCPIC({super.key});
+class ViewApprenticesCPIC extends StatefulWidget {
+  const ViewApprenticesCPIC({super.key});
 
   @override
-  State<ViewGroupsCPIC> createState() => _ViewGroupsCPICState();
+  State<ViewApprenticesCPIC> createState() => _ViewApprenticesCPICState();
 }
 
-class _ViewGroupsCPICState extends State<ViewGroupsCPIC> {
+class _ViewApprenticesCPICState extends State<ViewApprenticesCPIC> {
   @override
   void initState() {
     super.initState();
     // Aquí puedes inicializar cualquier cosa que necesites antes de que se construya el widget
-    fetchAPIGroups();         // Metodo que trae los grupos 
+    fetchAPIApprentices();         // Metodo que trae los aprendices 
   }
 
   @override
@@ -27,39 +27,39 @@ class _ViewGroupsCPICState extends State<ViewGroupsCPIC> {
       // Boton flotante para crear
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Llamamos la función para crear el grupo
-          //viewCreateGroup(context);
+          // Llamamos la función para crear el aprendiz
+          //viewCreateApprentice(context);
         },
         child: const Icon(Icons.add),
         backgroundColor: Colors.blue, // Personaliza el color
       ),
       body: Obx(
         () => ListView.builder(
-          itemCount: myReactController.getListGroups.length,
+          itemCount: myReactController.getListApprentices.length,
           itemBuilder: (BuildContext context, int index) {
-            final itemList = myReactController.getListGroups[index];
+            final itemList = myReactController.getListApprentices[index];
             return Card(
               child: ListTile(
                 leading: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.group), 
+                    Icon(Icons.school), 
                     Text(itemList['id'].toString()),
                   ],
                 ),
-                title: Text(itemList['file'] ?? 'Sin ficha'),
-                subtitle: Text('${itemList['managerName']} - ${itemList['shift']}' ?? 'Sin información'),
+                title: Text('${itemList['firtsName']} ${itemList['lastName']}' ?? 'Sin nombre'),
+                subtitle: Text('${itemList['document']} - ${itemList['status']}' ?? 'Sin información'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(onPressed: (){
-                      viewItemGroup(context, itemList);
+                      viewItemApprentice(context, itemList);
                     }, icon: Icon( Icons.visibility)),
                     IconButton(onPressed: () async {
-                      await modalEditNewGroup(context, "edit", itemList);
+                      await modalEditNewApprentice(context, "edit", itemList);
                     }, icon: Icon(Icons.edit)),
                     IconButton(onPressed: (){
-                      viewDeleteGroup(context, itemList);
+                      viewDeleteApprentice(context, itemList);
                     }, icon: Icon(Icons.delete)),
 
                   ],
