@@ -1,3 +1,5 @@
+import 'package:app_projectretention_711_v1/views/apprentices/viewApprentices.dart';
+import 'package:app_projectretention_711_v1/views/groups/viewGroups.dart';
 import 'package:app_projectretention_711_v1/views/interface/homePrincipal.dart';
 import 'package:app_projectretention_711_v1/views/login/viewLogin.dart';
 import 'package:app_projectretention_711_v1/views/rols/viewRols.dart';
@@ -22,8 +24,9 @@ List menuPages = [
   HomePrincipal(),              // 0 Home Principal
   ViewRolsCPIC(),               // 1 View rols CPIC
   ViewUsersCPIC(),              // 2 View user CPIC
-  ViewTrainingProgramsCPIC(),   // 3 View categories CPIC
-  // ViewEventsCPIC(),          // 4 View events CPIC
-  //ViewLoginCPIC()             // 5 View login CPIC // Aqui nueva paginacion login
+  ViewTrainingProgramsCPIC(),   // 3 View training_programs CPIC
+  ViewGroupsCPIC(),             // 4 View groups CPIC
+  ViewApprenticesCPIC()         // 5 View apprentices CPIC
+  ViewCategoriesCPIC()          // 6 View categories CPIC
  
 ];

@@ -1,24 +1,24 @@
 import 'package:app_projectretention_711_v1/api/apiRetention.dart';
 import 'package:app_projectretention_711_v1/main.dart';
-import 'package:app_projectretention_711_v1/views/groups/editNewGroup.dart';
-import 'package:app_projectretention_711_v1/views/groups/viewDeleteGroup.dart';
-import 'package:app_projectretention_711_v1/views/groups/viewItemGroup.dart';
+import 'package:app_projectretention_711_v1/views/categories/editNewCategory.dart';
+import 'package:app_projectretention_711_v1/views/categories/viewDeleteCategory.dart';
+import 'package:app_projectretention_711_v1/views/categories/viewItemCategory.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-class ViewGroupsCPIC extends StatefulWidget {
-  const ViewGroupsCPIC({super.key});
+class ViewCategoriesCPIC extends StatefulWidget {
+  const ViewCategoriesCPIC({super.key});
 
   @override
-  State<ViewGroupsCPIC> createState() => _ViewGroupsCPICState();
+  State<ViewCategoriesCPIC> createState() => _ViewCategoriesCPICState();
 }
 
-class _ViewGroupsCPICState extends State<ViewGroupsCPIC> {
+class _ViewCategoriesCPICState extends State<ViewCategoriesCPIC> {
   @override
   void initState() {
     super.initState();
     // Aquí puedes inicializar cualquier cosa que necesites antes de que se construya el widget
-    fetchAPIGroups();         // Metodo que trae los grupos 
+    fetchAPICategories();         // Metodo que trae las categorías 
   }
 
   @override
@@ -27,39 +27,39 @@ class _ViewGroupsCPICState extends State<ViewGroupsCPIC> {
       // Boton flotante para crear
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Llamamos la función para crear el grupo
-          //viewCreateGroup(context);
+          // Llamamos la función para crear la categoría
+          modalEditNewCategory(context, "new", null);
         },
         child: const Icon(Icons.add),
         backgroundColor: Colors.blue, // Personaliza el color
       ),
       body: Obx(
         () => ListView.builder(
-          itemCount: myReactController.getListGroups.length,
+          itemCount: myReactController.getListCategories.length,
           itemBuilder: (BuildContext context, int index) {
-            final itemList = myReactController.getListGroups[index];
+            final itemList = myReactController.getListCategories[index];
             return Card(
               child: ListTile(
                 leading: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    Icon(Icons.group), 
+                    Icon(Icons.category), 
                     Text(itemList['id'].toString()),
                   ],
                 ),
-                title: Text(itemList['file'] ?? 'Sin ficha'),
-                subtitle: Text('${itemList['managerName']} - ${itemList['shift']}' ?? 'Sin información'),
+                title: Text(itemList['name'] ?? 'Sin nombre'),
+                subtitle: Text('${itemList['description']} - ${itemList['addressing']}' ?? 'Sin información'),
                 trailing: Row(
                   mainAxisSize: MainAxisSize.min,
                   children: [
                     IconButton(onPressed: (){
-                      viewItemGroup(context, itemList);
+                      viewItemCategory(context, itemList);
                     }, icon: Icon( Icons.visibility)),
                     IconButton(onPressed: () async {
-                      await modalEditNewGroup(context, "edit", itemList);
+                      await modalEditNewCategory(context, "edit", itemList);
                     }, icon: Icon(Icons.edit)),
                     IconButton(onPressed: (){
-                      viewDeleteGroup(context, itemList);
+                      viewDeleteCategory(context, itemList);
                     }, icon: Icon(Icons.delete)),
 
                   ],

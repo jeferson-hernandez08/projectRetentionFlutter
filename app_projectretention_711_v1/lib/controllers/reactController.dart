@@ -6,6 +6,9 @@ class ReactController extends GetxController  {
   final _listRols = [].obs; 
   final _listUsers = [].obs; 
   final _listTrainingPrograms = [].obs; 
+  final _listGroups = [].obs; 
+  final _listApprentices = [].obs; 
+  final _listCategories = [].obs; 
 
   final _token = ''.obs;
   final _user = {}.obs;
@@ -25,6 +28,16 @@ class ReactController extends GetxController  {
   void setListTrainingPrograms(List itemList){
     _listTrainingPrograms.value = itemList;
   }
+  void setListGroups(List itemList){
+    _listGroups.value = itemList;
+  }
+  void setListApprentices(List itemList){
+    _listApprentices.value = itemList;
+  }
+  void setListCategories(List itemList){
+    _listCategories.value = itemList;
+  }
+
 
   void setToken(String newToken) {
     _token.value = newToken;
@@ -38,7 +51,11 @@ class ReactController extends GetxController  {
       
   List get getListRols => _listRols.value;     
   List get getListUsers => _listUsers.value;        
-  List get getListTrainingPrograms => _listTrainingPrograms.value;        
+  List get getListTrainingPrograms => _listTrainingPrograms.value;     
+  List get getListGroups => _listGroups.value;     
+  List get getListApprentices => _listApprentices.value;     
+  List get getListCategories => _listApprentices.value;     
+
  
   String get getToken => _token.value;
   Map get getUser => _user.value;
