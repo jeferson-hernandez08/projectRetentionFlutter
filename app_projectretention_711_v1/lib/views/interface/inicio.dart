@@ -1,9 +1,12 @@
 import 'package:app_projectretention_711_v1/api/apiRetention.dart';
 import 'package:app_projectretention_711_v1/views/apprentices/editNewApprentice.dart';
 import 'package:app_projectretention_711_v1/views/categories/editNewCategory.dart';
+import 'package:app_projectretention_711_v1/views/causes/editNewCause.dart';
 import 'package:app_projectretention_711_v1/views/groups/editNewGroup.dart';
+import 'package:app_projectretention_711_v1/views/interventions/editNewIntervention.dart';
 import 'package:app_projectretention_711_v1/views/login/viewLogin.dart';
 import 'package:app_projectretention_711_v1/views/rols/editNewRol.dart';
+import 'package:app_projectretention_711_v1/views/strategies/editNewStrategy.dart';
 import 'package:app_projectretention_711_v1/views/trainingPrograms/editNewTrainingProgram.dart';
 import 'package:app_projectretention_711_v1/views/users/editNewUser.dart';
 import 'package:flutter/material.dart';
@@ -54,7 +57,8 @@ class _InicioState extends State<Inicio> {
           visible: (myReactController.getPagina == 1 || myReactController.getPagina == 2 || 
                     myReactController.getPagina == 3 || myReactController.getPagina == 4 ||
                     myReactController.getPagina == 5 || myReactController.getPagina == 6 ||    
-                    myReactController.getPagina == 7
+                    myReactController.getPagina == 7 || myReactController.getPagina == 8 ||
+                    myReactController.getPagina == 9
                     ) ? true : false,
           child: FloatingActionButton(    
             backgroundColor: Colors.amber,
@@ -72,9 +76,15 @@ class _InicioState extends State<Inicio> {
                 modalEditNewGroup(context, "new", null);
               } else if (page == 5) {    // Crear editar apprentices
                 modalEditNewApprentice(context, "new", null);
-              } else if (page == 7) {    // Crear editar causas  0000000000000000
+              } else if (page == 6) {    // Crear editar categories
                 modalEditNewCategory(context, "new", null);
-              } 
+              } else if (page == 7) {    // Crear editar causas
+                modalEditNewCause(context, "new", null);
+              } else if (page == 8) {    // Crear editar estrategias
+                modalEditNewStrategy(context, "new", null);
+              } else if (page == 9) {    // Crear editar intervenciones
+                modalEditNewIntervention(context, "new", null);
+              }
             }),
         ),
         drawer: Drawer(
@@ -178,6 +188,42 @@ class _InicioState extends State<Inicio> {
                 onTap: (){
                   myReactController.setTituloAppBar('Listado Categorias CPIC');
                   myReactController.setPagina(6);   // Aqui se trae en main el array List menuPages = [
+                  Get.back();
+                },
+              ),
+              Divider(),
+
+              ListTile(
+                title: Text('Listado de Causas'),
+                leading: Icon(Icons.warning_amber, color: Colors.redAccent),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: (){
+                  myReactController.setTituloAppBar('Listado Causas CPIC');
+                  myReactController.setPagina(7);   // Aqui se trae en main el array List menuPages = [
+                  Get.back();
+                },
+              ),
+              Divider(),
+
+              ListTile(
+                title: Text('Listado de Estrategias'),
+                leading: Icon(Icons.flag, color: Colors.teal),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: (){
+                  myReactController.setTituloAppBar('Listado Estrategias CPIC');
+                  myReactController.setPagina(8);   // Aqui se trae en main el array List menuPages = [
+                  Get.back();
+                },
+              ),
+              Divider(),
+
+              ListTile(
+                title: Text('Listado de Intervenciones'),
+                leading: Icon(Icons.handshake, color: Colors.indigo),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: (){
+                  myReactController.setTituloAppBar('Listado Intervenciones CPIC');
+                  myReactController.setPagina(9);   // Aqui se trae en main el array List menuPages = [
                   Get.back();
                 },
               ),

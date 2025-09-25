@@ -92,8 +92,6 @@ En el campo adressing (Direccionamiento) son dos campos o opciones coordinador a
 
 
 
-
-
 ___________________CRUDS apiProjectRetention.dart_________________________
 Hola estoy realizando un proyecto en flutter con API rest , necesito que autocompletes estos CRUDS para  training_programs que quede exactamente igual que users , es decir , necesito que quede con los campos de la nueva tabla training_programs que te compartiré,  muy importante que también me conserves los comentarios de users  para este nuevo CRUD training_programs,
 es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla training_programs. 
@@ -109,10 +107,10 @@ CRUD de users para que me adaptes a CRUD training_programs :
 
 
 
-*** eliminar
-Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo editNewCause.dart que quede exactamente igual que este archivo editNewUser.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla causes que te compartiré, muy importante que también me conserves los comentarios de este archivo editNewUser.dart  pero para este nuevo archivo editNewCause.dart  , 
-es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla causes . 
-Te comparto la tabla y los campos del la nueva tabla causes : 
+******* ELIMINAR
+Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewInterventions.dart que quede exactamente igual que este archivo viewUsers.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla interventions que te compartiré, muy importante que también me conserves los comentarios de este archivo viewUsers.dart  pero para este nuevo archivo viewInterventions.dart  , 
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla interventions . 
+Te comparto la tabla y los campos del la nueva tabla interventions : 
 Modelo:
 
 
@@ -120,10 +118,16 @@ Migracion:
 
 
 
-Archivo del editNewUser.dart para que me adaptes al nuevo archivo editNewCause.dart :  
+Archivo del viewUsers.dart para que me adaptes al nuevo archivo viewInterventions.dart :  
 
 
 Te comparto los datos que hay disponibles en seeders para que te guíes y entiendas mejor:
+
+
+En el campo creationDate(fecha creacion) recordemos que de tipo date, lo cual es completo que fecha con hora, minutos y segundos
+
+
+
 
 
 

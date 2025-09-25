@@ -9,6 +9,9 @@ class ReactController extends GetxController  {
   final _listGroups = [].obs; 
   final _listApprentices = [].obs; 
   final _listCategories = [].obs; 
+  final _listCauses = [].obs;   
+  final _listStrategies = [].obs;   
+  final _listInterventions = [].obs;   
 
   final _token = ''.obs;
   final _user = {}.obs;
@@ -37,6 +40,15 @@ class ReactController extends GetxController  {
   void setListCategories(List itemList){
     _listCategories.value = itemList;
   }
+  void setListCauses(List itemList){
+    _listCauses.value = itemList;
+  }
+  void setListStrategies(List itemList){
+    _listStrategies.value = itemList;
+  }
+  void setListInterventions(List itemList){
+    _listInterventions.value = itemList;
+  }
 
 
   void setToken(String newToken) {
@@ -55,8 +67,11 @@ class ReactController extends GetxController  {
   List get getListGroups => _listGroups.value;     
   List get getListApprentices => _listApprentices.value;     
   List get getListCategories => _listCategories.value;     
+  List get getListCauses => _listCauses.value;     
+  List get getListStrategies => _listStrategies.value;     
+  List get getListInterventions=> _listInterventions.value;     
 
- 
+
   String get getToken => _token.value;
   Map get getUser => _user.value;
  
