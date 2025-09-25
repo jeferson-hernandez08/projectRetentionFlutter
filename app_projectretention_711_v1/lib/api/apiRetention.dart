@@ -93,6 +93,7 @@ Future fetchDeleteRol(int id) async {
 }
 
 //**********CRUD Tabla Users**********//
+
 Future fetchAPIUsers() async {
   final url = '${baseUrl["projectretention_api"]}/api/v1/users';
   print(url);
@@ -197,6 +198,7 @@ Future deleteUserApi(int id) async {
 }
 
 //**********CRUD Tabla TrainingPrograms**********//
+
 Future fetchAPITrainingPrograms() async {
   final url = '${baseUrl["projectretention_api"]}/api/v1/trainingPrograms';
   print(url);
@@ -283,6 +285,7 @@ Future deleteTrainingProgramApi(int id) async {
 }
 
 //**********CRUD Tabla Groups**********//
+
 Future fetchAPIGroups() async {
   final url = '${baseUrl["projectretention_api"]}/api/v1/groups';
   print(url);
@@ -381,6 +384,7 @@ Future deleteGroupApi(int id) async {
 }
 
 //**********CRUD Tabla Apprentices**********//
+
 Future fetchAPIApprentices() async {
   final url = '${baseUrl["projectretention_api"]}/api/v1/apprentices';
   print(url);
@@ -569,8 +573,287 @@ Future deleteCategoryApi(int id) async {
   }
 }
 
+//**********CRUD Tabla Causes**********//
+
+// Obtener todas las causas desde la API
+Future fetchAPICauses() async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/causes';
+  print(url);
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    print("Respuesta API: ${response.body}"); // imprime lo que devuelve la API
+    //print(jsonDecode(response.body)['data']);
+    myReactController.setListCauses(jsonDecode(response.body)['data']); // Guardamos las causas en el controlador Reactivo
+  } else {
+    throw Exception('Error al traer los datos de API causes');
+  }
+}
+
+// Crear una nueva causa
+Future newCauseApi(newCause, newVariable, newFkIdCategories) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'cause': newCause,
+    'variable': newVariable,
+    'fkIdCategories': newFkIdCategories,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/causes');
+  print('URL: $url');
+
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 201) {
+    // Si la respuesta es exitosa, actualizamos la lista de causas
+    await fetchAPICauses();
+    return true;  // Retornamos true si se creó correctamente
+  } else {
+    //throw Exception('Error al crear la nueva causa');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+// Editar una causa existente
+Future editCauseApi(id, newCause, newVariable, newFkIdCategories) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'cause': newCause,
+    'variable': newVariable,
+    'fkIdCategories': newFkIdCategories,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/causes/$id');
+
+  final response = await http.put(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 200) {
+    // Si la respuesta es exitosa, actualizamos la lista de causas
+    await fetchAPICauses();
+    return true;  // Retornamos true si se actualizó correctamente
+  } else {
+    //throw Exception('Error al editar la causa');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+// Eliminar una causa por ID
+Future deleteCauseApi(int id) async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/causes/$id';   // Recibir el url con id de la causa a eliminar
+  final response = await http.delete(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // Actualizamos la lista de causas después de eliminar una
+    await fetchAPICauses();
+  } else {
+    throw Exception('Error al eliminar la causa con ID: $id');
+  }
+}
+
+//**********CRUD Tabla Strategies**********//
+
+// Traer todas las estrategias desde la API
+Future fetchAPIStrategies() async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/strategies';
+  print(url);
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    print("Respuesta API: ${response.body}"); // imprime lo que devuelve la API
+    //print(jsonDecode(response.body)['data']);
+    myReactController.setListStrategies(jsonDecode(response.body)['data']);
+  } else {
+    throw Exception('Error al traer los datos de API strategies');
+  }
+}
+
+// Crear una nueva estrategia en la API
+Future newStrategyApi(newStrategy, newFkIdCategories) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'strategy': newStrategy,
+    'fkIdCategories': newFkIdCategories,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/strategies');
+  print('URL: $url');
+
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 201) {
+    // Si la respuesta es exitosa, actualizamos la lista de strategies
+    await fetchAPIStrategies();
+    return true;  // Retornamos true si se creó correctamente
+  } else {
+    //throw Exception('Error al crear la nueva estrategia');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+// Editar una estrategia existente en la API
+Future editStrategyApi(id, newStrategy, newFkIdCategories) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'strategy': newStrategy,
+    'fkIdCategories': newFkIdCategories,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/strategies/$id');
+
+  final response = await http.put(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 200) {
+    // Si la respuesta es exitosa, actualizamos la lista de strategies
+    await fetchAPIStrategies();
+    return true;  // Retornamos true si se editó correctamente
+  } else {
+    //throw Exception('Error al editar la estrategia');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+// Eliminar una estrategia de la API
+Future deleteStrategyApi(int id) async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/strategies/$id';   // Recibir el url con id estrategia a eliminar
+  final response = await http.delete(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // Actualizamos la lista de estrategias después de eliminar una
+    await fetchAPIStrategies();
+  } else {
+    throw Exception('Error al eliminar la estrategia con ID: $id');
+  }
+}
+
+//********** 👉 CRUD Tabla Interventions**********//
+
+// Traer todas las intervenciones desde la API
+Future fetchAPIInterventions() async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/interventions';
+  print(url);
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    print("Respuesta API: ${response.body}"); // imprime lo que devuelve la API
+    //print(jsonDecode(response.body)['data']);
+    myReactController.setListInterventions(jsonDecode(response.body)['data']);
+  } else {
+    throw Exception('Error al traer los datos de API interventions');
+  }
+}
+
+// Crear una nueva intervención
+Future newInterventionApi(newCreationDate, newDescription, newFkIdStrategies, newFkIdReports, newFkIdUsers) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'creationDate': newCreationDate,
+    'description': newDescription,
+    'fkIdStrategies': newFkIdStrategies,
+    'fkIdReports': newFkIdReports,
+    'fkIdUsers': newFkIdUsers,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/interventions');
+  print('URL: $url');
+
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 201) {
+    // Si la respuesta es exitosa, actualizamos la lista de interventions
+    await fetchAPIInterventions();
+    return true;  // Retornamos true si se creó correctamente
+  } else {
+    //throw Exception('Error al crear la nueva intervención');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+// Editar una intervención existente
+Future editInterventionApi(id, newCreationDate, newDescription, newFkIdStrategies, newFkIdReports, newFkIdUsers) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'creationDate': newCreationDate,
+    'description': newDescription,
+    'fkIdStrategies': newFkIdStrategies,
+    'fkIdReports': newFkIdReports,
+    'fkIdUsers': newFkIdUsers,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/interventions/$id');
+
+  final response = await http.put(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 200) {
+    // Si la respuesta es exitosa, actualizamos la lista de interventions
+    await fetchAPIInterventions();
+    return true;  // Retornamos true si se actualizó correctamente
+  } else {
+    //throw Exception('Error al actualizar la intervención');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+// Eliminar una intervención por ID
+Future deleteInterventionApi(int id) async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/interventions/$id';   // Recibir el url con id intervención a eliminar
+  final response = await http.delete(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // Actualizamos la lista de intervenciones después de eliminar una
+    await fetchAPIInterventions();
+  } else {
+    throw Exception('Error al eliminar la intervención con ID: $id');
+  }
+}
+
+
+
+
 
 // ************ Login *************//
+
 Future<bool> loginApi(String email, String password) async {
   const headers = {
     'Content-Type': 'application/json',
