@@ -5,6 +5,7 @@ import 'package:app_projectretention_711_v1/views/causes/editNewCause.dart';
 import 'package:app_projectretention_711_v1/views/groups/editNewGroup.dart';
 import 'package:app_projectretention_711_v1/views/interventions/editNewIntervention.dart';
 import 'package:app_projectretention_711_v1/views/login/viewLogin.dart';
+import 'package:app_projectretention_711_v1/views/reports/editNewReport.dart';
 import 'package:app_projectretention_711_v1/views/rols/editNewRol.dart';
 import 'package:app_projectretention_711_v1/views/strategies/editNewStrategy.dart';
 import 'package:app_projectretention_711_v1/views/trainingPrograms/editNewTrainingProgram.dart';
@@ -58,7 +59,7 @@ class _InicioState extends State<Inicio> {
                     myReactController.getPagina == 3 || myReactController.getPagina == 4 ||
                     myReactController.getPagina == 5 || myReactController.getPagina == 6 ||    
                     myReactController.getPagina == 7 || myReactController.getPagina == 8 ||
-                    myReactController.getPagina == 9
+                    myReactController.getPagina == 9 || myReactController.getPagina == 10
                     ) ? true : false,
           child: FloatingActionButton(    
             backgroundColor: Colors.amber,
@@ -82,7 +83,9 @@ class _InicioState extends State<Inicio> {
                 modalEditNewCause(context, "new", null);
               } else if (page == 8) {    // Crear editar estrategias
                 modalEditNewStrategy(context, "new", null);
-              } else if (page == 9) {    // Crear editar intervenciones
+              } else if (page == 9) {    // Crear editar reportes
+                modalEditNewReport(context, "new", null);
+              } else if (page == 10) {    // Crear editar intervenciones
                 modalEditNewIntervention(context, "new", null);
               }
             }),
@@ -111,7 +114,7 @@ class _InicioState extends State<Inicio> {
 
               ListTile(
                 title: Text('Info SENA Contigo'),
-                leading: Icon(Icons.person),
+                leading: Icon(Icons.person, color: Colors.blueGrey),
                 trailing: Icon(Icons.arrow_forward_ios),
                 onTap: (){
                   myReactController.setTituloAppBar('Sena Contigo');
@@ -123,7 +126,7 @@ class _InicioState extends State<Inicio> {
 
               ListTile(
                 title: Text('Roles'),
-                leading: Icon(Icons.security),
+                leading: Icon(Icons.security, color: Colors.teal),
                 trailing: Icon(Icons.arrow_forward_ios),
                 onTap: (){
                   myReactController.setTituloAppBar('Listado Roles CPIC');
@@ -135,7 +138,7 @@ class _InicioState extends State<Inicio> {
 
               ListTile(
                 title: Text('Usuarios'),
-                leading: Icon(Icons.people),
+                leading: Icon(Icons.people, color: Colors.green),
                 trailing: Icon(Icons.arrow_forward_ios),
                 onTap: (){
                   myReactController.setTituloAppBar('Listado Usuarios CPIC');
@@ -147,7 +150,7 @@ class _InicioState extends State<Inicio> {
 
               ListTile(
                 title: Text('Programas de Formacion'),
-                leading: Icon(Icons.school),
+                leading: Icon(Icons.school, color: Colors.deepPurple),
                 trailing: Icon(Icons.arrow_forward_ios),
                 onTap: (){
                   myReactController.setTituloAppBar('Listado Programas de Formacion CPIC');
@@ -159,7 +162,7 @@ class _InicioState extends State<Inicio> {
 
               ListTile(
                 title: Text('Listado de Grupos'),
-                leading: Icon(Icons.groups),
+                leading: Icon(Icons.groups, color: Colors.cyan),
                 trailing: Icon(Icons.arrow_forward_ios),
                 onTap: (){
                   myReactController.setTituloAppBar('Listado Grupos CPIC');
@@ -218,16 +221,29 @@ class _InicioState extends State<Inicio> {
               Divider(),
 
               ListTile(
-                title: Text('Listado de Intervenciones'),
-                leading: Icon(Icons.handshake, color: Colors.indigo),
+                title: Text('Listado de Reportes'),
+                leading: Icon(Icons.description, color: Colors.brown),
                 trailing: Icon(Icons.arrow_forward_ios),
                 onTap: (){
-                  myReactController.setTituloAppBar('Listado Intervenciones CPIC');
+                  myReactController.setTituloAppBar('Listado Reportes CPIC');
                   myReactController.setPagina(9);   // Aqui se trae en main el array List menuPages = [
                   Get.back();
                 },
               ),
               Divider(),
+
+              ListTile(
+                title: Text('Listado de Intervenciones'),
+                leading: Icon(Icons.handshake, color: Colors.indigo),
+                trailing: Icon(Icons.arrow_forward_ios),
+                onTap: (){
+                  myReactController.setTituloAppBar('Listado Intervenciones CPIC');
+                  myReactController.setPagina(10);   // Aqui se trae en main el array List menuPages = [
+                  Get.back();
+                },
+              ),
+              Divider(),
+
 
               // Opción para cerrar sesión
               ListTile(

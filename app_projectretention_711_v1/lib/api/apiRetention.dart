@@ -753,6 +753,103 @@ Future deleteStrategyApi(int id) async {
   }
 }
 
+//********** 👉 CRUD Tabla Reports**********//
+
+// Obtener todos los reportes desde la API
+Future fetchAPIReports() async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/reports';
+  print(url);
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    print("Respuesta API: ${response.body}"); // imprime lo que devuelve la API
+    //print(jsonDecode(response.body)['data']);
+    myReactController.setListReports(jsonDecode(response.body)['data']);
+  } else {
+    throw Exception('Error al traer los datos de API reports');
+  }
+}
+
+// Crear un nuevo reporte en la API
+Future newReportApi(newCreationDate, newDescription, newAddressing, newState, newFkIdApprentices, newFkIdUsers) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'creationDate': newCreationDate,
+    'description': newDescription,
+    'addressing': newAddressing,
+    'state': newState,
+    'fkIdApprentices': newFkIdApprentices,
+    'fkIdUsers': newFkIdUsers,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/reports');
+  print('URL: $url');
+
+  final response = await http.post(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 201) {
+    // Si la respuesta es exitosa, actualizamos la lista de reports
+    await fetchAPIReports();
+    return true;  // Retornamos true si se creó correctamente
+  } else {
+    //throw Exception('Error al crear el nuevo reporte');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+// Editar un reporte existente en la API
+Future editReportApi(id, newCreationDate, newDescription, newAddressing, newState, newFkIdApprentices, newFkIdUsers) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'creationDate': newCreationDate,
+    'description': newDescription,
+    'addressing': newAddressing,
+    'state': newState,
+    'fkIdApprentices': newFkIdApprentices,
+    'fkIdUsers': newFkIdUsers,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/reports/$id');
+
+  final response = await http.put(
+    url,
+    headers: headers,
+    body: jsonEncode(data),
+  );
+
+  if (response.statusCode == 200) {
+    // Si la respuesta es exitosa, actualizamos la lista de reports
+    await fetchAPIReports();
+    return true;  // Retornamos true si se actualizó correctamente
+  } else {
+    //throw Exception('Error al editar el reporte');
+    return false;  // Retornamos false si hubo un error
+  }
+}
+
+// Eliminar un reporte de la API
+Future deleteReportApi(int id) async {
+  final url = '${baseUrl["projectretention_api"]}/api/v1/reports/$id';   // Recibir el url con id reporte a eliminar
+  final response = await http.delete(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    // Actualizamos la lista de reports después de eliminar uno
+    await fetchAPIReports();
+  } else {
+    throw Exception('Error al eliminar el reporte con ID: $id');
+  }
+}
+
 //********** 👉 CRUD Tabla Interventions**********//
 
 // Traer todas las intervenciones desde la API

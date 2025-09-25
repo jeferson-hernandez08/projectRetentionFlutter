@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:get/get_core/src/get_main.dart';
 
-viewDeleteIntervention(context, itemList) {
+viewDeleteReport(context, itemList) {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,  
@@ -11,7 +11,7 @@ viewDeleteIntervention(context, itemList) {
       return Scaffold(
         backgroundColor: Colors.grey[100],
         appBar: AppBar(
-          title: const Text('Confirmar Eliminación de la intervención'),
+          title: Text('Confirmar Eliminación del Reporte'),
           backgroundColor: Colors.red,
           foregroundColor: Colors.white,
           centerTitle: true,     // Propiedad para centrar el titulo
@@ -41,7 +41,7 @@ viewDeleteIntervention(context, itemList) {
                       
                       // Título
                       const Text(
-                        '¿Eliminar esta intervención?',
+                        '¿Eliminar este reporte?',
                         style: TextStyle(
                           fontSize: 20,
                           fontWeight: FontWeight.bold,
@@ -51,7 +51,7 @@ viewDeleteIntervention(context, itemList) {
                       ),
                       const SizedBox(height: 15),
                       
-                      // Descripción de la intervención
+                      // Descripción del reporte
                       Text(
                         itemList['description'] ?? 'Sin descripción',
                         style: const TextStyle(
@@ -62,7 +62,7 @@ viewDeleteIntervention(context, itemList) {
                       ),
                       const SizedBox(height: 10),
                       
-                      // ID de la intervención
+                      // ID del reporte
                       Text(
                         'ID: ${itemList['id']}',
                         style: TextStyle(
@@ -97,8 +97,8 @@ viewDeleteIntervention(context, itemList) {
                             child: ElevatedButton(
                               onPressed: () async {
                                 try {
-                                  // Lógica para eliminar la intervención | Llamamos la función API apiRetention.dart
-                                  await deleteInterventionApi(itemList['id']);  
+                                  // Lógica para eliminar el reporte | Llamamos la función API apiRetention.dart
+                                  await deleteReportApi(itemList['id']);  
                                   
                                   // Cerrar el modal
                                   Navigator.pop(context);
@@ -106,19 +106,19 @@ viewDeleteIntervention(context, itemList) {
                                   // Mostramos mensaje de éxito
                                   Get.snackbar(
                                     'Éxito',
-                                    'Intervención eliminada correctamente',
+                                    'Reporte eliminado correctamente',
                                     backgroundColor: Colors.green,
                                     colorText: Colors.white,
                                     duration: const Duration(seconds: 2),
                                   );
                                   
-                                  // Actualizamos la lista de intervenciones
-                                  fetchAPIInterventions();
+                                  // Actualizamos la lista de reportes
+                                  fetchAPIReports();
                                   
                                 } catch (e) {
                                   Get.snackbar(
                                     'Error',
-                                    'Error al eliminar intervención: ${e.toString()}',
+                                    'Error al eliminar reporte: ${e.toString()}',
                                     backgroundColor: Colors.red,
                                     colorText: Colors.white,
                                   );

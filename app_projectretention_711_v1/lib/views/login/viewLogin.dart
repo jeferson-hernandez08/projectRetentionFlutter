@@ -19,9 +19,17 @@ class _ViewLoginCPICState extends State<ViewLoginCPIC> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _rememberMe = false;
+  //bool modoDesarrollo = true;  // Cambiar esta bandera a true para saltar login | Mientras tanto para ingreso facil
+ 
 
   // Función para manejar el login
   Future<void> _handleLogin() async {
+    // if (modoDesarrollo) {
+    //   Get.offAll(() => const Inicio());
+    //   return;
+    // }
+
+    // 🔹 Login real con API
     if (_formKey.currentState!.validate()) {
       // Cerrar teclado
       FocusScope.of(context).unfocus();

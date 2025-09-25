@@ -1,28 +1,17 @@
 import 'package:app_projectretention_711_v1/main.dart';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart'; // Para formatear fecha y hora
-import 'package:app_projectretention_711_v1/api/apiRetention.dart'; // Importa tu API
+import 'package:intl/intl.dart'; // 👈 Para formatear fechas
 
 viewItemIntervention(context, itemList) async {
-  // Cargar estrategias, reportes y usuarios si no están disponibles
-  if (myReactController.getListStrategies.isEmpty) {
-    await fetchAPIStrategies();
-  }
-  if (myReactController.getListReports.isEmpty) {
-    await fetchAPIReports();
-  }
-  if (myReactController.getListUsers.isEmpty) {
-    await fetchAPIUsers();
-  }
-
-  // Función para formatear fecha con hora, minutos y segundos
-  String formatDate(String? date) {
+  // Formateador de fecha + hora
+  String formatDateTime(String? date) {
     if (date == null) return 'No disponible';
     try {
       final parsedDate = DateTime.parse(date);
-      return DateFormat('yyyy-MM-dd HH:mm:ss').format(parsedDate);
+      // 👇 Formato con fecha + hora completa
+      return DateFormat('dd/MM/yyyy HH:mm:ss').format(parsedDate);
     } catch (e) {
-      return 'Fecha inválida';
+      return 'Formato inválido';
     }
   }
 
@@ -32,97 +21,116 @@ viewItemIntervention(context, itemList) async {
     builder: (context) {
       return Scaffold(
         appBar: AppBar(
-          title: Text('Detalle de la Intervención'),
-          backgroundColor: Colors.deepPurple,
+          title: const Text('Detalle de la Intervención'),
+          backgroundColor: Colors.teal,
           foregroundColor: Colors.white,
         ),
         body: ListView(
           children: [
             // ID de la intervención
             ListTile(
-              leading: Icon(Icons.key),
-              title: Text('ID'),
+              leading: const Icon(Icons.key),
+              title: const Text('ID'),
               subtitle: Text(itemList['id'].toString()),
             ),
-            Divider(),
+            const Divider(),
 
-            // Fecha de creación
+            // Fecha de creación con hora
             ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: Text('Fecha de Creación'),
-              subtitle: Text(formatDate(itemList['creationDate'])),
+              leading: const Icon(Icons.date_range),
+              title: const Text('Fecha de Creación'),
+              subtitle: Text(formatDateTime(itemList['creationDate'])),
             ),
-            Divider(),
+            const Divider(),
 
             // Descripción
             ListTile(
-              leading: Icon(Icons.description),
-              title: Text('Descripción'),
+              leading: const Icon(Icons.description),
+              title: const Text('Descripción'),
               subtitle: Text(itemList['description'] ?? 'No disponible'),
             ),
-            Divider(),
+            const Divider(),
 
             // Estrategia asociada
             ListTile(
-              leading: Icon(Icons.lightbulb),
-              title: Text('Estrategia'),
+              leading: const Icon(Icons.lightbulb),
+              title: const Text('Estrategia'),
               subtitle: Text(itemList['strategy']?['strategy'] ?? 'No disponible'),
             ),
-            Divider(),
+            const Divider(),
 
             // Categoría de la estrategia
             ListTile(
-              leading: Icon(Icons.category),
-              title: Text('Categoría de Estrategia'),
+              leading: const Icon(Icons.category),
+              title: const Text('Categoría de Estrategia'),
               subtitle: Text(itemList['strategy']?['category']?['name'] ?? 'No disponible'),
             ),
-            Divider(),
+            const Divider(),
 
             // Reporte asociado
             ListTile(
-              leading: Icon(Icons.report),
-              title: Text('Reporte Asociado'),
+              leading: const Icon(Icons.assignment),
+              title: const Text('Reporte Asociado'),
               subtitle: Text(itemList['report']?['description'] ?? 'No disponible'),
             ),
-            Divider(),
+            const Divider(),
 
             // Estado del reporte
             ListTile(
-              leading: Icon(Icons.flag),
-              title: Text('Estado del Reporte'),
+              leading: const Icon(Icons.flag),
+              title: const Text('Estado del Reporte'),
               subtitle: Text(itemList['report']?['state'] ?? 'No disponible'),
             ),
-            Divider(),
+            const Divider(),
 
-            // Aprendiz del reporte
+            // Aprendiz asociado al reporte
             ListTile(
-              leading: Icon(Icons.school),
-              title: Text('Aprendiz del Reporte'),
+              leading: const Icon(Icons.school),
+              title: const Text('Aprendiz'),
               subtitle: Text(
-                "${itemList['report']?['apprentice']?['firtsName'] ?? 'Nombre'} "
-                "${itemList['report']?['apprentice']?['lastName'] ?? 'Apellido'}",
+                "${itemList['report']?['apprentice']?['firtsName'] ?? ''} "
+                "${itemList['report']?['apprentice']?['lastName'] ?? ''}".trim().isNotEmpty
+                    ? "${itemList['report']?['apprentice']?['firtsName'] ?? ''} ${itemList['report']?['apprentice']?['lastName'] ?? ''}"
+                    : 'No disponible',
               ),
             ),
-            Divider(),
+            const Divider(),
 
-            // Usuario que registró la intervención
+            // Usuario que realizó la intervención
             ListTile(
-              leading: Icon(Icons.person),
-              title: Text('Usuario que Registró'),
+              leading: const Icon(Icons.person),
+              title: const Text('Usuario Responsable'),
               subtitle: Text(
-                "${itemList['user']?['firstName'] ?? 'Nombre'} "
-                "${itemList['user']?['lastName'] ?? 'Apellido'}",
+                "${itemList['user']?['firstName'] ?? ''} ${itemList['user']?['lastName'] ?? ''}".trim().isNotEmpty
+                    ? "${itemList['user']?['firstName'] ?? ''} ${itemList['user']?['lastName'] ?? ''}"
+                    : 'No disponible',
               ),
             ),
-            Divider(),
+            const Divider(),
+
+            // Documento del usuario
+            ListTile(
+              leading: const Icon(Icons.badge),
+              title: const Text('Documento del Usuario'),
+              subtitle: Text(itemList['user']?['document'] ?? 'No disponible'),
+            ),
+            const Divider(),
 
             // Rol del usuario
             ListTile(
-              leading: Icon(Icons.security),
-              title: Text('Rol del Usuario'),
+              leading: const Icon(Icons.security),
+              title: const Text('Rol del Usuario'),
               subtitle: Text(itemList['user']?['rol']?['name'] ?? 'No disponible'),
             ),
-            Divider(),
+            const Divider(),
+
+            // Email del usuario
+            ListTile(
+              leading: const Icon(Icons.email),
+              title: const Text('Email del Usuario'),
+              subtitle: Text(itemList['user']?['email'] ?? 'No disponible'),
+            ),
+            const Divider(),
           ],
         ),
       );

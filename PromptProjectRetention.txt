@@ -90,6 +90,46 @@ Te comparto los datos que hay disponibles en seeders para que te guíes y entien
 
 En el campo adressing (Direccionamiento) son dos campos o opciones coordinador académico o coordinador de formación.
 
+******* Interventions
+Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewInterventions.dart que quede exactamente igual que este archivo viewUsers.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla interventions que te compartiré, muy importante que también me conserves los comentarios de este archivo viewUsers.dart  pero para este nuevo archivo viewInterventions.dart  , 
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla interventions . 
+Te comparto la tabla y los campos del la nueva tabla interventions : 
+Modelo:
+
+
+Migracion:
+
+
+
+Archivo del viewUsers.dart para que me adaptes al nuevo archivo viewInterventions.dart :  
+
+
+Te comparto los datos que hay disponibles en seeders para que te guíes y entiendas mejor:
+
+
+En el campo creationDate(fecha creacion) recordemos que de tipo date en API lo cual es timestamp ,
+Necesito en este editNewIntervention en el campo DATE , el campo date es timestamp lo cual este campo NO ES DATE ONLY lo que necesito en este campo DATE de API guardar también el tiempo del reporte, osea que necesrito integrar tambien la fecha y el tiempo también de que creo el reporte 
+La solución es combinar DatePicker + TimePicker y luego guardar en formato completo (yyyy-MM-dd HH:mm:ss).
+
+******* Reports
+Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewReports.dart que quede exactamente igual que este archivo viewUsers.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla reports que te compartiré, muy importante que también me conserves los comentarios de este archivo viewUsers.dart  pero para este nuevo archivo viewReports.dart  , 
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla reports . 
+Te comparto la tabla y los campos del la nueva tabla reports : 
+Modelo:
+
+
+Migracion:
+
+
+
+Archivo del viewUsers.dart para que me adaptes al nuevo archivo viewReports.dart :  
+
+
+Te comparto los datos que hay disponibles en seeders para que te guíes y entiendas mejor:
+
+
+En el campo creationDate(fecha creacion) recordemos que de tipo date, lo cual es completo que fecha con hora, minutos y segundos . En el campo adressing (Direccionamiento) son dos campos o opciones coordinador académico o coordinador de formación. En el campo state (estado) es el estado del aprendiz y los campos son Registrado, En proceso, Retenido, Desertado.
+
 
 
 ___________________CRUDS apiProjectRetention.dart_________________________
@@ -107,24 +147,7 @@ CRUD de users para que me adaptes a CRUD training_programs :
 
 
 
-******* ELIMINAR
-Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewInterventions.dart que quede exactamente igual que este archivo viewUsers.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla interventions que te compartiré, muy importante que también me conserves los comentarios de este archivo viewUsers.dart  pero para este nuevo archivo viewInterventions.dart  , 
-es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla interventions . 
-Te comparto la tabla y los campos del la nueva tabla interventions : 
-Modelo:
 
-
-Migracion:
-
-
-
-Archivo del viewUsers.dart para que me adaptes al nuevo archivo viewInterventions.dart :  
-
-
-Te comparto los datos que hay disponibles en seeders para que te guíes y entiendas mejor:
-
-
-En el campo creationDate(fecha creacion) recordemos que de tipo date, lo cual es completo que fecha con hora, minutos y segundos
 
 
 
