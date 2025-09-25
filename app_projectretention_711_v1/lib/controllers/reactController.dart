@@ -11,6 +11,7 @@ class ReactController extends GetxController  {
   final _listCategories = [].obs; 
   final _listCauses = [].obs;   
   final _listStrategies = [].obs;   
+  final _listReports = [].obs;   
   final _listInterventions = [].obs;   
 
   final _token = ''.obs;
@@ -46,6 +47,9 @@ class ReactController extends GetxController  {
   void setListStrategies(List itemList){
     _listStrategies.value = itemList;
   }
+  void setListReports(List itemList){
+    _listReports.value = itemList;
+  }
   void setListInterventions(List itemList){
     _listInterventions.value = itemList;
   }
@@ -69,6 +73,7 @@ class ReactController extends GetxController  {
   List get getListCategories => _listCategories.value;     
   List get getListCauses => _listCauses.value;     
   List get getListStrategies => _listStrategies.value;     
+  List get getListReports=> _listReports.value;     
   List get getListInterventions=> _listInterventions.value;     
 
 

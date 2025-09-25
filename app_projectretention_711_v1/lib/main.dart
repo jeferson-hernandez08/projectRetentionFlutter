@@ -5,6 +5,7 @@ import 'package:app_projectretention_711_v1/views/groups/viewGroups.dart';
 import 'package:app_projectretention_711_v1/views/interface/homePrincipal.dart';
 import 'package:app_projectretention_711_v1/views/interventions/viewInterventions.dart';
 import 'package:app_projectretention_711_v1/views/login/viewLogin.dart';
+import 'package:app_projectretention_711_v1/views/reports/viewReports.dart';
 import 'package:app_projectretention_711_v1/views/rols/viewRols.dart';
 import 'package:app_projectretention_711_v1/views/strategies/viewStrategies.dart';
 import 'package:app_projectretention_711_v1/views/trainingPrograms/viewtrainingPrograms.dart';
@@ -24,7 +25,7 @@ void main(List<String> args) {
 ReactController myReactController = Get.find();
 
 // Lista de páginas
-List menuPages = [
+List menuPages = [              // Array para diferentes paginaciones 
   HomePrincipal(),              // 0 Home Principal
   ViewRolsCPIC(),               // 1 View rols CPIC
   ViewUsersCPIC(),              // 2 View user CPIC
@@ -34,6 +35,7 @@ List menuPages = [
   ViewCategoriesCPIC(),         // 6 View categories CPIC
   ViewCausesCPIC(),             // 7 View causes CPIC
   ViewStrategiesCPIC(),         // 8 View strategies CPIC
-  ViewInterventionsCPIC()       // 9 View strategies CPIC
+  ViewReportsCPIC(),            // 9 View strategies CPIC
+  ViewInterventionsCPIC()       // 10 View strategies CPIC
  
 ];

@@ -4,20 +4,19 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Para formatear fechas
 
-// Controladores de texto
+// Controladores para los campos de la intervención
+final TextEditingController creationDateController = TextEditingController();
 final TextEditingController descriptionController = TextEditingController();
-final TextEditingController strategyController = TextEditingController();
-final TextEditingController reportController = TextEditingController();
-final TextEditingController userController = TextEditingController();
+final TextEditingController fkIdStrategiesController = TextEditingController();
+final TextEditingController fkIdReportsController = TextEditingController();
+final TextEditingController fkIdUsersController = TextEditingController();
 
 modalEditNewIntervention(context, option, dynamic listItem) {
-  // Creamos una clave global para el formulario
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Variables para los valores seleccionados en los dropdowns
-  String? selectedStrategy;
-  String? selectedReport;
-  String? selectedUser;
+  String? selectedStrategyId;
+  String? selectedReportId;
+  String? selectedUserId;
   DateTime? selectedCreationDate;
 
   showModalBottomSheet(
@@ -25,37 +24,37 @@ modalEditNewIntervention(context, option, dynamic listItem) {
     context: context,
     builder: (context) {
       if (option == "new") {
-        // Limpiar campos para nueva intervención
+        creationDateController.clear();
         descriptionController.clear();
-        strategyController.clear();
-        reportController.clear();
-        userController.clear();
+        fkIdStrategiesController.clear();
+        fkIdReportsController.clear();
+        fkIdUsersController.clear();
 
-        // Inicializar valores por defecto
-        selectedStrategy = null;
-        selectedReport = null;
-        selectedUser = null;
+        selectedStrategyId = null;
+        selectedReportId = null;
+        selectedUserId = null;
         selectedCreationDate = null;
       } else {
-        // Cargar datos existentes para editar
+        creationDateController.text = listItem['creationDate'] ?? '';
         descriptionController.text = listItem['description'] ?? '';
 
         String strategyValue = listItem['fkIdStrategies']?.toString() ?? '';
-        selectedStrategy = strategyValue.isNotEmpty ? strategyValue : null;
-        strategyController.text = selectedStrategy ?? '';
+        selectedStrategyId = strategyValue.isNotEmpty ? strategyValue : null;
+        fkIdStrategiesController.text = selectedStrategyId ?? '';
 
         String reportValue = listItem['fkIdReports']?.toString() ?? '';
-        selectedReport = reportValue.isNotEmpty ? reportValue : null;
-        reportController.text = selectedReport ?? '';
+        selectedReportId = reportValue.isNotEmpty ? reportValue : null;
+        fkIdReportsController.text = selectedReportId ?? '';
 
         String userValue = listItem['fkIdUsers']?.toString() ?? '';
-        selectedUser = userValue.isNotEmpty ? userValue : null;
-        userController.text = selectedUser ?? '';
+        selectedUserId = userValue.isNotEmpty ? userValue : null;
+        fkIdUsersController.text = selectedUserId ?? '';
 
-        // Procesar fecha de creación si existe
         if (listItem['creationDate'] != null) {
           try {
             selectedCreationDate = DateTime.parse(listItem['creationDate']);
+            creationDateController.text =
+                DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedCreationDate!);
           } catch (e) {
             selectedCreationDate = null;
           }
@@ -64,21 +63,14 @@ modalEditNewIntervention(context, option, dynamic listItem) {
 
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
-          // Capturar listas solo si no están en memoria
           if (myReactController.getListStrategies.isEmpty) {
-            fetchAPIStrategies().then((_) {
-              setState(() {}); // Refresca cuando termine la API
-            });
+            fetchAPIStrategies().then((_) => setState(() {}));
           }
           if (myReactController.getListReports.isEmpty) {
-            fetchAPIReports().then((_) {
-              setState(() {});
-            });
+            fetchAPIReports().then((_) => setState(() {}));
           }
           if (myReactController.getListUsers.isEmpty) {
-            fetchAPIUsers().then((_) {
-              setState(() {});
-            });
+            fetchAPIUsers().then((_) => setState(() {}));
           }
 
           return Scaffold(
@@ -95,7 +87,6 @@ modalEditNewIntervention(context, option, dynamic listItem) {
               foregroundColor: Colors.white,
               child: Icon(option == "new" ? Icons.add : Icons.edit),
               onPressed: () async {
-                // Validar formulario
                 if (!_formKey.currentState!.validate()) {
                   Get.snackbar(
                     'Campos incompletos',
@@ -107,13 +98,12 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                 }
 
                 if (option == "new") {
-                  // Crear nueva intervención
                   bool resp = await newInterventionApi(
+                    creationDateController.text,
                     descriptionController.text,
-                    selectedCreationDate?.toIso8601String() ?? '',
-                    selectedStrategy ?? '',
-                    selectedReport ?? '',
-                    selectedUser ?? '',
+                    selectedStrategyId ?? '',
+                    selectedReportId ?? '',
+                    selectedUserId ?? '',
                   );
                   Get.back();
                   if (resp) {
@@ -132,14 +122,13 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                     );
                   }
                 } else {
-                  // Editar intervención existente
                   bool resp = await editInterventionApi(
                     listItem['id'],
+                    creationDateController.text,
                     descriptionController.text,
-                    selectedCreationDate?.toIso8601String() ?? '',
-                    selectedStrategy ?? '',
-                    selectedReport ?? '',
-                    selectedUser ?? '',
+                    selectedStrategyId ?? '',
+                    selectedReportId ?? '',
+                    selectedUserId ?? '',
                   );
                   Get.back();
                   if (resp) {
@@ -150,8 +139,11 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                       backgroundColor: Colors.greenAccent,
                     );
                   } else {
-                    Get.snackbar('Mensaje', "Error al editar la intervención",
-                        colorText: Colors.red);
+                    Get.snackbar(
+                      'Mensaje',
+                      "Error al editar la intervención",
+                      colorText: Colors.red,
+                    );
                   }
                 }
               },
@@ -162,28 +154,14 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                 key: _formKey,
                 child: ListView(
                   children: [
+                    // Campo de Fecha y Hora de Creación
                     TextFormField(
-                      controller: descriptionController,
+                      controller: creationDateController,
                       decoration: InputDecoration(
-                        labelText: 'Descripción *',
-                        hintText: 'Ingrese la descripción',
+                        labelText: 'Fecha y Hora de Creación *',
+                        hintText: 'Seleccione fecha y hora',
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    SizedBox(height: 16),
-
-                    // Selector de Fecha y Hora de Creación
-                    ListTile(
-                      title: Text(selectedCreationDate == null
-                          ? 'Seleccionar fecha y hora de creación *'
-                          : 'Fecha: ${DateFormat('yyyy-MM-dd – kk:mm').format(selectedCreationDate!)}'),
-                      trailing: Icon(Icons.calendar_today),
+                      readOnly: true,
                       onTap: () async {
                         DateTime? pickedDate = await showDatePicker(
                           context: context,
@@ -201,25 +179,51 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                           );
 
                           if (pickedTime != null) {
+                            final fullDateTime = DateTime(
+                              pickedDate.year,
+                              pickedDate.month,
+                              pickedDate.day,
+                              pickedTime.hour,
+                              pickedTime.minute,
+                            );
                             setState(() {
-                              selectedCreationDate = DateTime(
-                                pickedDate.year,
-                                pickedDate.month,
-                                pickedDate.day,
-                                pickedTime.hour,
-                                pickedTime.minute,
-                              );
+                              selectedCreationDate = fullDateTime;
+                              creationDateController.text =
+                                  DateFormat('yyyy-MM-dd HH:mm:ss')
+                                      .format(fullDateTime);
                             });
                           }
                         }
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Este campo es obligatorio';
+                        }
+                        return null;
+                      },
+                    ),
+
+                    // Campo para Descripción
+                    TextFormField(
+                      controller: descriptionController,
+                      decoration: InputDecoration(
+                        labelText: 'Descripción *',
+                        hintText: 'Ingrese la descripción',
+                      ),
+                      maxLines: 3,
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Este campo es obligatorio';
+                        }
+                        return null;
                       },
                     ),
 
                     SizedBox(height: 16),
 
-                    // Dropdown para Estrategia
+                    // Dropdown Estrategia
                     DropdownButtonFormField<String>(
-                      value: selectedStrategy,
+                      value: selectedStrategyId,
                       decoration: InputDecoration(
                         labelText: 'Estrategia *',
                         border: OutlineInputBorder(),
@@ -236,23 +240,21 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                       }).toList(),
                       onChanged: (String? newValue) {
                         setState(() {
-                          selectedStrategy = newValue;
-                          strategyController.text = newValue ?? '';
+                          selectedStrategyId = newValue;
+                          fkIdStrategiesController.text = newValue ?? '';
                         });
                       },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
+                      validator: (value) =>
+                          value == null || value.isEmpty
+                              ? 'Este campo es obligatorio'
+                              : null,
                     ),
 
                     SizedBox(height: 16),
 
-                    // Dropdown para Reporte
+                    // Dropdown Reporte
                     DropdownButtonFormField<String>(
-                      value: selectedReport,
+                      value: selectedReportId,
                       decoration: InputDecoration(
                         labelText: 'Reporte *',
                         border: OutlineInputBorder(),
@@ -269,23 +271,21 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                       }).toList(),
                       onChanged: (String? newValue) {
                         setState(() {
-                          selectedReport = newValue;
-                          reportController.text = newValue ?? '';
+                          selectedReportId = newValue;
+                          fkIdReportsController.text = newValue ?? '';
                         });
                       },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
+                      validator: (value) =>
+                          value == null || value.isEmpty
+                              ? 'Este campo es obligatorio'
+                              : null,
                     ),
 
                     SizedBox(height: 16),
 
-                    // Dropdown para Usuario
+                    // Dropdown Usuario
                     DropdownButtonFormField<String>(
-                      value: selectedUser,
+                      value: selectedUserId,
                       decoration: InputDecoration(
                         labelText: 'Usuario *',
                         border: OutlineInputBorder(),
@@ -298,21 +298,19 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                         return DropdownMenuItem<String>(
                           value: user['id'].toString(),
                           child: Text(
-                              '${user['firstName']} ${user['lastName']}'),
+                              "${user['firstName']} ${user['lastName']}"),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
                         setState(() {
-                          selectedUser = newValue;
-                          userController.text = newValue ?? '';
+                          selectedUserId = newValue;
+                          fkIdUsersController.text = newValue ?? '';
                         });
                       },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
+                      validator: (value) =>
+                          value == null || value.isEmpty
+                              ? 'Este campo es obligatorio'
+                              : null,
                     ),
                   ],
                 ),

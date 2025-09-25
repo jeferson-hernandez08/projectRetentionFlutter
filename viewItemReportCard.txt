@@ -1,0 +1,147 @@
+import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:app_projectretention_711_v1/api/apiRetention.dart';
+
+viewItemReport(context, itemList) {
+  showModalBottomSheet(
+    context: context,
+    isScrollControlled: true,  
+    builder: (context) {
+      return Scaffold(
+        backgroundColor: Colors.grey[100],
+        appBar: AppBar(
+          title: Text('Detalle del Reporte'),
+          backgroundColor: Colors.teal,
+          foregroundColor: Colors.white,
+          centerTitle: true, // Propiedad para centrar el titulo
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              // Creación de tarjeta con los detalles del reporte
+              Card(
+                elevation: 5,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(15.0),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // ID del reporte
+                      Text(
+                        'ID Reporte: ${itemList['id']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Fecha de creación
+                      Text(
+                        'Fecha de creación: ${itemList['creationDate']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Descripción del reporte
+                      Text(
+                        'Descripción: ${itemList['description']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Dirección o Coordinador asignado
+                      Text(
+                        'Direccionamiento: ${itemList['addressing']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Estado del reporte / aprendiz
+                      Text(
+                        'Estado: ${itemList['state']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Datos del aprendiz
+                      Text(
+                        'Aprendiz: ${itemList['apprentice']['firtsName']} ${itemList['apprentice']['lastName']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        'Documento aprendiz: ${itemList['apprentice']['document']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        'Email aprendiz: ${itemList['apprentice']['email']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      const SizedBox(height: 10),
+
+                      // Datos del usuario que registró el reporte
+                      Text(
+                        'Usuario que registró: ${itemList['user']['firstName']} ${itemList['user']['lastName']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                        ),
+                      ),
+                      Text(
+                        'Documento usuario: ${itemList['user']['document']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                      Text(
+                        'Email usuario: ${itemList['user']['email']}',
+                        style: const TextStyle(
+                          fontSize: 16,
+                          color: Colors.grey,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
+              const SizedBox(height: 20),
+
+              // Información adicional
+              Text(
+                'Este es un detalle completo del reporte, incluyendo aprendiz y usuario responsable.',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: Colors.grey[600],
+                  fontStyle: FontStyle.italic,
+                ),
+                textAlign: TextAlign.center,
+              ),
+            ],
+          ),
+        ),
+      );
+    },
+  );
+}
