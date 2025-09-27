@@ -947,6 +947,26 @@ Future deleteInterventionApi(int id) async {
 
 
 
+//********** 🔹 Traer causas asociadas a un reporte **********//
+Future<List<dynamic>> fetchAPICausesReportsByReport(int reportId) async {
+  final url =
+      '${baseUrl["projectretention_api"]}/api/v1/causesReports/report/$reportId';
+  print("URL fetchAPICausesReportsByReport: $url");
+
+  final response = await http.get(Uri.parse(url));
+
+  if (response.statusCode == 200) {
+    final decoded = jsonDecode(response.body);
+    print("Respuesta API CausesReports: $decoded");
+
+    // Si la API responde con { "data": [...] }
+    return decoded['data'];
+  } else {
+    throw Exception(
+        'Error al traer las causas asociadas al reporte con ID $reportId');
+  }
+}
+
 
 
 // ************ Login *************//

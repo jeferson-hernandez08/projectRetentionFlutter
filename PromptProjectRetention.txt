@@ -145,6 +145,29 @@ Migracion:
 CRUD de users para que me adaptes a CRUD training_programs :
 
 
+______________________Causa_Reporte_____________________
+Hola me falta realizar una ultima que la causes_reports, en esta tabla es que la que realiona muchos a muchos (un reporte tiene muchas causas y una causa tiene mucos reportes)
+esta tabla no lleva una vista en si, si no que necesito realionar esta tabka en la vista de reports, es decir cuando se cree un reporte ya estamos creando el fkIdReports de la tabla causes_reports y
+en esta misma vista en reports crearemos el fkIdCauses, de la siguiente manera como lo vez en la captura ya que es un proyecto en php de la captura de pantalla que ya esta realizado lo cual
+necesito realizarlo en flutter, ten en cuenta como observas en la captura para acceder a la causa se necesita la categoria, vamos a relaizarlo paso a paso, te compartire los modelos y migraciones
+de la API. Tambien te comparo el modelo en la API de la tabla reports y la vista en repots donde requerimos realizar esto.
+Modelo causes_reports:
+
+
+Migracion causes_reports:
+
+
+Modelo reports:
+
+
+MIgracion reports:
+
+
+editNewReport:
+
+
+
+
 
 
 
