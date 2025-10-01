@@ -2,7 +2,7 @@ import 'package:app_projectretention_711_v1/api/apiRetention.dart';
 import 'package:app_projectretention_711_v1/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:intl/intl.dart'; // Para formatear fechas
+import 'package:intl/intl.dart';
 
 // Controladores para cada campo del formulario
 final TextEditingController creationDateController = TextEditingController();
@@ -11,12 +11,6 @@ final TextEditingController addressingController = TextEditingController();
 final TextEditingController stateController = TextEditingController();
 final TextEditingController apprenticeIdController = TextEditingController();
 final TextEditingController userIdController = TextEditingController();
-
-// 🔹 Función global para cargar causas asociadas a un reporte
-Future<List<dynamic>> fetchCausesReports(int reportId) async {
-  final resp = await fetchAPICausesReportsByReport(reportId);
-  return resp;
-}
 
 modalEditNewReport(context, option, dynamic listItem) {
   // Creamos una clave global para el formulario
@@ -29,9 +23,12 @@ modalEditNewReport(context, option, dynamic listItem) {
   String? selectedUserId;
   DateTime? selectedCreationDate;
 
-  // Listas dinámicas
+  // Variables para causas
+  List<dynamic> selectedCauses = [];
+  String? selectedCategoryId;
+  String? selectedCauseId;
   List<dynamic> causesByCategory = [];
-  List<dynamic> causesReportsList = []; // 👈 causas asociadas al reporte
+  bool isLoadingCauses = false;
 
   showModalBottomSheet(
     isScrollControlled: true,
@@ -45,6 +42,7 @@ modalEditNewReport(context, option, dynamic listItem) {
         stateController.clear();
         apprenticeIdController.clear();
         userIdController.clear();
+        selectedCauses.clear();
 
         // Inicializar valores por defecto
         selectedAddressing = null;
@@ -52,6 +50,9 @@ modalEditNewReport(context, option, dynamic listItem) {
         selectedApprenticeId = null;
         selectedUserId = null;
         selectedCreationDate = null;
+        selectedCategoryId = null;
+        selectedCauseId = null;
+        causesByCategory = [];
       } else {
         // Cargar datos existentes para editar
         if (listItem['creationDate'] != null) {
@@ -90,346 +91,651 @@ modalEditNewReport(context, option, dynamic listItem) {
         selectedUserId = userValue.isNotEmpty ? userValue : null;
         userIdController.text = selectedUserId ?? '';
 
-        // 🔹 Paso 2: cargar causas asociadas a este reporte
-        fetchCausesReports(listItem['id']).then((resp) {
-          causesReportsList = resp;
-          // refresca el modal
-          (context as Element).markNeedsBuild();
-        });
+        // En una implementación completa, aquí cargarías las causas existentes del reporte
+        // Podrías usar fetchCausesByReport(listItem['id']) para cargar las causas existentes
       }
 
       return StatefulBuilder(
-        builder: (BuildContext context, StateSetter setState) {
-          // Capturar aprendices y usuarios solo si no están en memoria
-          if (myReactController.getListApprentices.isEmpty) {
-            fetchAPIApprentices().then((_) {
-              setState(() {});
+          builder: (BuildContext context, StateSetter setState) {
+        
+        // Función para cargar causas por categoría
+        Future<void> loadCausesByCategory(String categoryId) async {
+          if (categoryId.isEmpty) return;
+          
+          setState(() {
+            isLoadingCauses = true;
+            causesByCategory = [];
+            selectedCauseId = null;
+          });
+
+          try {
+            final causes = await fetchCausesByCategory(int.parse(categoryId));
+            setState(() {
+              causesByCategory = causes;
+              isLoadingCauses = false;
             });
+          } catch (e) {
+            setState(() {
+              isLoadingCauses = false;
+            });
+            Get.snackbar(
+              'Error',
+              'No se pudieron cargar las causas',
+              colorText: Colors.white,
+              backgroundColor: Colors.red,
+            );
           }
-          if (myReactController.getListUsers.isEmpty) {
-            fetchAPIUsers().then((_) {
-              setState(() {});
-            });
+        }
+
+        // Función para agregar causa a la lista
+        void addCause() {
+          if (selectedCauseId == null || selectedCauseId!.isEmpty) {
+            Get.snackbar(
+              'Selección requerida',
+              'Por favor seleccione una causa',
+              colorText: Colors.white,
+              backgroundColor: Colors.orange,
+            );
+            return;
           }
 
-          return Scaffold(
-            appBar: AppBar(
-              title: (option == "new")
-                  ? Text('Crear Nuevo Reporte')
-                  : Text('Editar Reporte'),
-              backgroundColor: (option == "new") ? Colors.green : Colors.blue,
-              foregroundColor: Colors.white,
-              centerTitle: true,
-            ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: (option == "new") ? Colors.green : Colors.blue,
-              foregroundColor: Colors.white,
-              child: Icon(option == "new" ? Icons.add : Icons.edit),
-              onPressed: () async {
-                // Validar formulario
-                if (!_formKey.currentState!.validate()) {
-                  Get.snackbar(
-                    'Campos incompletos',
-                    'Por favor, complete todos los campos obligatorios',
-                    colorText: Colors.white,
-                    backgroundColor: Colors.orange,
-                  );
-                  return;
-                }
+          final cause = causesByCategory.firstWhere(
+            (c) => c['id'].toString() == selectedCauseId,
+            orElse: () => null,
+          );
+          
+          if (cause != null) {
+            // Verificar si ya existe
+            final exists = selectedCauses.any((c) => c['id'] == cause['id']);
+            if (!exists) {
+              setState(() {
+                selectedCauses.add(cause);
+              });
+              // Limpiar selección
+              selectedCauseId = null;
+              
+              Get.snackbar(
+                'Causa agregada',
+                'La causa ha sido agregada a la lista',
+                colorText: Colors.white,
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 1),
+              );
+            } else {
+              Get.snackbar(
+                'Causa duplicada',
+                'Esta causa ya fue agregada',
+                colorText: Colors.white,
+                backgroundColor: Colors.orange,
+              );
+            }
+          }
+        }
 
-                if (option == "new") {
-                  // Crear nuevo reporte
-                  bool resp = await newReportApi(
-                    creationDateController.text,
-                    descriptionController.text,
-                    selectedAddressing ?? '',
-                    selectedState ?? '',
-                    selectedApprenticeId ?? '',
-                    selectedUserId ?? '',
-                  );
-                  Get.back();
-                  if (resp) {
-                    Get.snackbar(
-                      'Mensaje',
-                      "Se ha añadido correctamente un nuevo reporte",
-                      colorText: Colors.white,
-                      backgroundColor: Colors.green,
-                    );
-                  } else {
-                    Get.snackbar(
-                      'Mensaje',
-                      "Error al agregar el nuevo reporte",
-                      colorText: Colors.white,
-                      backgroundColor: Colors.red,
-                    );
-                  }
-                } else {
-                  // Editar reporte existente
-                  bool resp = await editReportApi(
-                    listItem['id'],
-                    creationDateController.text,
-                    descriptionController.text,
-                    selectedAddressing ?? '',
-                    selectedState ?? '',
-                    selectedApprenticeId ?? '',
-                    selectedUserId ?? '',
-                  );
-                  Get.back();
-                  if (resp) {
-                    Get.snackbar(
-                      'Mensaje',
-                      "Se ha editado correctamente el reporte",
-                      colorText: Colors.green,
-                      backgroundColor: Colors.greenAccent,
-                    );
-                  } else {
-                    Get.snackbar(
-                      'Mensaje',
-                      "Error al editar el reporte",
-                      colorText: Colors.red,
-                    );
-                  }
-                }
-              },
+        // Función para eliminar causa de la lista
+        void removeCause(int index) {
+          setState(() {
+            selectedCauses.removeAt(index);
+          });
+        }
+
+        // Función principal para guardar el reporte y las causas
+        Future<void> saveReportAndCauses() async {
+          // Validar formulario
+          if (!_formKey.currentState!.validate()) {
+            Get.snackbar(
+              'Campos incompletos',
+              'Por favor, complete todos los campos obligatorios',
+              colorText: Colors.white,
+              backgroundColor: Colors.orange,
+            );
+            return;
+          }
+
+          if (selectedCauses.isEmpty) {
+            Get.snackbar(
+              'Causas requeridas',
+              'Por favor agregue al menos una causa',
+              colorText: Colors.white,
+              backgroundColor: Colors.orange,
+            );
+            return;
+          }
+
+          bool reportSaved = false;
+          int? reportId;
+
+          print('🟡 INICIANDO PROCESO DE GUARDADO...');
+
+          if (option == "new") {
+            // Crear nuevo reporte
+            print('🟡 USANDO MÉTODO MEJORADO PARA CREAR REPORTE...');
+            final result = await newReportApi(
+              creationDateController.text,
+              descriptionController.text,
+              selectedAddressing ?? '',
+              selectedState ?? '',
+              selectedApprenticeId ?? '',
+              selectedUserId ?? '',
+            );
+            
+            reportSaved = result?['success'] ?? false;
+            reportId = result?['id'];
+
+            print('🟡 Resultado después del fallback:');
+            print('🟡 reportSaved: $reportSaved');
+            print('🟡 reportId: $reportId');
+            
+            if (reportId == null) {
+              Get.snackbar(
+                'Error',
+                'No se pudo obtener el ID del reporte creado',
+                colorText: Colors.white,
+                backgroundColor: Colors.red,
+              );
+              return;
+            }
+            
+          } else {
+            // Editar reporte existente
+            reportSaved = await editReportApi(
+              listItem['id'],
+              creationDateController.text,
+              descriptionController.text,
+              selectedAddressing ?? '',
+              selectedState ?? '',
+              selectedApprenticeId ?? '',
+              selectedUserId ?? '',
+            );
+            reportId = listItem['id'];
+          }
+
+          if (reportSaved && reportId != null) {
+            // Guardar las relaciones causes_reports
+            bool allCausesSaved = true;
+            int savedCount = 0;
+            
+            print('🟡 GUARDANDO RELACIONES CAUSES_REPORTS...');
+            print('🟡 Total de causas a guardar: ${selectedCauses.length}');
+            print('🟡 reportId para relaciones: $reportId');
+            
+            for (var cause in selectedCauses) {
+              print('🟡 Intentando guardar causa ID: ${cause['id']}');
+              
+              final causeSaved = await newCauseReportApi(
+                reportId,
+                cause['id'],
+              );
+              
+              if (causeSaved) {
+                savedCount++;
+                print('✅ Causa ${cause['id']} guardada exitosamente');
+              } else {
+                allCausesSaved = false;
+                print('❌ Error al guardar causa ID: ${cause['id']}');
+              }
+            }
+
+            Get.back();
+            
+            if (allCausesSaved) {
+              Get.snackbar(
+                'Éxito',
+                option == "new" 
+                    ? "Reporte y $savedCount causa(s) guardados correctamente"
+                    : "Reporte actualizado correctamente",
+                colorText: Colors.white,
+                backgroundColor: Colors.green,
+                duration: Duration(seconds: 3),
+              );
+            } else {
+              Get.snackbar(
+                'Advertencia',
+                'Reporte guardado pero $savedCount de ${selectedCauses.length} causa(s) se asociaron correctamente',
+                colorText: Colors.white,
+                backgroundColor: Colors.orange,
+                duration: Duration(seconds: 3),
+              );
+            }
+          } else {
+            Get.back();
+            Get.snackbar(
+              'Error',
+              option == "new" 
+                  ? "Error al crear el reporte"
+                  : "Error al actualizar el reporte",
+              colorText: Colors.white, 
+              backgroundColor: Colors.red,
+            );
+          }
+        }
+
+        // Capturar aprendices y usuarios solo si no están en memoria
+        if (myReactController.getListApprentices.isEmpty) {
+          fetchAPIApprentices().then((_) {
+            setState(() {});
+          });
+        }
+        if (myReactController.getListUsers.isEmpty) {
+          fetchAPIUsers().then((_) {
+            setState(() {});
+          });
+        }
+        if (myReactController.getListCategories.isEmpty) {
+          fetchAPICategories().then((_) {
+            setState(() {});
+          });
+        }
+
+        return Scaffold(
+          appBar: AppBar(
+            title: (option == "new")
+                ? Text('Crear Nuevo Reporte')
+                : Text('Editar Reporte'),
+            backgroundColor: (option == "new") ? Colors.green : Colors.blue,
+            foregroundColor: Colors.white,
+            centerTitle: true,
+          ),
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: (option == "new") ? Colors.green : Colors.blue,
+            foregroundColor: Colors.white,
+            child: option == "new" 
+                ? Icon(Icons.add) 
+                : Icon(Icons.edit),
+            onPressed: saveReportAndCauses,
+          ),
+          body: Padding(
+            padding: EdgeInsets.only(
+              left: 8,
+              right: 8,
+              top: 8,
+              bottom: MediaQuery.of(context).viewInsets.bottom,
             ),
-            body: Padding(
-              padding: EdgeInsets.only(
-                left: 8,
-                right: 8,
-                top: 8,
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
-              child: Form(
-                key: _formKey,
-                child: ListView(
-                  children: [
-                    // Fecha de creación
-                    TextFormField(
-                      controller: creationDateController,
-                      readOnly: true,
-                      decoration: InputDecoration(
-                        labelText: 'Fecha y hora de creación *',
-                        hintText: 'Seleccione fecha y hora',
-                        suffixIcon: IconButton(
-                          icon: Icon(Icons.calendar_today),
-                          onPressed: () async {
-                            // Seleccionar la fecha
-                            final DateTime? pickedDate =
-                                await showDatePicker(
+            child: Form(
+              key: _formKey,
+              child: ListView(
+                children: [
+                  // Fecha de creación (fecha + hora)
+                  TextFormField(
+                    controller: creationDateController,
+                    readOnly: true,
+                    decoration: InputDecoration(
+                      labelText: 'Fecha y hora de creación *',
+                      hintText: 'Seleccione fecha y hora',
+                      suffixIcon: IconButton(
+                        icon: Icon(Icons.calendar_today),
+                        onPressed: () async {
+                          // Seleccionar la fecha
+                          final DateTime? pickedDate = await showDatePicker(
+                            context: context,
+                            initialDate: selectedCreationDate ?? DateTime.now(),
+                            firstDate: DateTime(2000),
+                            lastDate: DateTime(2100),
+                          );
+
+                          if (pickedDate != null) {
+                            // Seleccionar la hora
+                            final TimeOfDay? pickedTime = await showTimePicker(
                               context: context,
-                              initialDate:
-                                  selectedCreationDate ?? DateTime.now(),
-                              firstDate: DateTime(2000),
-                              lastDate: DateTime(2100),
+                              initialTime: TimeOfDay.fromDateTime(DateTime.now()),
                             );
 
-                            if (pickedDate != null) {
-                              // Seleccionar la hora
-                              final TimeOfDay? pickedTime =
-                                  await showTimePicker(
-                                context: context,
-                                initialTime:
-                                    TimeOfDay.fromDateTime(DateTime.now()),
-                              );
+                            if (pickedTime != null) {
+                              setState(() {
+                                selectedCreationDate = DateTime(
+                                  pickedDate.year,
+                                  pickedDate.month,
+                                  pickedDate.day,
+                                  pickedTime.hour,
+                                  pickedTime.minute,
+                                );
 
-                              if (pickedTime != null) {
-                                setState(() {
-                                  selectedCreationDate = DateTime(
-                                    pickedDate.year,
-                                    pickedDate.month,
-                                    pickedDate.day,
-                                    pickedTime.hour,
-                                    pickedTime.minute,
-                                  );
-
-                                  creationDateController.text =
-                                      DateFormat('yyyy-MM-dd HH:mm:ss')
-                                          .format(selectedCreationDate!);
-                                });
-                              }
+                                creationDateController.text =
+                                    DateFormat('yyyy-MM-dd HH:mm:ss')
+                                        .format(selectedCreationDate!);
+                              });
                             }
-                          },
-                        ),
+                          }
+                        },
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Este campo es obligatorio';
+                      }
+                      return null;
+                    },
+                  ),
 
-                    // Descripción
-                    TextFormField(
-                      controller: descriptionController,
-                      decoration: InputDecoration(
-                        labelText: 'Descripción *',
-                        hintText: 'Ingrese la descripción',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
+                  SizedBox(height: 16),
+
+                  // Descripción
+                  TextFormField(
+                    controller: descriptionController,
+                    maxLines: 3,
+                    decoration: InputDecoration(
+                      labelText: 'Descripción *',
+                      hintText: 'Ingrese la descripción del reporte',
+                      border: OutlineInputBorder(),
                     ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Este campo es obligatorio';
+                      }
+                      return null;
+                    },
+                  ),
 
-                    SizedBox(height: 16),
+                  SizedBox(height: 16),
 
-                    // Dropdown Addressing
-                    DropdownButtonFormField<String>(
-                      value: selectedAddressing,
-                      decoration: InputDecoration(
-                        labelText: 'Direccionamiento *',
-                        border: OutlineInputBorder(),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      ),
-                      hint: Text('Seleccione el direccionamiento'),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'Coordinador Académico',
-                          child: Text('Coordinador Académico'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Coordinador de Formación',
-                          child: Text('Coordinador de Formación'),
-                        ),
-                      ],
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedAddressing = newValue;
-                          addressingController.text = newValue ?? '';
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
+                  // Dropdown para Addressing
+                  DropdownButtonFormField<String>(
+                    value: selectedAddressing,
+                    decoration: InputDecoration(
+                      labelText: 'Direccionamiento *',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     ),
-
-                    SizedBox(height: 16),
-
-                    // Dropdown State
-                    DropdownButtonFormField<String>(
-                      value: selectedState,
-                      decoration: InputDecoration(
-                        labelText: 'Estado *',
-                        border: OutlineInputBorder(),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    hint: Text('Seleccione el direccionamiento'),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'Coordinador Académico',
+                        child: Text('Coordinador Académico'),
                       ),
-                      hint: Text('Seleccione un estado'),
-                      items: [
-                        DropdownMenuItem(
-                          value: 'Registrado',
-                          child: Text('Registrado'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'En proceso',
-                          child: Text('En proceso'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Retenido',
-                          child: Text('Retenido'),
-                        ),
-                        DropdownMenuItem(
-                          value: 'Desertado',
-                          child: Text('Desertado'),
-                        ),
-                      ],
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedState = newValue;
-                          stateController.text = newValue ?? '';
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
+                      DropdownMenuItem(
+                        value: 'Coordinador de Formación',
+                        child: Text('Coordinador de Formación'),
+                      ),
+                    ],
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedAddressing = newValue;
+                        addressingController.text = newValue ?? '';
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Este campo es obligatorio';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Dropdown para State
+                  DropdownButtonFormField<String>(
+                    value: selectedState,
+                    decoration: InputDecoration(
+                      labelText: 'Estado *',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     ),
-
-                    SizedBox(height: 16),
-
-                    // Dropdown Aprendiz
-                    DropdownButtonFormField<String>(
-                      value: selectedApprenticeId,
-                      decoration: InputDecoration(
-                        labelText: 'Aprendiz *',
-                        border: OutlineInputBorder(),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    hint: Text('Seleccione un estado'),
+                    items: [
+                      DropdownMenuItem(
+                        value: 'Registrado',
+                        child: Text('Registrado'),
                       ),
-                      hint: Text('Seleccione un aprendiz'),
-                      items: myReactController.getListApprentices
-                          .map<DropdownMenuItem<String>>((apprentice) {
-                        return DropdownMenuItem<String>(
-                          value: apprentice['id'].toString(),
-                          child: Text(
-                            "${apprentice['firtsName']} ${apprentice['lastName']}",
+                      DropdownMenuItem(
+                        value: 'En proceso',
+                        child: Text('En proceso'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Retenido',
+                        child: Text('Retenido'),
+                      ),
+                      DropdownMenuItem(
+                        value: 'Desertado',
+                        child: Text('Desertado'),
+                      ),
+                    ],
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedState = newValue;
+                        stateController.text = newValue ?? '';
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Este campo es obligatorio';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Dropdown para Aprendiz
+                  DropdownButtonFormField<String>(
+                    value: selectedApprenticeId,
+                    decoration: InputDecoration(
+                      labelText: 'Aprendiz *',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    ),
+                    hint: Text('Seleccione un aprendiz'),
+                    items: myReactController.getListApprentices
+                        .map<DropdownMenuItem<String>>((apprentice) {
+                      return DropdownMenuItem<String>(
+                        value: apprentice['id'].toString(),
+                        child: Text(
+                            "${apprentice['firtsName']} ${apprentice['lastName']} - ${apprentice['document']}"),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedApprenticeId = newValue;
+                        apprenticeIdController.text = newValue ?? '';
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Este campo es obligatorio';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Dropdown para Usuario
+                  DropdownButtonFormField<String>(
+                    value: selectedUserId,
+                    decoration: InputDecoration(
+                      labelText: 'Usuario *',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    ),
+                    hint: Text('Seleccione un usuario'),
+                    items: myReactController.getListUsers
+                        .map<DropdownMenuItem<String>>((user) {
+                      return DropdownMenuItem<String>(
+                        value: user['id'].toString(),
+                        child: Text("${user['firstName']} ${user['lastName']}"),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedUserId = newValue;
+                        userIdController.text = newValue ?? '';
+                      });
+                    },
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Este campo es obligatorio';
+                      }
+                      return null;
+                    },
+                  ),
+
+                  // SECCIÓN DE CAUSAS
+                  SizedBox(height: 24),
+                  Divider(thickness: 2),
+                  Text(
+                    'Causas del Reporte *',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.blue,
+                    ),
+                  ),
+                  SizedBox(height: 16),
+
+                  // Dropdown para Categorías
+                  DropdownButtonFormField<String>(
+                    value: selectedCategoryId,
+                    decoration: InputDecoration(
+                      labelText: 'Seleccione una categoría',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    ),
+                    hint: Text('Seleccione una categoría'),
+                    items: myReactController.getListCategories
+                        .map<DropdownMenuItem<String>>((category) {
+                      return DropdownMenuItem<String>(
+                        value: category['id'].toString(),
+                        child: Text(category['name']),
+                      );
+                    }).toList(),
+                    onChanged: (String? newValue) {
+                      setState(() {
+                        selectedCategoryId = newValue;
+                        selectedCauseId = null;
+                        causesByCategory = [];
+                      });
+                      if (newValue != null && newValue.isNotEmpty) {
+                        loadCausesByCategory(newValue);
+                      }
+                    },
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Dropdown para Causas
+                  DropdownButtonFormField<String>(
+                    value: selectedCauseId,
+                    decoration: InputDecoration(
+                      labelText: 'Seleccione una causa',
+                      border: OutlineInputBorder(),
+                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                    ),
+                    hint: isLoadingCauses 
+                        ? Text('Cargando causas...')
+                        : Text(selectedCategoryId == null 
+                            ? 'Primero seleccione una categoría'
+                            : 'Seleccione una causa'),
+                    items: isLoadingCauses
+                        ? [DropdownMenuItem(value: null, child: Text('Cargando...'))]
+                        : causesByCategory.map<DropdownMenuItem<String>>((cause) {
+                            return DropdownMenuItem<String>(
+                              value: cause['id'].toString(),
+                              child: Text(cause['cause']),
+                            );
+                          }).toList(),
+                    onChanged: isLoadingCauses ? null : (String? newValue) {
+                      setState(() {
+                        selectedCauseId = newValue;
+                      });
+                    },
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Botón para agregar causa
+                  ElevatedButton(
+                    onPressed: addCause,
+                    child: Text('Agregar Causa a la Lista'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.blue,
+                      foregroundColor: Colors.white,
+                      minimumSize: Size(double.infinity, 50),
+                    ),
+                  ),
+
+                  SizedBox(height: 16),
+
+                  // Lista de causas agregadas
+                  Text(
+                    'Causas Agregadas:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
+                    ),
+                  ),
+                  SizedBox(height: 8),
+
+                  selectedCauses.isEmpty
+                      ? Container(
+                          padding: EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: Colors.grey[100],
+                            borderRadius: BorderRadius.circular(8),
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedApprenticeId = newValue;
-                          apprenticeIdController.text = newValue ?? '';
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    SizedBox(height: 16),
-
-                    // Dropdown Usuario
-                    DropdownButtonFormField<String>(
-                      value: selectedUserId,
-                      decoration: InputDecoration(
-                        labelText: 'Usuario *',
-                        border: OutlineInputBorder(),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      ),
-                      hint: Text('Seleccione un usuario'),
-                      items: myReactController.getListUsers
-                          .map<DropdownMenuItem<String>>((user) {
-                        return DropdownMenuItem<String>(
-                          value: user['id'].toString(),
                           child: Text(
-                            "${user['firstName']} ${user['lastName']}",
+                            'No hay causas agregadas. Seleccione una categoría y causa, luego presione "Agregar Causa a la Lista".',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(color: Colors.grey[600]),
                           ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedUserId = newValue;
-                          userIdController.text = newValue ?? '';
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
-                    ),
-                  ],
-                ),
+                        )
+                      : Column(
+                          children: [
+                            Text(
+                              'Total: ${selectedCauses.length} causa(s) agregada(s)',
+                              style: TextStyle(
+                                fontWeight: FontWeight.w500,
+                                color: Colors.green,
+                              ),
+                            ),
+                            SizedBox(height: 8),
+                            ListView.builder(
+                              shrinkWrap: true,
+                              physics: NeverScrollableScrollPhysics(),
+                              itemCount: selectedCauses.length,
+                              itemBuilder: (context, index) {
+                                final cause = selectedCauses[index];
+                                final category = myReactController.getListCategories
+                                    .firstWhere(
+                                      (cat) => cat['id'] == cause['fkIdCategories'],
+                                      orElse: () => {'name': 'N/A'},
+                                    );
+                                
+                                return Card(
+                                  margin: EdgeInsets.symmetric(vertical: 4),
+                                  child: ListTile(
+                                    leading: CircleAvatar(
+                                      backgroundColor: Colors.blue,
+                                      child: Text(
+                                        '${index + 1}',
+                                        style: TextStyle(color: Colors.white),
+                                      ),
+                                    ),
+                                    title: Text(
+                                      cause['cause'],
+                                      style: TextStyle(fontSize: 14),
+                                    ),
+                                    subtitle: Text(
+                                      'Categoría: ${category['name']}',
+                                      style: TextStyle(fontSize: 12),
+                                    ),
+                                    trailing: IconButton(
+                                      icon: Icon(Icons.delete, color: Colors.red),
+                                      onPressed: () => removeCause(index),
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+
+                  SizedBox(height: 30),
+                ],
               ),
             ),
-          );
-        },
-      );
+          ),
+        );
+      });
     },
   );
 }

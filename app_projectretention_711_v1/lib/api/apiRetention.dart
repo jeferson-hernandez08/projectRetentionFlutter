@@ -771,38 +771,38 @@ Future fetchAPIReports() async {
 }
 
 // Crear un nuevo reporte en la API
-Future newReportApi(newCreationDate, newDescription, newAddressing, newState, newFkIdApprentices, newFkIdUsers) async {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+// Future newReportApi(newCreationDate, newDescription, newAddressing, newState, newFkIdApprentices, newFkIdUsers) async {
+//   const headers = {
+//     'Content-Type': 'application/json',
+//   };
 
-  dynamic data = {
-    'creationDate': newCreationDate,
-    'description': newDescription,
-    'addressing': newAddressing,
-    'state': newState,
-    'fkIdApprentices': newFkIdApprentices,
-    'fkIdUsers': newFkIdUsers,
-  };
+//   dynamic data = {
+//     'creationDate': newCreationDate,
+//     'description': newDescription,
+//     'addressing': newAddressing,
+//     'state': newState,
+//     'fkIdApprentices': newFkIdApprentices,
+//     'fkIdUsers': newFkIdUsers,
+//   };
 
-  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/reports');
-  print('URL: $url');
+//   dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/reports');
+//   print('URL: $url');
 
-  final response = await http.post(
-    url,
-    headers: headers,
-    body: jsonEncode(data),
-  );
+//   final response = await http.post(
+//     url,
+//     headers: headers,
+//     body: jsonEncode(data),
+//   );
 
-  if (response.statusCode == 201) {
-    // Si la respuesta es exitosa, actualizamos la lista de reports
-    await fetchAPIReports();
-    return true;  // Retornamos true si se creó correctamente
-  } else {
-    //throw Exception('Error al crear el nuevo reporte');
-    return false;  // Retornamos false si hubo un error
-  }
-}
+//   if (response.statusCode == 201) {
+//     // Si la respuesta es exitosa, actualizamos la lista de reports
+//     await fetchAPIReports();
+//     return true;  // Retornamos true si se creó correctamente
+//   } else {
+//     //throw Exception('Error al crear el nuevo reporte');
+//     return false;  // Retornamos false si hubo un error
+//   }
+// }
 
 // Editar un reporte existente en la API
 Future editReportApi(id, newCreationDate, newDescription, newAddressing, newState, newFkIdApprentices, newFkIdUsers) async {
@@ -947,25 +947,332 @@ Future deleteInterventionApi(int id) async {
 
 
 
-//********** 🔹 Traer causas asociadas a un reporte **********//
-Future<List<dynamic>> fetchAPICausesReportsByReport(int reportId) async {
-  final url =
-      '${baseUrl["projectretention_api"]}/api/v1/causesReports/report/$reportId';
-  print("URL fetchAPICausesReportsByReport: $url");
 
-  final response = await http.get(Uri.parse(url));
 
-  if (response.statusCode == 200) {
-    final decoded = jsonDecode(response.body);
-    print("Respuesta API CausesReports: $decoded");
 
-    // Si la API responde con { "data": [...] }
-    return decoded['data'];
-  } else {
-    throw Exception(
-        'Error al traer las causas asociadas al reporte con ID $reportId');
+
+
+
+
+//********** 👉 Funciones para Causes y Causes_Reports **********//
+
+// Obtener causas por categoría desde la API
+Future<List<dynamic>> fetchCausesByCategory(int categoryId) async {
+  try {
+    final url = '${baseUrl["projectretention_api"]}/api/v1/causes?categoryId=$categoryId';
+    print('🔍 Buscando causas para categoría ID: $categoryId');
+    print('URL: $url');
+    
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      print('✅ Causas encontradas: ${responseData['data']?.length ?? 0}');
+      return responseData['data'] ?? [];
+    } else {
+      print('❌ Error al obtener causas: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('💥 Excepción al obtener causas: $e');
+    return [];
   }
 }
+
+// Crear una nueva relación causes_reports
+Future<bool> newCauseReportApi(int fkIdReports, int fkIdCauses) async {
+  try {
+    const headers = {
+      'Content-Type': 'application/json',
+    };
+
+    dynamic data = {
+      'fkIdReports': fkIdReports,
+      'fkIdCauses': fkIdCauses,
+    };
+
+    dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/causesReports');
+    print('🟡 CREANDO RELACIÓN CAUSES_REPORTS...');
+    print('🟡 Datos: $data');
+    print('🟡 URL: $url');
+
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    print('🟡 Respuesta del servidor (causes_reports):');
+    print('🟡 Status Code: ${response.statusCode}');
+    print('🟡 Body: ${response.body}');
+
+    if (response.statusCode == 201 || response.statusCode == 200) {
+      print('✅ Relación causes_reports creada exitosamente');
+      return true;
+    } else {
+      print('❌ Error al crear relación causes_reports: ${response.statusCode}');
+      print('❌ Mensaje de error: ${response.body}');
+      return false;
+    }
+  } catch (e) {
+    print('💥 Excepción al crear relación causes_reports: $e');
+    return false;
+  }
+}
+
+// Modificar newReportApi para que devuelva el ID del reporte creado
+Future<Map<String, dynamic>?> newReportApi(newCreationDate, newDescription, newAddressing, newState, newFkIdApprentices, newFkIdUsers) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'creationDate': newCreationDate,
+    'description': newDescription,
+    'addressing': newAddressing,
+    'state': newState,
+    'fkIdApprentices': newFkIdApprentices,
+    'fkIdUsers': newFkIdUsers,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/reports');
+  print('🟡 CREANDO NUEVO REPORTE...');
+  print('🟡 Datos: $data');
+  print('🟡 URL: $url');
+
+  try {
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    print('🟡 Respuesta del servidor (nuevo reporte):');
+    print('🟡 Status Code: ${response.statusCode}');
+    print('🟡 Body: ${response.body}');
+
+    if (response.statusCode == 201) {
+      var responseData = jsonDecode(response.body);
+      
+      // Diferentes formas en que la API podría devolver el ID
+      int? reportId;
+      
+      // Opción 1: responseData['data']['id']
+      if (responseData['data'] != null && responseData['data']['id'] != null) {
+        reportId = responseData['data']['id'];
+        print('✅ ID obtenido de data.id: $reportId');
+      }
+      // Opción 2: responseData['id'] 
+      else if (responseData['id'] != null) {
+        reportId = responseData['id'];
+        print('✅ ID obtenido de id: $reportId');
+      }
+      // Opción 3: responseData['data'] es directamente el objeto con id
+      else if (responseData['data'] != null && responseData['data'] is Map && responseData['data']['id'] != null) {
+        reportId = responseData['data']['id'];
+        print('✅ ID obtenido de data (Map): $reportId');
+      }
+      // Opción 4: Buscar en toda la respuesta
+      else {
+        // Intentar encontrar el ID en cualquier parte de la respuesta
+        String responseString = response.body;
+        RegExp idPattern = RegExp(r'"id"\s*:\s*(\d+)');
+        Match? match = idPattern.firstMatch(responseString);
+        if (match != null) {
+          reportId = int.tryParse(match.group(1)!);
+          print('✅ ID obtenido por regex: $reportId');
+        }
+      }
+      
+      if (reportId != null) {
+        print('✅ Reporte creado exitosamente con ID: $reportId');
+        
+        // Actualizamos la lista de reports
+        await fetchAPIReports();
+        
+        return {
+          'success': true,
+          'id': reportId,
+          'data': responseData
+        };
+      } else {
+        print('⚠️ Reporte creado pero no se pudo obtener el ID de la respuesta');
+        print('📋 Estructura completa de respuesta: $responseData');
+        
+        // Si no viene el ID, intentamos obtener el último reporte creado
+        // Esta es una solución de emergencia
+        await fetchAPIReports();
+        if (myReactController.getListReports.isNotEmpty) {
+          var lastReport = myReactController.getListReports.last;
+          var lastReportId = lastReport['id'];
+          print('⚠️ Usando último reporte de la lista como fallback: $lastReportId');
+          
+          return {
+            'success': true,
+            'id': lastReportId,
+            'data': responseData,
+            'note': 'ID obtenido del último reporte de la lista'
+          };
+        }
+        
+        return {
+          'success': true,
+          'id': null,
+          'data': responseData,
+          'error': 'No se pudo obtener el ID del reporte'
+        };
+      }
+    } else {
+      print('❌ Error al crear reporte - Status code: ${response.statusCode}');
+      return {
+        'success': false,
+        'error': 'Error al crear el reporte - Status: ${response.statusCode}'
+      };
+    }
+  } catch (e) {
+    print('💥 Excepción al crear reporte: $e');
+    return {
+      'success': false,
+      'error': 'Excepción: $e'
+    };
+  }
+}
+
+// Función para obtener las causas de un reporte específico (útil para edición) - CORREGIDA
+Future<List<dynamic>> fetchCausesByReport(int reportId) async {
+  try {
+    // 🔥 CORRECCIÓN: Usar el endpoint correcto para obtener causas por reporte
+    // Necesitarías agregar este endpoint en tu API o usar el existente
+    final url = '${baseUrl["projectretention_api"]}/api/v1/causesReports?reportId=$reportId';
+    print('🔍 Buscando causas para reporte ID: $reportId');
+    print('URL: $url');
+    
+    final response = await http.get(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      final responseData = jsonDecode(response.body);
+      print('✅ Causas del reporte encontradas: ${responseData['data']?.length ?? 0}');
+      return responseData['data'] ?? [];
+    } else {
+      print('❌ Error al obtener causas del reporte: ${response.statusCode}');
+      return [];
+    }
+  } catch (e) {
+    print('💥 Excepción al obtener causas del reporte: $e');
+    return [];
+  }
+}
+
+// Eliminar relaciones causes_reports (útil para edición)
+Future<bool> deleteCauseReportApi(int id) async {
+  try {
+    final url = '${baseUrl["projectretention_api"]}/api/v1/causesReports/$id';
+    print('🗑️ Eliminando relación causes_reports ID: $id');
+    print('URL: $url');
+
+    final response = await http.delete(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      print('✅ Relación causes_reports eliminada exitosamente');
+      return true;
+    } else {
+      print('❌ Error al eliminar relación causes_reports: ${response.statusCode}');
+      return false;
+    }
+  } catch (e) {
+    print('💥 Excepción al eliminar relación causes_reports: $e');
+    return false;
+  }
+}
+
+// ********** 👉 FUNCIONES NUEVAS AGREGADAS ********** //
+
+// Función para obtener el último ID de reporte creado - NUEVA FUNCIÓN
+Future<int?> getLastReportId() async {
+  try {
+    await fetchAPIReports();
+    if (myReactController.getListReports.isNotEmpty) {
+      var lastReport = myReactController.getListReports.last;
+      print('🟡 Último reporte en la lista - ID: ${lastReport['id']}');
+      return lastReport['id'];
+    }
+    return null;
+  } catch (e) {
+    print('💥 Error al obtener último reporte: $e');
+    return null;
+  }
+}
+
+// Función mejorada para crear reporte con respaldo de ID - NUEVA FUNCIÓN
+Future<Map<String, dynamic>?> createReportWithFallback(
+    newCreationDate, newDescription, newAddressing, newState, newFkIdApprentices, newFkIdUsers) async {
+  
+  print('🟡 INICIANDO CREACIÓN DE REPORTE CON FALLBACK...');
+  
+  // 1. Obtener el último ID antes de crear
+  int? lastReportIdBefore = await getLastReportId();
+  print('🟡 Último report ID antes de crear: $lastReportIdBefore');
+  
+  // 2. Crear el reporte
+  final result = await newReportApi(
+    newCreationDate,
+    newDescription,
+    newAddressing,
+    newState,
+    newFkIdApprentices,
+    newFkIdUsers,
+  );
+  
+  print('🟡 Resultado de newReportApi: $result');
+  
+  bool reportSaved = result?['success'] ?? false;
+  int? reportId = result?['id'];
+  
+  // 3. Si no conseguimos el ID, usar el método de respaldo
+  if (reportSaved && reportId == null) {
+    print('🟡 No se obtuvo ID, usando método de respaldo...');
+    
+    // Esperar un poco para que la API procese la creación
+    await Future.delayed(Duration(seconds: 2));
+    
+    // Obtener el nuevo último reporte
+    int? lastReportIdAfter = await getLastReportId();
+    print('🟡 Último report ID después de crear: $lastReportIdAfter');
+    
+    if (lastReportIdAfter != null && lastReportIdAfter != lastReportIdBefore) {
+      reportId = lastReportIdAfter;
+      print('✅ ID obtenido por método de respaldo: $reportId');
+      
+      return {
+        'success': true,
+        'id': reportId,
+        'data': result?['data'],
+        'note': 'ID obtenido por método de respaldo (comparación de últimos reportes)'
+      };
+    } else {
+      print('❌ No se pudo obtener el ID ni por respaldo');
+      return {
+        'success': true,
+        'id': null,
+        'data': result?['data'],
+        'error': 'No se pudo obtener el ID del reporte creado'
+      };
+    }
+  }
+  
+  return result;
+}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
