@@ -167,6 +167,52 @@ editNewReport:
 
 
 
+_____________ 
+Balckbox:
+Hola estoy realizado una aplicacion en flutter con BD en API rest, ya esta finalizado los CRUDS unicamente me falta realizar un ultimo CRUD es una ultima tabla que es causes_reports
+en esta tabla es que la que reaciona muchos a muchos (un reporte tiene muchas causas y una causa tiene muchos reportes, te comparto el .sql de la base datos en MSQL)
+lo cual la BD ya esta desplegada en la web con postgres en render. Como puedes ver en la BD local esta tabla es la que relaciona este muchos a muchos, 
+necesito realizar esta realizacion de la siguiente forma: Esta tabla causes_reports recibe dos llaves foraneas de fkIdReports y fkIdCauses, necesito realizar
+esta tabla causes_reports o esta realacion en el editNewReport.dart, que desde este pueda capturar el fkIdCauses y al crear el reporte me guarde el fkIdReports
+es decir para capturar las causas necesito realizar una un select que me capture la categoria para luego capturar la causa y tenga un boton de guardar, 
+que al guardar vaya agregando causas donde va guardando fkIdCauses ) y al dar click finalmente en guardar reporte me guarde el fkIdReports y asi me lo 
+va guardando en la tabla causes_reports, en conclusion realizar esta tabla causes_reports desde editNewReport.dart. Aqui tambien te comparto unos captures
+de pantalla de como deberia ser para que entiendas mejor del mismo proyectop ya realizado pero en PHP, esto es para entiendas mejor de como debe quedar. 
+Tambien te comparto la carpeta completa de la api que se llama api_projectretention_711 y el proyecto en flutter que se llama app_projectretention_711_v1
+
+
+
+Hola estoy realizado una aplicacion en flutter con BD en API rest, ya esta finalizado los CRUDS unicamente me falta realizar un ultimo CRUD es una ultima tabla que es causes_reports
+en esta tabla es que la que reaciona muchos a muchos (un reporte tiene muchas causas y una causa tiene muchos reportes, te comparto el .sql de la base datos en MSQL)
+lo cual la BD ya esta desplegada en la web con postgres en render. Como puedes ver en la BD local esta tabla es la que relaciona este muchos a muchos, 
+necesito realizar esta realizacion de la siguiente forma: Esta tabla causes_reports recibe dos llaves foraneas de fkIdReports y fkIdCauses, necesito realizar
+esta tabla causes_reports o esta realacion en el editNewReport.dart, que desde este pueda capturar el fkIdCauses y al crear el reporte me guarde el fkIdReports
+es decir para capturar las causas necesito realizar una un select que me capture la categoria para luego capturar la causa y tenga un boton de guardar, 
+que al guardar vaya agregando causas donde va guardando fkIdCauses ) y al dar click finalmente en guardar reporte me guarde el fkIdReports y asi me lo 
+va guardando en la tabla causes_reports, en conclusion realizar esta tabla causes_reports desde editNewReport.dart. Aqui tambien te comparto unos captures
+de pantalla de como deberia ser para que entiendas mejor del mismo proyectop ya realizado pero en PHP, esto es para entiendas mejor de como debe quedar. 
+Tambien te comparto la carpeta completa de la api que se llama api_projectretention_711 y el proyecto en flutter que se llama app_projectretention_711_v1
+
+Ya tengo realizado una estrucrura ayudame a arreglar y adaptar esta estructura con la segunda ya que la primea esta incompleta : 
+
+
+
+
+
+Ya hice todos los cambios que me pediste pero aun sale el error, Te comparto el código y el error:
+apiRetention.dart:
+
+reactController.dart:
+
+
+editNewReport.dart:
+
+Modelo API causes_reports:
+
+Migración API causes_reports:
+
+
+Error por consola en el inspeccionador :
 
 
 
