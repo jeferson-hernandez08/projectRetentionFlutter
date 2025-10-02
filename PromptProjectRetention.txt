@@ -207,9 +207,13 @@ reactController.dart:
 
 editNewReport.dart:
 
-Modelo API causes_reports:
 
-Migración API causes_reports:
+Modelo en la API causes_reports:
+
+
+Migración en la API causes_reports:
+
+Te comparo la base de datos de MYSQL anteriormente para que entiendas el sistema, en estos momentos la BD esta en postgres por medio de render.com:
 
 
 Error por consola en el inspeccionador :

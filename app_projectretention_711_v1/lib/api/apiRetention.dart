@@ -838,16 +838,58 @@ Future editReportApi(id, newCreationDate, newDescription, newAddressing, newStat
 }
 
 // Eliminar un reporte de la API
-Future deleteReportApi(int id) async {
-  final url = '${baseUrl["projectretention_api"]}/api/v1/reports/$id';   // Recibir el url con id reporte a eliminar
-  final response = await http.delete(Uri.parse(url));
+// Future deleteReportApi(int id) async {
+//   final url = '${baseUrl["projectretention_api"]}/api/v1/reports/$id';   // Recibir el url con id reporte a eliminar
+//   final response = await http.delete(Uri.parse(url));
 
-  if (response.statusCode == 200) {
-    // Actualizamos la lista de reports después de eliminar uno
-    await fetchAPIReports();
-  } else {
-    throw Exception('Error al eliminar el reporte con ID: $id');
+//   if (response.statusCode == 200) {
+//     // Actualizamos la lista de reports después de eliminar uno
+//     await fetchAPIReports();
+//   } else {
+//     throw Exception('Error al eliminar el reporte con ID: $id');
+//   }
+// }
+
+// Eliminar un reporte de la API
+Future deleteReportApi(int id) async {
+  try {
+    print('🟡 INICIANDO ELIMINACIÓN DE REPORTE ID: $id');
+    
+    // 1. Primero eliminar las relaciones en causes_reports asociadas a ESTE reporte
+    print('🟡 Buscando relaciones causes_reports específicas para el reporte...');
+    final causesReports = await fetchCausesByReport(id);
+    print('🟡 Relaciones encontradas para este reporte: ${causesReports.length}');
+    
+    // Eliminar cada relación causes_reports asociada a ESTE reporte
+    for (var causeReport in causesReports) {
+      final causeReportId = causeReport['id'];
+      print('🟡 Eliminando relación causes_reports ID: $causeReportId (pertenece al reporte $id)');
+      await deleteCauseReportApi(causeReportId);
+    }
+    
+    // 2. Luego eliminar el reporte
+    final url = '${baseUrl["projectretention_api"]}/api/v1/reports/$id';
+    print('🟡 URL para eliminar reporte: $url');
+    
+    final response = await http.delete(Uri.parse(url));
+
+    if (response.statusCode == 200) {
+      print('✅ Reporte eliminado exitosamente junto con sus relaciones causes_reports');
+      // Actualizamos la lista de reports después de eliminar uno
+      await fetchAPIReports();
+    } else {
+      print('❌ Error al eliminar reporte - Status: ${response.statusCode}');
+      print('❌ Body: ${response.body}');
+      throw Exception('Error al eliminar el reporte con ID: $id - Status: ${response.statusCode}');
+    }
+  } catch (e) {
+    print('💥 Excepción al eliminar reporte: $e');
+    throw Exception('Error al eliminar el reporte con ID: $id: $e');
   }
+
+  // Nota:
+  // En Postman: Si Intentamos eliminar el reporte directamente sin eliminar primero sus relaciones no nos va eliminar por el restric
+  // En Flutter: Nuestra función deleteReportApi SÍ elimina primero las relaciones y luego el reporte.
 }
 
 //********** 👉 CRUD Tabla Interventions**********//
@@ -1138,27 +1180,27 @@ Future<Map<String, dynamic>?> newReportApi(newCreationDate, newDescription, newA
   }
 }
 
-// Función para obtener las causas de un reporte específico (útil para edición) - CORREGIDA
+// Función para obtener las relaciones causes_reports de un reporte específico - CORREGIDA
 Future<List<dynamic>> fetchCausesByReport(int reportId) async {
   try {
-    // 🔥 CORRECCIÓN: Usar el endpoint correcto para obtener causas por reporte
-    // Necesitarías agregar este endpoint en tu API o usar el existente
-    final url = '${baseUrl["projectretention_api"]}/api/v1/causesReports?reportId=$reportId';
-    print('🔍 Buscando causas para reporte ID: $reportId');
+    // 🔥 CORRECCIÓN: Usar el endpoint correcto que filtre por reportId
+    final url = '${baseUrl["projectretention_api"]}/api/v1/causesReports/by-report?fkIdReports=$reportId';
+    print('🔍 Buscando relaciones causes_reports para reporte ID: $reportId');
     print('URL: $url');
     
     final response = await http.get(Uri.parse(url));
 
     if (response.statusCode == 200) {
       final responseData = jsonDecode(response.body);
-      print('✅ Causas del reporte encontradas: ${responseData['data']?.length ?? 0}');
-      return responseData['data'] ?? [];
+      final causesReports = responseData['data'] ?? [];
+      print('✅ Relaciones causes_reports encontradas: ${causesReports.length}');
+      return causesReports;
     } else {
-      print('❌ Error al obtener causas del reporte: ${response.statusCode}');
+      print('❌ Error al obtener relaciones causes_reports: ${response.statusCode}');
       return [];
     }
   } catch (e) {
-    print('💥 Excepción al obtener causas del reporte: $e');
+    print('💥 Excepción al obtener relaciones causes_reports: $e');
     return [];
   }
 }
