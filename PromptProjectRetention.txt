@@ -219,6 +219,23 @@ Te comparo la base de datos de MYSQL anteriormente para que entiendas el sistema
 Error por consola en el inspeccionador :
 
 
+_____________________ Prompt Nuevo Chat______________
+
+Hola estoy realizando un proyecto en flutter con API rest, Te comparto los archivos del proyecto para que entiendas el proyecto y vamos realizando paso a paso lo faltante.
+apiRetention.dart:
+
+reactController.dart:
+
+
+editNewReport.dart:
+
+
+Modelo en la API causes_reports:
+
+
+Migración en la API causes_reports:
+
+Te comparo la base de datos de MYSQL anteriormente para que entiendas el sistema, en estos momentos la BD esta en postgres por medio de render.com:
 
 
 
