@@ -11,6 +11,8 @@ final TextEditingController addressingController = TextEditingController();
 final TextEditingController stateController = TextEditingController();
 final TextEditingController apprenticeIdController = TextEditingController();
 final TextEditingController userIdController = TextEditingController();
+// 🔥 NUEVO CONTROLADOR PARA MOSTRAR EL NOMBRE DEL USUARIO
+final TextEditingController userNameDisplayController = TextEditingController();
 
 modalEditNewReport(context, option, dynamic listItem) {
   // Creamos una clave global para el formulario
@@ -29,32 +31,51 @@ modalEditNewReport(context, option, dynamic listItem) {
   String? selectedCauseId;
   List<dynamic> causesByCategory = [];
   bool isLoadingCauses = false;
-  bool _causesLoaded = false;   // Se deja Flag o bandera para controlar carga única para mensaje
+  bool _causesLoaded = false;
 
   showModalBottomSheet(
     isScrollControlled: true,
     context: context,
     builder: (context) {
       if (option == "new") {
+        // Fecha y hora actual automáticamente 
+        selectedCreationDate = DateTime.now();
+        creationDateController.text = 
+            DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedCreationDate!);
+
         // Limpiar campos para nuevo reporte
-        creationDateController.clear();
         descriptionController.clear();
         addressingController.clear();
         stateController.clear();
         apprenticeIdController.clear();
         userIdController.clear();
+        userNameDisplayController.clear(); // 🔥 LIMPIAR CONTROLADOR DE NOMBRE
         selectedCauses.clear();
 
         // Inicializar valores por defecto
         selectedAddressing = null;
         selectedState = null;
         selectedApprenticeId = null;
-        selectedUserId = null;
-        selectedCreationDate = null;
+        
+        // 🔥 OBTENER USUARIO LOGUEADO Y SELECCIONARLO AUTOMÁTICAMENTE
+        final currentUser = myReactController.getUser;
+        if (currentUser != null && currentUser['id'] != null) {
+          selectedUserId = currentUser['id'].toString();
+          userIdController.text = selectedUserId!;
+          // 🔥 MOSTRAR NOMBRE COMPLETO EN LUGAR DEL ID
+          userNameDisplayController.text = "${currentUser['firstName']} ${currentUser['lastName']}";
+          print('✅ Usuario autoseleccionado: ${currentUser['firstName']} ${currentUser['lastName']} (ID: ${currentUser['id']})');
+        } else {
+          selectedUserId = null;
+          userIdController.clear();
+          userNameDisplayController.clear();
+          print('⚠️ No se pudo obtener el usuario logueado');
+        }
+        
         selectedCategoryId = null;
         selectedCauseId = null;
         causesByCategory = [];
-        _causesLoaded = false; // 🔥 Reset flag para nuevo reporte
+        _causesLoaded = false;
       } else {
         // Cargar datos existentes para editar
         if (listItem['creationDate'] != null) {
@@ -92,6 +113,21 @@ modalEditNewReport(context, option, dynamic listItem) {
         String userValue = listItem['fkIdUsers']?.toString() ?? '';
         selectedUserId = userValue.isNotEmpty ? userValue : null;
         userIdController.text = selectedUserId ?? '';
+        
+        // 🔥 PARA EDICIÓN: BUSCAR Y MOSTRAR EL NOMBRE DEL USUARIO
+        if (selectedUserId != null) {
+          final user = myReactController.getListUsers.firstWhere(
+            (u) => u['id'].toString() == selectedUserId,
+            orElse: () => null,
+          );
+          if (user != null) {
+            userNameDisplayController.text = "${user['firstName']} ${user['lastName']}";
+          } else {
+            userNameDisplayController.text = selectedUserId!; // Fallback al ID si no encuentra
+          }
+        } else {
+          userNameDisplayController.clear();
+        }
 
         // Inicializar selectedCauses como vacío temporalmente, se cargarán en el StatefulBuilder
         selectedCauses = [];
@@ -124,37 +160,17 @@ modalEditNewReport(context, option, dynamic listItem) {
               setState(() {
                 selectedCauses = existingCauses;
                 isLoadingCauses = false;
-                _causesLoaded = true; // 🔥 MARCADOR PARA EVITAR CARGA MÚLTIPLE
+                _causesLoaded = true;
               });
               
               print('✅ Causas existentes cargadas: ${existingCauses.length}');
-              
-              // ELIMINADO: Mensaje de snackbar que causaba el bucle, se deja comentado
-              // El usuario ya puede ver las causas cargadas en la interfaz
-
-              // if (existingCauses.isNotEmpty) {
-              //   Get.snackbar(
-              //     'Causas cargadas',
-              //     'Se cargaron ${existingCauses.length} causa(s) existentes',
-              //     colorText: Colors.white,
-              //     backgroundColor: Colors.green,
-              //     duration: Duration(seconds: 2),
-              //   );
-              // }
               
             } catch (e) {
               print('❌ Error al cargar causas existentes: $e');
               setState(() {
                 isLoadingCauses = false;
-                _causesLoaded = true; // MARCADOR INCLUSO EN ERROR
+                _causesLoaded = true;
               });
-              // ELIMINAMOS EL MENSAJE DE ERROR | Se deja comentado
-              // Get.snackbar(
-              //   'Error',
-              //   'No se pudieron cargar las causas',
-              //   colorText: Colors.white,
-              //   backgroundColor: Colors.red,
-              // );
             }
           }
         }
@@ -457,56 +473,18 @@ modalEditNewReport(context, option, dynamic listItem) {
               key: _formKey,
               child: ListView(
                 children: [
-                  // Fecha de creación (fecha + hora)
+                  // Fecha de creación - AUTOMÁTICA Y NO EDITABLE
                   TextFormField(
                     controller: creationDateController,
                     readOnly: true,
                     decoration: InputDecoration(
                       labelText: 'Fecha y hora de creación *',
-                      hintText: 'Seleccione fecha y hora',
-                      suffixIcon: IconButton(
-                        icon: Icon(Icons.calendar_today),
-                        onPressed: () async {
-                          // Seleccionar la fecha
-                          final DateTime? pickedDate = await showDatePicker(
-                            context: context,
-                            initialDate: selectedCreationDate ?? DateTime.now(),
-                            firstDate: DateTime(2000),
-                            lastDate: DateTime(2100),
-                          );
-
-                          if (pickedDate != null) {
-                            // Seleccionar la hora
-                            final TimeOfDay? pickedTime = await showTimePicker(
-                              context: context,
-                              initialTime: TimeOfDay.fromDateTime(DateTime.now()),
-                            );
-
-                            if (pickedTime != null) {
-                              setState(() {
-                                selectedCreationDate = DateTime(
-                                  pickedDate.year,
-                                  pickedDate.month,
-                                  pickedDate.day,
-                                  pickedTime.hour,
-                                  pickedTime.minute,
-                                );
-
-                                creationDateController.text =
-                                    DateFormat('yyyy-MM-dd HH:mm:ss')
-                                        .format(selectedCreationDate!);
-                              });
-                            }
-                          }
-                        },
+                      hintText: 'Fecha generada automáticamente',
+                      suffixIcon: Icon(
+                        Icons.lock_clock,
+                        color: Colors.grey,
                       ),
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Este campo es obligatorio';
-                      }
-                      return null;
-                    },
                   ),
 
                   SizedBox(height: 16),
@@ -641,28 +619,19 @@ modalEditNewReport(context, option, dynamic listItem) {
 
                   SizedBox(height: 16),
 
-                  // Dropdown para Usuario
-                  DropdownButtonFormField<String>(
-                    value: selectedUserId,
+                  // 🔥 CAMPO USUARIO - SOLO LECTURA TANTO PARA CREAR COMO EDITAR
+                  TextFormField(
+                    controller: userNameDisplayController, // 🔥 USAR CONTROLADOR DE NOMBRE
+                    readOnly: true, // 🔥 SIEMPRE DE SOLO LECTURA
                     decoration: InputDecoration(
                       labelText: 'Usuario *',
+                      hintText: 'Usuario asignado al reporte',
                       border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                      suffixIcon: Icon(
+                        Icons.person,
+                        color: Colors.grey,
+                      ),
                     ),
-                    hint: Text('Seleccione un usuario'),
-                    items: myReactController.getListUsers
-                        .map<DropdownMenuItem<String>>((user) {
-                      return DropdownMenuItem<String>(
-                        value: user['id'].toString(),
-                        child: Text("${user['firstName']} ${user['lastName']}"),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedUserId = newValue;
-                        userIdController.text = newValue ?? '';
-                      });
-                    },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Este campo es obligatorio';
@@ -757,7 +726,7 @@ modalEditNewReport(context, option, dynamic listItem) {
 
                   SizedBox(height: 16),
 
-                  // 🔥 LISTA DE CAUSAS AGREGADAS - MEJORADA
+                  // LISTA DE CAUSAS AGREGADAS
                   Text(
                     'Causas Agregadas:',
                     style: TextStyle(
@@ -817,7 +786,7 @@ modalEditNewReport(context, option, dynamic listItem) {
                                   itemCount: selectedCauses.length,
                                   itemBuilder: (context, index) {
                                     final cause = selectedCauses[index];
-                                    final categoryName = getCategoryName(cause); // 🔥 USAR FUNCIÓN MEJORADA
+                                    final categoryName = getCategoryName(cause);
                                     
                                     return Card(
                                       margin: EdgeInsets.symmetric(vertical: 4),
@@ -834,7 +803,7 @@ modalEditNewReport(context, option, dynamic listItem) {
                                           style: TextStyle(fontSize: 14),
                                         ),
                                         subtitle: Text(
-                                          'Categoría: $categoryName', // 🔥 USAR NOMBRE CORRECTO
+                                          'Categoría: $categoryName',
                                           style: TextStyle(fontSize: 12),
                                         ),
                                         trailing: IconButton(
