@@ -239,8 +239,37 @@ Te comparo la base de datos de MYSQL anteriormente para que entiendas el sistema
 
 
 
+___________________Prompt Visualizar _______________
+Perfecta ya me funciona perfectamente Ahora en el archivo de visualizar (Recordemos que esto es un CRUD) necesito agregar el visualizar 
+de las causas de dicho reporte, dado a que ya esta funcionando a la perfeccion el crear, editar y eliminar , necesito que el visualizar se 
+visualice las causas de dicho reporte , en la capture te muestro el editar de cada reporte asi mismo que se visualice en el visualizar de manera
+ interactiva y atractiva para el usuario. El te comparto el visualizar actual:
+viewItemReport.dart:
 
 
+_______________Promt Generacion Automatica fecha y usuario___________
+Perfecto me funciona perfectamente, ahora necesito realizar otro cambio, en creación de reporte en el campo Usuario , 
+necesito que se me seleccione automáticamente el usuario, el usuario que se debe seleccionar automáticamente es el usuario que 
+ingresa al sistema a través del login, por lógica el que esta creando el reporte es el usuario que ingreso al sistema.  
+Te comparto el código que sea necesario: 
+
+
+Perfecto ahora necesito que me hagas absolutamente lo mismo pero con el archivo de editNewIntervention.dart, este archivo CRUD 
+necesito que al crear y editar la intervención se me genere la fecha automáticamente y también que al crear y editar se me genere 
+automáticamente el usuario que ingreso al sistema , así mismo como el archivo anterior editNewReport.dart. 
+Te comparto el archivo editNewIntervention.dart:
+
+
+_______________Estado en viewReport__________________
+Perfecto ahora necesito realizar un cambio , desde  este viewReport.dart necesito que desde aquí se pueda modificar o cambiar o editar  
+el campo del Estado (Recordemos que este campo tiene tres opciones en tipo select: Registrado, En proceso, Retenido, Desertado)
+del reporte realizado del aprendiz.
+Como puedes ver en la captura se puede ver el estado del reporte del aprendiz reportado, este estado que es el viewReport.dart 
+necesito que se tenga un drowdown o select para que se pueda modificar el estado del reporte del aprendiz desde aqui mismo, esto es para
+que el usuario le quede más facileditar unicamente el estado del reporte del aprendiz.
+Muy importarte que quede de manera interactiva, atractiva para el usuario. 
+Te comparto el codigo:
+  
 
 
 
