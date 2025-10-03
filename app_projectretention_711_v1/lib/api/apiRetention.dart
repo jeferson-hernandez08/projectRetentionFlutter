@@ -991,11 +991,6 @@ Future deleteInterventionApi(int id) async {
 
 
 
-
-
-
-
-
 //********** 👉 Funciones para Causes y Causes_Reports **********//
 
 // Obtener causas por categoría - FILTRADO EN FRONTEND
