@@ -269,6 +269,22 @@ necesito que se tenga un drowdown o select para que se pueda modificar el estado
 que el usuario le quede más facileditar unicamente el estado del reporte del aprendiz.
 Muy importarte que quede de manera interactiva, atractiva para el usuario. 
 Te comparto el codigo:
+
+
+
+_______________Filtrado en editNewReport____________
+Perfecto ahora necesito realizar un cambio, necesito realizar en el crear y editar en el editNewReport.dart un sistema de filtrado en la sección de Causas del Reporte, necesito que cuando seleccione una categoría en las causas se me seleccionen o filtren las causas de esa categoría, por ejemplo en seleccionar categoría selecciono Motivos Económicos y al seleccionar una causa se me deben filtrar las causas de la categoría motivos económicos o por ejemplo en seleccionar categoría selecciono Motivos Laborales y al seleccionar una causa se me deben filtrar las causas de la categoría motivos laborales y así sucesivamente  , esto es para que el usuario le quede de manera mas sencilla encontrar una causa de esa categoría y NO se encuentren o se muestren en el drowdown o select de causas todas las causas refundidas, la idea que quede de manera organizada que el usuario selecciones categoría y muestre las causas de esas categoría y el usuario pueda tener una opción mas fácil de encontrar esto debe ser tanto en el crear y editar. Te comparto el código necesario:
+editNewReport.dart:
+
+Modelo en la API categories:
+
+Modelo en la API causes:
+
+Modelo de la API reports:
+
+Te comparto todos los datos que hay en la BD API  para que entiendas mejor de categories: 
+
+Te comparto todos los datos que hay en la BD API  para que entiendas mejor de causes: 
   
 
 

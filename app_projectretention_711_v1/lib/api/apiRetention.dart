@@ -998,25 +998,36 @@ Future deleteInterventionApi(int id) async {
 
 //********** 👉 Funciones para Causes y Causes_Reports **********//
 
-// Obtener causas por categoría desde la API
+// Obtener causas por categoría - FILTRADO EN FRONTEND
 Future<List<dynamic>> fetchCausesByCategory(int categoryId) async {
   try {
-    final url = '${baseUrl["projectretention_api"]}/api/v1/causes?categoryId=$categoryId';
-    print('🔍 Buscando causas para categoría ID: $categoryId');
-    print('URL: $url');
+    print('🔍 Filtrando causas para categoría ID: $categoryId');
     
-    final response = await http.get(Uri.parse(url));
-
-    if (response.statusCode == 200) {
-      final responseData = jsonDecode(response.body);
-      print('✅ Causas encontradas: ${responseData['data']?.length ?? 0}');
-      return responseData['data'] ?? [];
-    } else {
-      print('❌ Error al obtener causas: ${response.statusCode}');
-      return [];
+    // Primero obtenemos TODAS las causas
+    final allCauses = myReactController.getListCauses;
+    
+    // Si no hay causas en el controlador, las cargamos
+    if (allCauses.isEmpty) {
+      print('🟡 No hay causas en memoria, cargando todas las causas...');
+      await fetchAPICauses();
     }
+    
+    // Filtramos las causas por la categoría seleccionada
+    final filteredCauses = myReactController.getListCauses.where((cause) {
+      final causeCategoryId = cause['fkIdCategories'] ?? cause['category']?['id'];
+      return causeCategoryId == categoryId;
+    }).toList();
+    
+    print('✅ Causas filtradas para categoría $categoryId: ${filteredCauses.length}');
+    
+    // 🔥 DEBUG: Imprimir las causas encontradas
+    for (var cause in filteredCauses) {
+      print('   - ${cause['cause']} (Categoría ID: ${cause['fkIdCategories']})');
+    }
+    
+    return filteredCauses;
   } catch (e) {
-    print('💥 Excepción al obtener causas: $e');
+    print('💥 Excepción al filtrar causas por categoría: $e');
     return [];
   }
 }

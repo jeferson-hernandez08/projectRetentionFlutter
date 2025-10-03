@@ -149,7 +149,7 @@ class _InicioState extends State<Inicio> {
               Divider(),
 
               ListTile(
-                title: Text('Programas de Formación'),
+                title: Text('Programas'),
                 leading: Icon(Icons.school, color: Colors.deepPurple),
                 trailing: Icon(Icons.arrow_forward_ios),
                 onTap: (){
@@ -161,7 +161,7 @@ class _InicioState extends State<Inicio> {
               Divider(),
 
               ListTile(
-                title: Text('Grupos de Formación'),
+                title: Text('Grupos'),
                 leading: Icon(Icons.groups, color: Colors.cyan),
                 trailing: Icon(Icons.arrow_forward_ios),
                 onTap: (){
