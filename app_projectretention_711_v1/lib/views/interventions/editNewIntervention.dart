@@ -10,6 +10,8 @@ final TextEditingController descriptionController = TextEditingController();
 final TextEditingController fkIdStrategiesController = TextEditingController();
 final TextEditingController fkIdReportsController = TextEditingController();
 final TextEditingController fkIdUsersController = TextEditingController();
+// 🔥 NUEVOS CONTROLADORES PARA MOSTRAR NOMBRES
+final TextEditingController userNameDisplayController = TextEditingController();
 
 modalEditNewIntervention(context, option, dynamic listItem) {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
@@ -24,18 +26,47 @@ modalEditNewIntervention(context, option, dynamic listItem) {
     context: context,
     builder: (context) {
       if (option == "new") {
-        creationDateController.clear();
+        // 🔥 FECHA ACTUAL AUTOMÁTICAMENTE
+        selectedCreationDate = DateTime.now();
+        creationDateController.text = 
+            DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedCreationDate!);
+        
         descriptionController.clear();
         fkIdStrategiesController.clear();
         fkIdReportsController.clear();
         fkIdUsersController.clear();
+        userNameDisplayController.clear(); // 🔥 LIMPIAR CONTROLADOR DE NOMBRE
 
         selectedStrategyId = null;
         selectedReportId = null;
         selectedUserId = null;
-        selectedCreationDate = null;
+        
+        // 🔥 OBTENER USUARIO LOGUEADO Y SELECCIONARLO AUTOMÁTICAMENTE
+        final currentUser = myReactController.getUser;
+        if (currentUser != null && currentUser['id'] != null) {
+          selectedUserId = currentUser['id'].toString();
+          fkIdUsersController.text = selectedUserId!;
+          // 🔥 MOSTRAR NOMBRE COMPLETO EN LUGAR DEL ID
+          userNameDisplayController.text = "${currentUser['firstName']} ${currentUser['lastName']}";
+          print('✅ Usuario autoseleccionado: ${currentUser['firstName']} ${currentUser['lastName']} (ID: ${currentUser['id']})');
+        } else {
+          selectedUserId = null;
+          fkIdUsersController.clear();
+          userNameDisplayController.clear();
+          print('⚠️ No se pudo obtener el usuario logueado');
+        }
       } else {
-        creationDateController.text = listItem['creationDate'] ?? '';
+        // 🔥 PARA EDICIÓN: CARGAR DATOS EXISTENTES
+        if (listItem['creationDate'] != null) {
+          try {
+            selectedCreationDate = DateTime.parse(listItem['creationDate']);
+            creationDateController.text =
+                DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedCreationDate!);
+          } catch (e) {
+            creationDateController.clear();
+          }
+        }
+
         descriptionController.text = listItem['description'] ?? '';
 
         String strategyValue = listItem['fkIdStrategies']?.toString() ?? '';
@@ -49,15 +80,20 @@ modalEditNewIntervention(context, option, dynamic listItem) {
         String userValue = listItem['fkIdUsers']?.toString() ?? '';
         selectedUserId = userValue.isNotEmpty ? userValue : null;
         fkIdUsersController.text = selectedUserId ?? '';
-
-        if (listItem['creationDate'] != null) {
-          try {
-            selectedCreationDate = DateTime.parse(listItem['creationDate']);
-            creationDateController.text =
-                DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedCreationDate!);
-          } catch (e) {
-            selectedCreationDate = null;
+        
+        // 🔥 PARA EDICIÓN: BUSCAR Y MOSTRAR EL NOMBRE DEL USUARIO
+        if (selectedUserId != null) {
+          final user = myReactController.getListUsers.firstWhere(
+            (u) => u['id'].toString() == selectedUserId,
+            orElse: () => null,
+          );
+          if (user != null) {
+            userNameDisplayController.text = "${user['firstName']} ${user['lastName']}";
+          } else {
+            userNameDisplayController.text = selectedUserId!; // Fallback al ID si no encuentra
           }
+        } else {
+          userNameDisplayController.clear();
         }
       }
 
@@ -108,15 +144,15 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                   Get.back();
                   if (resp) {
                     Get.snackbar(
-                      'Mensaje',
-                      "Se ha añadido correctamente una nueva intervención",
+                      'Éxito',
+                      "Se ha creado correctamente la nueva intervención",
                       colorText: Colors.white,
                       backgroundColor: Colors.green,
                     );
                   } else {
                     Get.snackbar(
-                      'Mensaje',
-                      "Error al agregar la nueva intervención",
+                      'Error',
+                      "Error al crear la nueva intervención",
                       colorText: Colors.white,
                       backgroundColor: Colors.red,
                     );
@@ -133,68 +169,46 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                   Get.back();
                   if (resp) {
                     Get.snackbar(
-                      'Mensaje',
+                      'Éxito',
                       "Se ha editado correctamente la intervención",
-                      colorText: Colors.green,
-                      backgroundColor: Colors.greenAccent,
+                      colorText: Colors.white,
+                      backgroundColor: Colors.green,
                     );
                   } else {
                     Get.snackbar(
-                      'Mensaje',
+                      'Error',
                       "Error al editar la intervención",
-                      colorText: Colors.red,
+                      colorText: Colors.white,
+                      backgroundColor: Colors.red,
                     );
                   }
                 }
               },
             ),
             body: Padding(
-              padding: const EdgeInsets.all(8.0),
+              padding: EdgeInsets.only(
+                left: 8,
+                right: 8,
+                top: 8,
+                bottom: MediaQuery.of(context).viewInsets.bottom,
+              ),
               child: Form(
                 key: _formKey,
                 child: ListView(
                   children: [
-                    // Campo de Fecha y Hora de Creación
+                    // 🔥 CAMPO FECHA - AUTOMÁTICA Y SOLO LECTURA
                     TextFormField(
                       controller: creationDateController,
+                      readOnly: true, // 🔥 SIEMPRE DE SOLO LECTURA
                       decoration: InputDecoration(
                         labelText: 'Fecha y Hora de Creación *',
-                        hintText: 'Seleccione fecha y hora',
+                        hintText: 'Fecha generada automáticamente',
+                        border: OutlineInputBorder(),
+                        suffixIcon: Icon(
+                          Icons.lock_clock,
+                          color: Colors.grey,
+                        ),
                       ),
-                      readOnly: true,
-                      onTap: () async {
-                        DateTime? pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate:
-                              selectedCreationDate ?? DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        );
-
-                        if (pickedDate != null) {
-                          TimeOfDay? pickedTime = await showTimePicker(
-                            context: context,
-                            initialTime: TimeOfDay.fromDateTime(
-                                selectedCreationDate ?? DateTime.now()),
-                          );
-
-                          if (pickedTime != null) {
-                            final fullDateTime = DateTime(
-                              pickedDate.year,
-                              pickedDate.month,
-                              pickedDate.day,
-                              pickedTime.hour,
-                              pickedTime.minute,
-                            );
-                            setState(() {
-                              selectedCreationDate = fullDateTime;
-                              creationDateController.text =
-                                  DateFormat('yyyy-MM-dd HH:mm:ss')
-                                      .format(fullDateTime);
-                            });
-                          }
-                        }
-                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Este campo es obligatorio';
@@ -203,12 +217,15 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                       },
                     ),
 
+                    SizedBox(height: 16),
+
                     // Campo para Descripción
                     TextFormField(
                       controller: descriptionController,
                       decoration: InputDecoration(
                         labelText: 'Descripción *',
-                        hintText: 'Ingrese la descripción',
+                        hintText: 'Ingrese la descripción de la intervención',
+                        border: OutlineInputBorder(),
                       ),
                       maxLines: 3,
                       validator: (value) {
@@ -266,7 +283,11 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                           .map<DropdownMenuItem<String>>((report) {
                         return DropdownMenuItem<String>(
                           value: report['id'].toString(),
-                          child: Text(report['description']),
+                          child: Text(
+                            report['description']?.length > 50 
+                                ? '${report['description']?.substring(0, 50)}...' 
+                                : report['description'] ?? 'Sin descripción',
+                          ),
                         );
                       }).toList(),
                       onChanged: (String? newValue) {
@@ -283,35 +304,28 @@ modalEditNewIntervention(context, option, dynamic listItem) {
 
                     SizedBox(height: 16),
 
-                    // Dropdown Usuario
-                    DropdownButtonFormField<String>(
-                      value: selectedUserId,
+                    // 🔥 CAMPO USUARIO - SOLO LECTURA TANTO PARA CREAR COMO EDITAR
+                    TextFormField(
+                      controller: userNameDisplayController, // 🔥 USAR CONTROLADOR DE NOMBRE
+                      readOnly: true, // 🔥 SIEMPRE DE SOLO LECTURA
                       decoration: InputDecoration(
                         labelText: 'Usuario *',
+                        hintText: 'Usuario asignado a la intervención',
                         border: OutlineInputBorder(),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                        suffixIcon: Icon(
+                          Icons.person,
+                          color: Colors.grey,
+                        ),
                       ),
-                      hint: Text('Seleccione un usuario'),
-                      items: myReactController.getListUsers
-                          .map<DropdownMenuItem<String>>((user) {
-                        return DropdownMenuItem<String>(
-                          value: user['id'].toString(),
-                          child: Text(
-                              "${user['firstName']} ${user['lastName']}"),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedUserId = newValue;
-                          fkIdUsersController.text = newValue ?? '';
-                        });
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Este campo es obligatorio';
+                        }
+                        return null;
                       },
-                      validator: (value) =>
-                          value == null || value.isEmpty
-                              ? 'Este campo es obligatorio'
-                              : null,
                     ),
+
+                    SizedBox(height: 30),
                   ],
                 ),
               ),
