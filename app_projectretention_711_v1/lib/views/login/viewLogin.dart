@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import '../../api/apiRetention.dart';
 
-
 class ViewLoginCPIC extends StatefulWidget {
   const ViewLoginCPIC({super.key});
 
@@ -19,76 +18,52 @@ class _ViewLoginCPICState extends State<ViewLoginCPIC> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _rememberMe = false;
-  //bool modoDesarrollo = true;  // Cambiar esta bandera a true para saltar login | Mientras tanto para ingreso facil
- 
 
-  // Función para manejar el login
+  // 🔐 FUNCIÓN MEJORADA DE LOGIN
   Future<void> _handleLogin() async {
-    // if (modoDesarrollo) {
-    //   Get.offAll(() => const Inicio());
-    //   return;
-    // }
-
-    // 🔹 Login real con API
     if (_formKey.currentState!.validate()) {
-      // Cerrar teclado
       FocusScope.of(context).unfocus();
       
       setState(() => _isLoading = true);
       
-      // Simular un pequeño delay para que se vea la animación de carga
       await Future.delayed(const Duration(milliseconds: 500));
       
-      bool success = await loginApi(
+      final result = await loginApi(
         _emailController.text.trim(),
         _passwordController.text.trim(),
       );
 
       setState(() => _isLoading = false);
 
-      if (success) {
-        // Mostrar mensaje de éxito con una animación
+      if (result['success']) {
         Get.snackbar(
           '¡Éxito!', 
-          'Inicio de sesión satisfactorio',
+          result['message'],
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.green.shade600,
           colorText: Colors.white,
           icon: const Icon(Icons.check_circle, color: Colors.white),
-          shouldIconPulse: true,
-          barBlur: 20,
-          isDismissible: true,
           duration: const Duration(seconds: 3),
-          margin: const EdgeInsets.all(10),
-          borderRadius: 10,
         );
         
-        // Navegar al inicio después de un breve delay
         await Future.delayed(const Duration(milliseconds: 1500));
         Get.offAll(() => Inicio());
       } else {
-        // Mostrar error con vibración
         HapticFeedback.heavyImpact();
         Get.snackbar(
           'Error', 
-          'Credenciales incorrectas. Por favor, inténtalo de nuevo.',
+          result['message'],
           snackPosition: SnackPosition.BOTTOM,
           backgroundColor: Colors.red.shade600,
           colorText: Colors.white,
-          icon: const Icon(Icons.error_outline, color: Colors.white),
-          shouldIconPulse: true,
-          barBlur: 20,
-          isDismissible: true,
           duration: const Duration(seconds: 4),
-          margin: const EdgeInsets.all(10),
-          borderRadius: 10,
         );
       }
     }
   }
 
-  // Función para recuperar contraseña
-  void _handleForgotPassword() {
+  // 📧 FUNCIÓN MEJORADA PARA RECUPERAR CONTRASEÑA
+  void _handleForgotPassword() async {
     if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
       Get.snackbar(
         'Email requerido', 
@@ -100,35 +75,30 @@ class _ViewLoginCPICState extends State<ViewLoginCPIC> {
       return;
     }
 
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Recuperar contraseña'),
-          content: Text(
-              '¿Deseas enviar un enlace de recuperación a ${_emailController.text}?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text('Cancelar'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-                Get.snackbar(
-                  'Enlace enviado', 
-                  'Revisa tu correo electrónico para restablecer tu contraseña',
-                  snackPosition: SnackPosition.BOTTOM,
-                  backgroundColor: Colors.green.shade600,
-                  colorText: Colors.white,
-                );
-              },
-              child: const Text('Enviar'),
-            ),
-          ],
-        );
-      },
-    );
+    setState(() => _isLoading = true);
+
+    final result = await forgotPasswordApi(_emailController.text.trim());
+
+    setState(() => _isLoading = false);
+
+    if (result['success']) {
+      Get.snackbar(
+        'Éxito', 
+        result['message'],
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.green.shade600,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 5),
+      );
+    } else {
+      Get.snackbar(
+        'Error', 
+        result['message'],
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red.shade600,
+        colorText: Colors.white,
+      );
+    }
   }
 
   @override

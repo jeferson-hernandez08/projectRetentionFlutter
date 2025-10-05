@@ -1324,9 +1324,10 @@ Future<Map<String, dynamic>?> createReportWithFallback(
 
 
 
-// ************ Login *************//
+// ************ AUTHENTICATION API *************//
 
-Future<bool> loginApi(String email, String password) async {
+// 🔐 LOGIN mejorado
+Future<Map<String, dynamic>> loginApi(String email, String password) async {
   const headers = {
     'Content-Type': 'application/json',
   };
@@ -1340,7 +1341,6 @@ Future<bool> loginApi(String email, String password) async {
 
   print('🔐 Intentando login con:');
   print('📧 Email: $email');
-  print('🔑 Password: $password');
   print('🌐 URL: $url');
 
   try {
@@ -1357,26 +1357,151 @@ Future<bool> loginApi(String email, String password) async {
     if (response.statusCode == 200) {
       var responseData = jsonDecode(response.body);
       
-      // Verificar la estructura de la respuesta
       if (responseData['status'] == 'Ok' && responseData['data'] != null) {
         print('✅ Login exitoso');
         print('🔑 Token recibido: ${responseData['data']['token']}');
-        print('👤 Datos usuario: ${responseData['data']['user']}');
 
-        // 👇🏼 CORREGIR: Acceder a los datos dentro de 'data'
+        // Guardar token y usuario en el controlador
         myReactController.setToken(responseData['data']['token']);
         myReactController.setUser(responseData['data']['user']);
-        return true;
+        
+        return {
+          'success': true,
+          'message': 'Login exitoso',
+          'user': responseData['data']['user']
+        };
       } else {
-        print('❌ Estructura de respuesta inesperada');
-        return false;
+        return {
+          'success': false,
+          'message': responseData['message'] ?? 'Error en el login'
+        };
       }
     } else {
-      print('❌ Error en login - Status code: ${response.statusCode}');
-      return false;
+      var errorData = jsonDecode(response.body);
+      return {
+        'success': false,
+        'message': errorData['message'] ?? 'Error en el servidor'
+      };
     }
   } catch (e) {
     print('💥 Excepción durante login: $e');
-    return false;
+    return {
+      'success': false,
+      'message': 'Error de conexión: $e'
+    };
   }
+}
+
+// 📧 RECUPERAR CONTRASEÑA
+Future<Map<String, dynamic>> forgotPasswordApi(String email) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'email': email,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/auth/forgotPassword');
+
+  print('📧 Solicitando recuperación para: $email');
+  print('🌐 URL: $url');
+
+  try {
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    print('📥 Respuesta del servidor (forgotPassword):');
+    print('📊 Status Code: ${response.statusCode}');
+    print('📦 Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      var responseData = jsonDecode(response.body);
+      return {
+        'success': true,
+        'message': responseData['message'] ?? 'Correo de recuperación enviado'
+      };
+    } else {
+      var errorData = jsonDecode(response.body);
+      return {
+        'success': false,
+        'message': errorData['message'] ?? 'Error al solicitar recuperación'
+      };
+    }
+  } catch (e) {
+    print('💥 Excepción durante forgotPassword: $e');
+    return {
+      'success': false,
+      'message': 'Error de conexión: $e'
+    };
+  }
+}
+
+// 🔄 RESTABLECER CONTRASEÑA
+Future<Map<String, dynamic>> resetPasswordApi(String newPassword, String token) async {
+  const headers = {
+    'Content-Type': 'application/json',
+  };
+
+  dynamic data = {
+    'newPassword': newPassword,
+    'token': token,
+  };
+
+  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/auth/resetPassword');
+
+  print('🔄 Restableciendo contraseña con token: $token');
+  print('🌐 URL: $url');
+
+  try {
+    final response = await http.post(
+      url,
+      headers: headers,
+      body: jsonEncode(data),
+    );
+
+    print('📥 Respuesta del servidor (resetPassword):');
+    print('📊 Status Code: ${response.statusCode}');
+    print('📦 Body: ${response.body}');
+
+    if (response.statusCode == 200) {
+      var responseData = jsonDecode(response.body);
+      return {
+        'success': true,
+        'message': responseData['message'] ?? 'Contraseña restablecida con éxito'
+      };
+    } else {
+      var errorData = jsonDecode(response.body);
+      return {
+        'success': false,
+        'message': errorData['message'] ?? 'Error al restablecer contraseña'
+      };
+    }
+  } catch (e) {
+    print('💥 Excepción durante resetPassword: $e');
+    return {
+      'success': false,
+      'message': 'Error de conexión: $e'
+    };
+  }
+}
+
+// 🚪 CERRAR SESIÓN
+void logoutApi() {
+  print('🚪 Cerrando sesión...');
+  myReactController.setToken('');
+  myReactController.setUser({});
+}
+
+// 🔍 VERIFICAR SESIÓN ACTIVA
+bool isLoggedIn() {
+  return myReactController.getToken.isNotEmpty && myReactController.getUser.isNotEmpty;
+}
+
+// 👤 OBTENER USUARIO ACTUAL
+Map<String, dynamic> getCurrentUser() {
+  return Map<String, dynamic>.from(myReactController.getUser);
 }
