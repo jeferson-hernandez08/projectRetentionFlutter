@@ -33,7 +33,7 @@ class _InicioState extends State<Inicio> {
     // Opción común para todos los roles
     menuOptions.addAll([
       ListTile(
-        title: Text('Info SENA Contigo'),
+        title: Text('Inicio SENA Contigo'),
         leading: Icon(Icons.person, color: Colors.blueGrey),
         trailing: Icon(Icons.arrow_forward_ios),
         onTap: (){
