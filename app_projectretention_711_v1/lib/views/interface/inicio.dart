@@ -24,16 +24,363 @@ class Inicio extends StatefulWidget {
 }
 
 class _InicioState extends State<Inicio> {
+  
+  // Método para obtener las opciones del menú según el rol
+  List<Widget> _getMenuOptionsByRole() {
+    final userRole = myReactController.userRole;
+    final List<Widget> menuOptions = [];
+    
+    // Opción común para todos los roles
+    menuOptions.addAll([
+      ListTile(
+        title: Text('Info SENA Contigo'),
+        leading: Icon(Icons.person, color: Colors.blueGrey),
+        trailing: Icon(Icons.arrow_forward_ios),
+        onTap: (){
+          myReactController.setTituloAppBar('Sena Contigo');
+          myReactController.setPagina(0); // Página de Bienvenida
+          Get.back();
+        },
+      ),
+      Divider(),
+    ]);
+
+    // Administrador: Roles y Usuarios
+    if (userRole == 'Administrador') {
+      menuOptions.addAll([
+        ListTile(
+          title: Text('Roles'),
+          leading: Icon(Icons.security, color: Colors.teal),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Roles CPIC');
+            myReactController.setPagina(1);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Usuarios'),
+          leading: Icon(Icons.people, color: Colors.green),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Usuarios CPIC');
+            myReactController.setPagina(2);
+            Get.back();
+          },
+        ),
+        Divider(),
+      ]);
+    }
+
+    // Instructor: Aprendices y Reportes
+    if (userRole == 'Instructor') {
+      menuOptions.addAll([
+        ListTile(
+          title: Text('Aprendices'),
+          leading: Icon(Icons.person, color: Colors.orange),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Aprendices CPIC');
+            myReactController.setPagina(5);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Reportes'),
+          leading: Icon(Icons.description, color: Colors.brown),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Reportes CPIC');
+            myReactController.setPagina(9);
+            Get.back();
+          },
+        ),
+        Divider(),
+      ]);
+    }
+
+    // Coordinador: Programas, Grupos, Aprendices, Categorías, Causas, Estrategias, Reportes, Intervenciones y Usuarios
+    if (userRole == 'Coordinador') {
+      menuOptions.addAll([
+        ListTile(
+          title: Text('Programas'),
+          leading: Icon(Icons.school, color: Colors.deepPurple),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Programas de Formacion CPIC');
+            myReactController.setPagina(3);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Grupos'),
+          leading: Icon(Icons.groups, color: Colors.cyan),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Grupos CPIC');
+            myReactController.setPagina(4);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Aprendices'),
+          leading: Icon(Icons.person, color: Colors.orange),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Aprendices CPIC');
+            myReactController.setPagina(5);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Categorias'),
+          leading: Icon(Icons.category, color: Colors.purple),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Categorias CPIC');
+            myReactController.setPagina(6);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Causas'),
+          leading: Icon(Icons.warning_amber, color: Colors.redAccent),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Causas CPIC');
+            myReactController.setPagina(7);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Estrategias'),
+          leading: Icon(Icons.flag, color: Colors.teal),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Estrategias CPIC');
+            myReactController.setPagina(8);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Reportes'),
+          leading: Icon(Icons.description, color: Colors.brown),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Reportes CPIC');
+            myReactController.setPagina(9);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Intervenciones'),
+          leading: Icon(Icons.handshake, color: Colors.indigo),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Intervenciones CPIC');
+            myReactController.setPagina(10);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Usuarios'),
+          leading: Icon(Icons.people, color: Colors.green),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Usuarios CPIC');
+            myReactController.setPagina(2);
+            Get.back();
+          },
+        ),
+        Divider(),
+      ]);
+    }
+
+    // Profesional de Bienestar: Programas, Grupos, Aprendices, Categorías, Causas, Estrategias, Reportes, Intervenciones y Usuarios
+    if (userRole == 'Profesional de Bienestar') {
+      menuOptions.addAll([
+        ListTile(
+          title: Text('Programas'),
+          leading: Icon(Icons.school, color: Colors.deepPurple),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Programas de Formacion CPIC');
+            myReactController.setPagina(3);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Grupos'),
+          leading: Icon(Icons.groups, color: Colors.cyan),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Grupos CPIC');
+            myReactController.setPagina(4);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Aprendices'),
+          leading: Icon(Icons.person, color: Colors.orange),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Aprendices CPIC');
+            myReactController.setPagina(5);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Categorias'),
+          leading: Icon(Icons.category, color: Colors.purple),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Categorias CPIC');
+            myReactController.setPagina(6);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Causas'),
+          leading: Icon(Icons.warning_amber, color: Colors.redAccent),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Causas CPIC');
+            myReactController.setPagina(7);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Estrategias'),
+          leading: Icon(Icons.flag, color: Colors.teal),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Estrategias CPIC');
+            myReactController.setPagina(8);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Reportes'),
+          leading: Icon(Icons.description, color: Colors.brown),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Reportes CPIC');
+            myReactController.setPagina(9);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Intervenciones'),
+          leading: Icon(Icons.handshake, color: Colors.indigo),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Intervenciones CPIC');
+            myReactController.setPagina(10);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Usuarios'),
+          leading: Icon(Icons.people, color: Colors.green),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Usuarios CPIC');
+            myReactController.setPagina(2);
+            Get.back();
+          },
+        ),
+        Divider(),
+      ]);
+    }
+
+    // Aprendiz Vocero: Aprendices y Reportes
+    if (userRole == 'Aprendiz Vocero') {
+      menuOptions.addAll([
+        ListTile(
+          title: Text('Aprendices'),
+          leading: Icon(Icons.person, color: Colors.orange),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Aprendices CPIC');
+            myReactController.setPagina(5);
+            Get.back();
+          },
+        ),
+        Divider(),
+        ListTile(
+          title: Text('Reportes'),
+          leading: Icon(Icons.description, color: Colors.brown),
+          trailing: Icon(Icons.arrow_forward_ios),
+          onTap: (){
+            myReactController.setTituloAppBar('Listado Reportes CPIC');
+            myReactController.setPagina(9);
+            Get.back();
+          },
+        ),
+        Divider(),
+      ]);
+    }
+
+    return menuOptions;
+  }
+
+  // Método para verificar si el FAB debe ser visible según el rol y la página
+  bool _shouldShowFAB() {
+    final userRole = myReactController.userRole;
+    final currentPage = myReactController.getPagina;
+    
+    // Páginas permitidas para cada rol
+    final Map<String, List<int>> allowedPagesByRole = {
+      'Administrador': [1, 2], // Roles y Usuarios
+      'Instructor': [5, 9], // Aprendices y Reportes
+      'Coordinador': [2, 3, 4, 5, 6, 7, 8, 9, 10], // Usuarios, Programas, Grupos, Aprendices, Categorías, Causas, Estrategias, Reportes, Intervenciones
+      'Profesional de Bienestar': [2, 3, 4, 5, 6, 7, 8, 9, 10], // Mismo que Coordinador
+      'Aprendiz Vocero': [5, 9], // Aprendices y Reportes
+    };
+
+    final allowedPages = allowedPagesByRole[userRole] ?? [];
+    return allowedPages.contains(currentPage);
+  }
+
   @override
   Widget build(BuildContext context) {
     // Verificamos si el usuario está autenticado - DEBE ESTAR FUERA de Obx
     if (myReactController.getToken.isEmpty) {
       return ViewLoginCPIC();
     }
+    
     return Obx(
       () => Scaffold(
         appBar: AppBar(
-          title: Center(child: Text(myReactController.getTituloAppBar)),
+          title: Center(
+            child: Column(
+              children: [
+                Text(myReactController.getTituloAppBar),
+                Text(
+                  'Rol: ${myReactController.userRole}',
+                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.normal),
+                ),
+              ],
+            ),
+          ),
           backgroundColor: Colors.amber,
           foregroundColor: Colors.white,
           actions: [
@@ -44,9 +391,19 @@ class _InicioState extends State<Inicio> {
                 children: [
                   const Icon(Icons.person, size: 20),
                   const SizedBox(width: 5),
-                  Text(
-                    myReactController.getUser['userName'] ?? 'Usuario',
-                    style: const TextStyle(fontSize: 16),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        myReactController.fullName,
+                        style: const TextStyle(fontSize: 14, fontWeight: FontWeight.bold),
+                      ),
+                      Text(
+                        myReactController.userRole,
+                        style: const TextStyle(fontSize: 12),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -54,13 +411,8 @@ class _InicioState extends State<Inicio> {
           ],
         ),
         body: menuPages[myReactController.getPagina],
-        floatingActionButton: Visibility(       // Aquí comentar para probar la otra opcion realizada de viewCreateAmbient.dart
-          visible: (myReactController.getPagina == 1 || myReactController.getPagina == 2 || 
-                    myReactController.getPagina == 3 || myReactController.getPagina == 4 ||
-                    myReactController.getPagina == 5 || myReactController.getPagina == 6 ||    
-                    myReactController.getPagina == 7 || myReactController.getPagina == 8 ||
-                    myReactController.getPagina == 9 || myReactController.getPagina == 10
-                    ) ? true : false,
+        floatingActionButton: Visibility(
+          visible: _shouldShowFAB(),
           child: FloatingActionButton(    
             backgroundColor: Colors.amber,
             foregroundColor: Colors.white,
@@ -88,7 +440,8 @@ class _InicioState extends State<Inicio> {
               } else if (page == 10) {    // Crear editar intervenciones
                 modalEditNewIntervention(context, "new", null);
               }
-            }),
+            },
+          ),
         ),
         drawer: Drawer(
           child: ListView(
@@ -96,12 +449,21 @@ class _InicioState extends State<Inicio> {
               // Encabezado del drawer con información del usuario
               UserAccountsDrawerHeader(
                 accountName: Text(
-                  myReactController.getUser['userName'] ?? 'Usuario',
+                  myReactController.fullName,
                   style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                 ),
-                accountEmail: Text(
-                  myReactController.getUser['email'] ?? 'email@ejemplo.com',
-                  style: const TextStyle(fontSize: 14),
+                accountEmail: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      myReactController.userEmail,
+                      style: const TextStyle(fontSize: 14),
+                    ),
+                    Text(
+                      'Rol: ${myReactController.userRole}',
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
                 ),
                 currentAccountPicture: const CircleAvatar(
                   backgroundColor: Colors.white,
@@ -112,152 +474,20 @@ class _InicioState extends State<Inicio> {
                 ),
               ),
 
-              ListTile(
-                title: Text('Info SENA Contigo'),
-                leading: Icon(Icons.person, color: Colors.blueGrey),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Sena Contigo');
-                  myReactController.setPagina(0); // Página de Picsum
-                  Get.back();
-                },
-              ),
-              Divider(),
+              // Opciones del menú según el rol
+              ..._getMenuOptionsByRole(),
 
-              ListTile(
-                title: Text('Roles'),
-                leading: Icon(Icons.security, color: Colors.teal),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Roles CPIC');
-                  myReactController.setPagina(1);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-              ListTile(
-                title: Text('Usuarios'),
-                leading: Icon(Icons.people, color: Colors.green),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Usuarios CPIC');
-                  myReactController.setPagina(2);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-              ListTile(
-                title: Text('Programas'),
-                leading: Icon(Icons.school, color: Colors.deepPurple),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Programas de Formacion CPIC');
-                  myReactController.setPagina(3);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-              ListTile(
-                title: Text('Grupos'),
-                leading: Icon(Icons.groups, color: Colors.cyan),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Grupos CPIC');
-                  myReactController.setPagina(4);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-              ListTile(
-                title: Text('Aprendices'),
-                leading: Icon(Icons.person, color: Colors.orange),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Aprendices CPIC');
-                  myReactController.setPagina(5);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-              ListTile(
-                title: Text('Categorias'),
-                leading: Icon(Icons.category, color: Colors.purple),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Categorias CPIC');
-                  myReactController.setPagina(6);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-              ListTile(
-                title: Text('Causas'),
-                leading: Icon(Icons.warning_amber, color: Colors.redAccent),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Causas CPIC');
-                  myReactController.setPagina(7);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-              ListTile(
-                title: Text('Estrategias'),
-                leading: Icon(Icons.flag, color: Colors.teal),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Estrategias CPIC');
-                  myReactController.setPagina(8);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-              ListTile(
-                title: Text('Reportes'),
-                leading: Icon(Icons.description, color: Colors.brown),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Reportes CPIC');
-                  myReactController.setPagina(9);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-              ListTile(
-                title: Text('Intervenciones'),
-                leading: Icon(Icons.handshake, color: Colors.indigo),
-                trailing: Icon(Icons.arrow_forward_ios),
-                onTap: (){
-                  myReactController.setTituloAppBar('Listado Intervenciones CPIC');
-                  myReactController.setPagina(10);   // Aqui se trae en main el array List menuPages = [
-                  Get.back();
-                },
-              ),
-              Divider(),
-
-
-              // Opción para cerrar sesión
+              // Opción para cerrar sesión (siempre visible)
               ListTile(
                 title: const Text('Cerrar Sesión'),
                 leading: const Icon(Icons.logout),
                 onTap: () {
                   // Limpiar token y datos de usuario
-                  myReactController.setToken('');
-                  myReactController.setUser({});
+                  myReactController.logout();
                   // Redirigir al login
                   Get.offAll(() => const Inicio());
                 },
               ),
-
             ],
           ),
         ),
