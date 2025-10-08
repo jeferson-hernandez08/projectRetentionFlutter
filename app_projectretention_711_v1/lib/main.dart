@@ -37,5 +37,5 @@ List menuPages = [              // Array para diferentes paginaciones
   ViewStrategiesCPIC(),         // 8 View strategies CPIC
   ViewReportsCPIC(),            // 9 View strategies CPIC
   ViewInterventionsCPIC()       // 10 View strategies CPIC
- 
+ //testo github
 ];
