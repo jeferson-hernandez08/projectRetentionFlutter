@@ -2,7 +2,7 @@ import 'package:get/get.dart';
 
 class ReactController extends GetxController  {
   final _pagina = 0.obs;
-  final _tituloAppBar = 'Proyecto Retencion SENA controller'.obs;
+  final _tituloAppBar = 'Sena Contigo'.obs;
   final _listRols = [].obs; 
   final _listUsers = [].obs; 
   final _listTrainingPrograms = [].obs; 
