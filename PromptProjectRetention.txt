@@ -1,0 +1,633 @@
+***************Login*****************
+Hola estoy realizando un proyecto en flutter con API rest , necesito realizar toda la parte del  login esto es en la API , este login es con olvide contraseña, etc . 
+El profesor me compartio ya el login realizado, pero es de otro proyecto lo cual necesito adaptarlo a mi proyecto en mi API . 
+Te comparto los archivos del profesor recuerda que este es el ejemplo de otro proyecto o aplicación  , dime que vez y analizalo primero y explicame que contiene 
+el codigo, sus importancioas funcionablidad , etc.
+api/v1/auth.routes.js:
+
+
+controllers/authController.js:
+
+
+utils/email.js:
+
+
+models/user.js:
+
+**************POSTMAN***************
+Ayúdame a rellenar estos otros datos en POSTMAN por POST, trata de los grupos de la institución SENA Colombia, regional Caldas para el centro de procesos industriales CPIC , 
+Te comparto los campos de la tabla :
+
+
+**************Tablas API **************
+Controller:
+Hola estoy realizando un proyecto en API rest sequelize, necesito que autocompletes este archivo apprenticeController.js que quede exactamente igual que este archivo groupController.php 
+si no que con los campos y tabla de apprenticeController.js, muy importante que también me conserves los comentarios del groupController.php pero para el nuevo archivo apprenticeController.js,
+es decir que quede exactamente igual pero con este nuevo archivo que es una nueva tabla y campos. 
+Te comparto la tabla y los campos para el apprenticeController.js.
+modelo:
+
+
+migracion:
+
+
+groupController.js:
+
+Service:
+Hola estoy realizando un proyecto en API rest sequelize, necesito que autocompletes este archivo apprenticeService.js que quede exactamente igual que este archivo groupService.js 
+si no que con los campos y tabla de apprenticeService.js, muy importante que también me conserves los comentarios del groupService.js pero para el nuevo archivo apprenticeService.js,
+es decir que quede exactamente igual pero con este nuevo archivo que es una nueva tabla y campos. 
+Te comparto la tabla y los campos para el apprenticeService.js.
+modelo:
+
+
+migracion:
+
+
+groupService.js:
+
+
+
+************Seeders******************
+Ayúdame a rellenar estos otros datos en POSTMAN por POST, es para la base de datos de postgres , la creación de estos datos es para los seeders de la API node.js con sequelize de la tabla training_programs ayúdame a crear seeders trata de los programas de formación de la institución SENA Colombia, regional Caldas para el centro de procesos industriales CPIC ,   
+Te comparto los campos de la tabla :
+
+
+Te comparto el archivo para realizar los seeders: 
+
+
+Y archivo de  :
+
+
+
+******** Adaptacion de campos Flutter **********
+Hola estoy realizando un proyecto en flutter con API rest , necesito que autocompletes este archivo viewItemUser.dart que quede exactamente igual que este archivo mismo , es decir , ya que este archivo es de otro user de otra tabla , necesito que quede con los campos de la nueva tabla users  que te compartiré,  muy importante que también me conserves los comentarios  para este nuevo archivo tabla  pero para el nuevo archivo,
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla user . 
+Te comparto la tabla y los campos del la nueva tabla user.: 
+
+
+archivo antiguo del edit para que me adaptes los nuevos campos de user en esta :
+
+
+
+____________________Adaptacion CRUDS de cada uno_____________________________________
+
+Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewTrainingProgram.dart que quede exactamente igual que este archivo viewUser.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla training_programs que te compartiré, muy importante que también me conserves los comentarios de este archivo viewUser.dart  pero para este nuevo archivo viewTrainingProgram.dart  ,
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla training_programs . 
+Te comparto la tabla y los campos del la nueva tabla training_programs: 
+Modelo:
+
+
+Migracion:
+
+
+
+Archivo del viewUser.dart para que me adaptes al nuevo archivo viewTrainingPrograms.dart :  
+
+
+Te comparto los datos que hay disponibles en seeders para que te guíes y entiendas mejor:
+
+
+En el campo adressing (Direccionamiento) son dos campos o opciones coordinador académico o coordinador de formación.
+
+******* Interventions
+Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewInterventions.dart que quede exactamente igual que este archivo viewUsers.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla interventions que te compartiré, muy importante que también me conserves los comentarios de este archivo viewUsers.dart  pero para este nuevo archivo viewInterventions.dart  , 
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla interventions . 
+Te comparto la tabla y los campos del la nueva tabla interventions : 
+Modelo:
+
+
+Migracion:
+
+
+
+Archivo del viewUsers.dart para que me adaptes al nuevo archivo viewInterventions.dart :  
+
+
+Te comparto los datos que hay disponibles en seeders para que te guíes y entiendas mejor:
+
+
+En el campo creationDate(fecha creacion) recordemos que de tipo date en API lo cual es timestamp ,
+Necesito en este editNewIntervention en el campo DATE , el campo date es timestamp lo cual este campo NO ES DATE ONLY lo que necesito en este campo DATE de API guardar también el tiempo del reporte, osea que necesrito integrar tambien la fecha y el tiempo también de que creo el reporte 
+La solución es combinar DatePicker + TimePicker y luego guardar en formato completo (yyyy-MM-dd HH:mm:ss).
+
+******* Reports
+Hola estoy realizando un proyecto en flutter con API rest , necesito que me realices este archivo viewReports.dart que quede exactamente igual que este archivo viewUsers.dart , es decir , que quede exactamente igual adaptado al nuevo archivo,  necesito que quede con los campos de la nueva tabla reports que te compartiré, muy importante que también me conserves los comentarios de este archivo viewUsers.dart  pero para este nuevo archivo viewReports.dart  , 
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla reports . 
+Te comparto la tabla y los campos del la nueva tabla reports : 
+Modelo:
+
+
+Migracion:
+
+
+
+Archivo del viewUsers.dart para que me adaptes al nuevo archivo viewReports.dart :  
+
+
+Te comparto los datos que hay disponibles en seeders para que te guíes y entiendas mejor:
+
+
+En el campo creationDate(fecha creacion) recordemos que de tipo date, lo cual es completo que fecha con hora, minutos y segundos . En el campo adressing (Direccionamiento) son dos campos o opciones coordinador académico o coordinador de formación. En el campo state (estado) es el estado del aprendiz y los campos son Registrado, En proceso, Retenido, Desertado.
+
+
+
+___________________CRUDS apiProjectRetention.dart_________________________
+Hola estoy realizando un proyecto en flutter con API rest , necesito que autocompletes estos CRUDS para  training_programs que quede exactamente igual que users , es decir , necesito que quede con los campos de la nueva tabla training_programs que te compartiré,  muy importante que también me conserves los comentarios de users  para este nuevo CRUD training_programs,
+es decir que quede exactamente igual pero con los  nuevos campos de la nueva tabla training_programs. 
+Te comparto la tabla y los campos del la nueva tabla training_programs.: 
+Model:
+
+
+Migracion:
+
+
+CRUD de users para que me adaptes a CRUD training_programs :
+
+
+______________________Causa_Reporte_____________________
+Hola me falta realizar una ultima que la causes_reports, en esta tabla es que la que realiona muchos a muchos (un reporte tiene muchas causas y una causa tiene mucos reportes)
+esta tabla no lleva una vista en si, si no que necesito realionar esta tabka en la vista de reports, es decir cuando se cree un reporte ya estamos creando el fkIdReports de la tabla causes_reports y
+en esta misma vista en reports crearemos el fkIdCauses, de la siguiente manera como lo vez en la captura ya que es un proyecto en php de la captura de pantalla que ya esta realizado lo cual
+necesito realizarlo en flutter, ten en cuenta como observas en la captura para acceder a la causa se necesita la categoria, vamos a relaizarlo paso a paso, te compartire los modelos y migraciones
+de la API. Tambien te comparo el modelo en la API de la tabla reports y la vista en repots donde requerimos realizar esto.
+Modelo causes_reports:
+
+
+Migracion causes_reports:
+
+
+Modelo reports:
+
+
+MIgracion reports:
+
+
+editNewReport:
+
+
+
+_____________ 
+Balckbox:
+Hola estoy realizado una aplicacion en flutter con BD en API rest, ya esta finalizado los CRUDS unicamente me falta realizar un ultimo CRUD es una ultima tabla que es causes_reports
+en esta tabla es que la que reaciona muchos a muchos (un reporte tiene muchas causas y una causa tiene muchos reportes, te comparto el .sql de la base datos en MSQL)
+lo cual la BD ya esta desplegada en la web con postgres en render. Como puedes ver en la BD local esta tabla es la que relaciona este muchos a muchos, 
+necesito realizar esta realizacion de la siguiente forma: Esta tabla causes_reports recibe dos llaves foraneas de fkIdReports y fkIdCauses, necesito realizar
+esta tabla causes_reports o esta realacion en el editNewReport.dart, que desde este pueda capturar el fkIdCauses y al crear el reporte me guarde el fkIdReports
+es decir para capturar las causas necesito realizar una un select que me capture la categoria para luego capturar la causa y tenga un boton de guardar, 
+que al guardar vaya agregando causas donde va guardando fkIdCauses ) y al dar click finalmente en guardar reporte me guarde el fkIdReports y asi me lo 
+va guardando en la tabla causes_reports, en conclusion realizar esta tabla causes_reports desde editNewReport.dart. Aqui tambien te comparto unos captures
+de pantalla de como deberia ser para que entiendas mejor del mismo proyectop ya realizado pero en PHP, esto es para entiendas mejor de como debe quedar. 
+Tambien te comparto la carpeta completa de la api que se llama api_projectretention_711 y el proyecto en flutter que se llama app_projectretention_711_v1
+
+
+
+Hola estoy realizado una aplicacion en flutter con BD en API rest, ya esta finalizado los CRUDS unicamente me falta realizar un ultimo CRUD es una ultima tabla que es causes_reports
+en esta tabla es que la que reaciona muchos a muchos (un reporte tiene muchas causas y una causa tiene muchos reportes, te comparto el .sql de la base datos en MSQL)
+lo cual la BD ya esta desplegada en la web con postgres en render. Como puedes ver en la BD local esta tabla es la que relaciona este muchos a muchos, 
+necesito realizar esta realizacion de la siguiente forma: Esta tabla causes_reports recibe dos llaves foraneas de fkIdReports y fkIdCauses, necesito realizar
+esta tabla causes_reports o esta realacion en el editNewReport.dart, que desde este pueda capturar el fkIdCauses y al crear el reporte me guarde el fkIdReports
+es decir para capturar las causas necesito realizar una un select que me capture la categoria para luego capturar la causa y tenga un boton de guardar, 
+que al guardar vaya agregando causas donde va guardando fkIdCauses ) y al dar click finalmente en guardar reporte me guarde el fkIdReports y asi me lo 
+va guardando en la tabla causes_reports, en conclusion realizar esta tabla causes_reports desde editNewReport.dart. Aqui tambien te comparto unos captures
+de pantalla de como deberia ser para que entiendas mejor del mismo proyectop ya realizado pero en PHP, esto es para entiendas mejor de como debe quedar. 
+Tambien te comparto la carpeta completa de la api que se llama api_projectretention_711 y el proyecto en flutter que se llama app_projectretention_711_v1
+
+Ya tengo realizado una estrucrura ayudame a arreglar y adaptar esta estructura con la segunda ya que la primea esta incompleta : 
+
+
+
+
+
+Ya hice todos los cambios que me pediste pero aun sale el error, Te comparto el código y el error:
+apiRetention.dart:
+
+reactController.dart:
+
+
+editNewReport.dart:
+
+
+Modelo en la API causes_reports:
+
+
+Migración en la API causes_reports:
+
+Te comparo la base de datos de MYSQL anteriormente para que entiendas el sistema, en estos momentos la BD esta en postgres por medio de render.com:
+
+
+Error por consola en el inspeccionador :
+
+
+_____________________ Prompt Nuevo Chat______________
+
+Hola estoy realizando un proyecto en flutter con API rest, Te comparto los archivos del proyecto para que entiendas el proyecto y vamos realizando paso a paso lo faltante.
+Muy importante que por el momento no hagas nada, ya en el segundo paso ya te indicare que vamos a realizar , simplemente te ordeno que entiendas toda la estructura del código.
+apiRetention.dart:
+
+reactController.dart:
+
+
+editNewReport.dart:
+
+
+Modelo en la API causes_reports:
+
+
+Migración en la API causes_reports:
+
+Te comparo la base de datos de MYSQL anteriormente para que entiendas el sistema, en estos momentos la BD esta en postgres por medio de render.com:
+
+
+Estructura API Backend: 
+API_PROJECTRETENTION_711/
+├── api/
+├── config/
+├── controllers/
+├── database/
+├── migrations/
+├── models/
+├── node_modules/
+├── seeders/
+├── services/
+├── utils/                    
+│   └── email.js             
+├── package-lock.json
+├── package.json
+├── README.md
+├── reset-db.js
+└── server.js
+
+
+______________________________
+
+Estoy realizando el sistema de login ya llevo realizado una gran parte, te comparto el codigo:
+Codigo y Estructura API Backend: 
+API_PROJECTRETENTION_711/
+├── api/
+├── config/
+├── controllers/
+├── database/
+├── migrations/
+├── models/
+├── node_modules/
+├── seeders/
+├── services/
+├── utils/                    👈 
+│   └── email.js              👈 
+├── package-lock.json
+├── package.json
+├── README.md
+├── reset-db.js
+└── server.js
+
+api/v1/auth.routes.js:
+
+
+controllers/authController.js:
+
+
+models/users.js:
+
+
+
+utils/email.js:
+
+
+Codigo del Frontend en flutter:
+apiRetention.dart:
+
+reactController.dart:
+
+views/auth/viewResetPassword.dart:
+
+views/login/viewLogin.dart:
+
+
+
+
+
+
+
+___________________Prompt Visualizar _______________
+Perfecta ya me funciona perfectamente Ahora en el archivo de visualizar (Recordemos que esto es un CRUD) necesito agregar el visualizar 
+de las causas de dicho reporte, dado a que ya esta funcionando a la perfeccion el crear, editar y eliminar , necesito que el visualizar se 
+visualice las causas de dicho reporte , en la capture te muestro el editar de cada reporte asi mismo que se visualice en el visualizar de manera
+ interactiva y atractiva para el usuario. El te comparto el visualizar actual:
+viewItemReport.dart:
+
+
+_______________Promt Generacion Automatica fecha y usuario___________
+Perfecto me funciona perfectamente, ahora necesito realizar otro cambio, en creación de reporte en el campo Usuario , 
+necesito que se me seleccione automáticamente el usuario, el usuario que se debe seleccionar automáticamente es el usuario que 
+ingresa al sistema a través del login, por lógica el que esta creando el reporte es el usuario que ingreso al sistema.  
+Te comparto el código que sea necesario: 
+
+
+Perfecto ahora necesito que me hagas absolutamente lo mismo pero con el archivo de editNewIntervention.dart, este archivo CRUD 
+necesito que al crear y editar la intervención se me genere la fecha automáticamente y también que al crear y editar se me genere 
+automáticamente el usuario que ingreso al sistema , así mismo como el archivo anterior editNewReport.dart. 
+Te comparto el archivo editNewIntervention.dart:
+
+
+_______________Estado en viewReport__________________
+Perfecto ahora necesito realizar un cambio , desde  este viewReport.dart necesito que desde aquí se pueda modificar o cambiar o editar  
+el campo del Estado (Recordemos que este campo tiene tres opciones en tipo select: Registrado, En proceso, Retenido, Desertado)
+del reporte realizado del aprendiz.
+Como puedes ver en la captura se puede ver el estado del reporte del aprendiz reportado, este estado que es el viewReport.dart 
+necesito que se tenga un drowdown o select para que se pueda modificar el estado del reporte del aprendiz desde aqui mismo, esto es para
+que el usuario le quede más facileditar unicamente el estado del reporte del aprendiz.
+Muy importarte que quede de manera interactiva, atractiva para el usuario. 
+Te comparto el codigo:
+
+
+
+_______________Filtrado en editNewReport____________
+Perfecto ahora necesito realizar un cambio, necesito realizar en el crear y editar en el editNewReport.dart un sistema de filtrado en la sección de Causas del Reporte, necesito que cuando seleccione una categoría en las causas se me seleccionen o filtren las causas de esa categoría, por ejemplo en seleccionar categoría selecciono Motivos Económicos y al seleccionar una causa se me deben filtrar las causas de la categoría motivos económicos o por ejemplo en seleccionar categoría selecciono Motivos Laborales y al seleccionar una causa se me deben filtrar las causas de la categoría motivos laborales y así sucesivamente  , esto es para que el usuario le quede de manera mas sencilla encontrar una causa de esa categoría y NO se encuentren o se muestren en el drowdown o select de causas todas las causas refundidas, la idea que quede de manera organizada que el usuario selecciones categoría y muestre las causas de esas categoría y el usuario pueda tener una opción mas fácil de encontrar esto debe ser tanto en el crear y editar. Te comparto el código necesario:
+editNewReport.dart:
+
+Modelo en la API categories:
+
+Modelo en la API causes:
+
+Modelo de la API reports:
+
+Te comparto todos los datos que hay en la BD API  para que entiendas mejor de categories: 
+
+Te comparto todos los datos que hay en la BD API  para que entiendas mejor de causes: 
+
+
+___________________Login______________________
+Necesito que para este proyecto me ayudes a realizar todo el sistema de login que inicie sesion y tambien el sistema de olvidaste tu contraseña 
+(Actualmente tengo un login provisional, lo cual muy importe realizar el destroy o destruir sesion ya que en estos momentos tengo dos sesiones
+ atrapadas)
+o recuperar contraseña, en este sitema de login y recuperar contraseña mi profesor me brindo un login y recupar contraseña pero de otro proyecto,
+lo que hay que realizar es adaptar este sistema que me brindó el profesor a este nuevo proyecto esto tambien te ayudaria a ti IA a realizar la
+logica mucho mas facil. 
+Te comparto el codigo brindado por el profesor:
+
+
+Te comparto todo el codigo del nuevo proyecto a realizar este sistema de login con contraseña: 
+
+
+
+Estructura API Backend: 
+API_PROJECTRETENTION_711/
+├── api/
+├── config/
+├── controllers/
+├── database/
+├── migrations/
+├── models/
+├── node_modules/
+├── seeders/
+├── services/
+├── utils/                    👈 🆕 CREAR ESTA CARPETA
+│   └── email.js              👈 🆕 CREAR ESTE ARCHIVO
+├── package-lock.json
+├── package.json
+├── README.md
+├── reset-db.js
+└── server.js
+
+Actualizado :
+API_PROJECTRETENTION_711/
+├── .env                    👈 AQUÍ DEBE ESTAR ESTE ARCHIVO
+├── api/
+├── config/
+├── controllers/
+├── database/
+├── migrations/
+├── models/
+├── node_modules/
+├── package.json           👈 MISMA CARPETA QUE ESTE ARCHIVO
+├── package-lock.json
+├── README.md
+├── reset-db.js
+└── server.js
+
+_________________Logica de rol al sistema_______________
+Perfecto este proyecto ya esta casi por finalizar necesito implementar algunas funcionabilidades segun el rol cuando ingrese al sistema,
+Cada rol cuando ingrese al sistema tendrá diferentes funcionabilidades o segun sus requerimientos, en el sistema hay 5 tipos de roles:
+1. Administrador: Permite ingresar a roles y usuarios.
+2. instructor:    Permite ingresar a aprendices y reportes.
+3. Coordinador:   Permite ingresar a programas, grupos, aprendices, categorías, causas, estrategias, reportes, intervenciones y usuarios.
+4. Profesional de Bienestar: Permite ingresar a programas, grupos, aprendices, categorías, causas, estrategias, reportes, intervenciones y usuarios.
+5. Aprendiz Vocero: Permite ingresar aprendices y reportes.
+
+Estos son los requisitos de cada rol que realizará cuando ingrese al sistema, cada uno realizará diferentes funcionabilidades recordemos que cada 
+ingreso al sistema por ejemplo roles tendra su CRUD respectivo (Esto ya esta realizado ya esta hecho todos los CRUDS), unicamente que cuando 
+el usuario ingrese al sistema segun su tipo de rol ingresará a estos diferentees tipos de sistemas. 
+
+Comparte el archivo completo a actualizar por favor.
+
+Te comporto el codigo donde esta esta implementado esta parte para realizar esta logica (Recordemos que ya esto todo realizado los CRUDS, paginaciones, vistas, etc.):
+inicio.dart:
+
+
+
+Te comparto demas codigo por lo necesitas: 
+apiRetention.dart:
+
+
+reactController.dart:
+
+________________Bienvenida segun rol__________________
+Perfecto este proyecto ya esta casi por finalizar necesito implementar algunas funcionabilidades en la bienvenida segun el rol cuando ingrese al sistema,
+Cada rol cuando ingrese al sistema tendrá una bienvenida diferente con diferentes acciones rapidaas o segun sus requerimientos, recordemos en el sistema hay 5 tipos de roles:
+1. Administrador: Permite ingresar a roles y usuarios.
+2. instructor:    Permite ingresar a aprendices y reportes.
+3. Coordinador:   Permite ingresar a programas, grupos, aprendices, categorías, causas, estrategias, reportes, intervenciones y usuarios.
+4. Profesional de Bienestar: Permite ingresar a programas, grupos, aprendices, categorías, causas, estrategias, reportes, intervenciones y usuarios.
+5. Aprendiz Vocero: Permite ingresar aprendices y reportes.
+
+Estos son los requisitos de cada rol que realizará cuando ingrese al sistema, cada uno tendra diferente bienvenida cuando ingrese al sistema, 
+En la bienvenida vendra una opciones rapidas para que el usuario pueda ingresar mas facilmente, te comparto una capture de pantalla de una
+bienvenida del proyecto ya realizado pero en otra en la aplicacion esto es para que te guíes y  la puedas realizar con este ejemplo (esta bienvenida
+es de una aplicación en php) adáptame esta bienvenida para flutter que quede de manera atractiva para el usuario , también te dejo que lo realices de
+manera libre a tu manera recreativa.
+
+Comparte el archivo completo a actualizar por favor.
+
+Te comporto el codigo donde esta esta implementado esta parte para realizar la BIENVENIDA:
+homePrincipal.dart:
+
+
+
+Te comparto demas codigo por lo necesitas: 
+apiRetention.dart:
+
+
+reactController.dart:
+
+
+principal.dart:
+
+
+inicio.dart:
+
+
+
+main.dart:
+
+
+
+
+
+
+
+Estructura API Backend: 
+API_PROJECTRETENTION_711/
+├── api/
+├── config/
+├── controllers/
+├── database/
+├── migrations/
+├── models/
+├── node_modules/
+├── seeders/
+├── services/
+├── utils/                    
+│   └── email.js             
+├── package-lock.json
+├── package.json
+├── README.md
+├── reset-db.js
+└── server.js
+
+  
+__________________Login logs______________________
+Hola estoy realizando el sistema de recuperar contraseña con API y flutter , ya esta implmentado el sistema pero no me envia correo para cambiar 
+contraseña, ya implemente uno Logs para identificar el problema, te comparto el codigo:
+API Backend:
+auth.routes.js:
+
+
+authController.js:
+
+
+models/user.js:
+
+
+utils/email.js:
+
+
+
+Frontend flutter:
+apiRetention.dart
+
+
+reactController.dart:
+
+
+view/auth/viewResetPassword.dart:
+
+
+
+view/login/viewLogin.dart:
+
+
+
+
+Estructura API Backend: 
+API_PROJECTRETENTION_711/
+├── api/
+├── config/
+├── controllers/
+├── database/
+├── migrations/
+├── models/
+├── node_modules/
+├── seeders/
+├── services/
+├── utils/                    
+│   └── email.js             
+├── package-lock.json
+├── package.json
+├── README.md
+├── reset-db.js
+└── server.js
+
+
+______________Servicios Recuperar Contraseña API___________
+_______Servicio # 1 _____
+
+https://www.twilio.com/login
+https://app.sendgrid.com
+User:
+jefer.hernandez1+sendgrid@gmail.com
+Password:
+La misma del correo mio
+
+API kEY:
+En la pagina se encuentra
+
+_______Servicio # 2 _____
+https://app.elasticemail.com/api/
+User:
+Inicio de sesion con google.
+
+
+
+
+
+
+_______________________Error autenticacion con el cambio de contraseña generada_____________
+Tengo un problema , ya todo me funciona perfectamente pero al cambiar la nueva contraseña que me genero anteriormente en el  forgot password no me funciona me sale credenciales incorrectas , el problema es como si no cambiara la contraseña por la nueva subministrada . Te comparto el código completo tanto del backend y del frontend:
+Código Backend API:
+auth.routes.js:
+
+
+controllers/authController.js:
+
+
+models/user.js:
+
+
+server.js:
+
+
+Aqui tengo dudas en el user.js y server.js , revísame si hay el código innecesario para eliminar, por ejemplo en server.js donde dice
+/ 🔥 NUEVA RUTA TEMPORAL PARA RESET PASSWORD (DESPUÉS de CORS y bodyParser)
+app.get('/reset-password', (req, res) => { 
+
+
+
+Código Frontend:
+apiRetention.dart:
+
+
+
+reactController.dart:
+
+
+
+viewForgotPassword.dart:
+
+
+
+viewLogin.dart:
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
