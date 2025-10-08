@@ -1392,53 +1392,96 @@ Future<Map<String, dynamic>> loginApi(String email, String password) async {
   }
 }
 
-// 📧 RECUPERAR CONTRASEÑA
-Future<Map<String, dynamic>> forgotPasswordApi(String email) async {
-  const headers = {
-    'Content-Type': 'application/json',
-  };
+// 📧 RECUPERAR CONTRASEÑA | Envio al de enpoint hacia el servicios de paginas web
+// Future<Map<String, dynamic>> forgotPasswordApi(String email) async {
+//   const headers = {
+//     'Content-Type': 'application/json',
+//   };
 
-  dynamic data = {
-    'email': email,
-  };
+//   dynamic data = {
+//     'email': email,
+//   };
 
-  dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/auth/forgotPassword');
+//   dynamic url = Uri.parse('${baseUrl["projectretention_api"]}/api/v1/auth/forgotPassword');
 
-  print('📧 Solicitando recuperación para: $email');
-  print('🌐 URL: $url');
+//   print('📧 Solicitando recuperación para: $email');
+//   print('🌐 URL: $url');
 
-  try {
-    final response = await http.post(
-      url,
-      headers: headers,
-      body: jsonEncode(data),
-    );
+//   try {
+//     final response = await http.post(
+//       url,
+//       headers: headers,
+//       body: jsonEncode(data),
+//     );
 
-    print('📥 Respuesta del servidor (forgotPassword):');
-    print('📊 Status Code: ${response.statusCode}');
-    print('📦 Body: ${response.body}');
+//     print('📥 Respuesta del servidor (forgotPassword):');
+//     print('📊 Status Code: ${response.statusCode}');
+//     print('📦 Body: ${response.body}');
 
-    if (response.statusCode == 200) {
-      var responseData = jsonDecode(response.body);
-      return {
-        'success': true,
-        'message': responseData['message'] ?? 'Correo de recuperación enviado'
-      };
-    } else {
-      var errorData = jsonDecode(response.body);
+//     if (response.statusCode == 200) {
+//       var responseData = jsonDecode(response.body);
+//       return {
+//         'success': true,
+//         'message': responseData['message'] ?? 'Correo de recuperación enviado'
+//       };
+//     } else {
+//       var errorData = jsonDecode(response.body);
+//       return {
+//         'success': false,
+//         'message': errorData['message'] ?? 'Error al solicitar recuperación'
+//       };
+//     }
+//   } catch (e) {
+//     print('💥 Excepción durante forgotPassword: $e');
+//     return {
+//       'success': false,
+//       'message': 'Error de conexión: $e'
+//     };
+//   }
+// }
+
+
+// 📧 RECUPERAR CONTRASEÑA - NUEVO MÉTODO CON DOCUMENTO viewForgotPassword.dart
+Future<Map<String, dynamic>> forgotPasswordApi({
+  required String email,
+  required String document,
+  }) async {
+    try {
+      final response = await http.post(
+        Uri.parse('${baseUrl["projectretention_api"]}/api/v1/auth/forgotPassword'),
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': email,
+          'document': document,
+        }),
+      );
+
+      print('📥 Respuesta del servidor (forgotPassword):');
+      print('📊 Status Code: ${response.statusCode}');
+      print('📦 Body: ${response.body}');
+
+      if (response.statusCode == 200) {
+        final data = json.decode(response.body);
+        return {
+          'success': true,
+          'message': data['message'],
+          'tempPassword': data['tempPassword'],
+          'userInfo': data['userInfo'],
+        };
+      } else {
+        final error = json.decode(response.body);
+        return {
+          'success': false,
+          'message': error['message'] ?? 'Error desconocido',
+        };
+      }
+    } catch (e) {
       return {
         'success': false,
-        'message': errorData['message'] ?? 'Error al solicitar recuperación'
+        'message': 'Error de conexión: $e',
       };
     }
-  } catch (e) {
-    print('💥 Excepción durante forgotPassword: $e');
-    return {
-      'success': false,
-      'message': 'Error de conexión: $e'
-    };
   }
-}
 
 // 🔄 RESTABLECER CONTRASEÑA
 Future<Map<String, dynamic>> resetPasswordApi(String newPassword, String token) async {

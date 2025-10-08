@@ -1,8 +1,10 @@
+import 'package:app_projectretention_711_v1/views/auth/viewForgotPassword.dart';
 import 'package:app_projectretention_711_v1/views/interface/inicio.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:flutter/services.dart';
 import '../../api/apiRetention.dart';
+
 
 class ViewLoginCPIC extends StatefulWidget {
   const ViewLoginCPIC({super.key});
@@ -62,43 +64,10 @@ class _ViewLoginCPICState extends State<ViewLoginCPIC> {
     }
   }
 
-  // 📧 FUNCIÓN MEJORADA PARA RECUPERAR CONTRASEÑA
-  void _handleForgotPassword() async {
-    if (_emailController.text.isEmpty || !_emailController.text.contains('@')) {
-      Get.snackbar(
-        'Email requerido', 
-        'Por favor, ingresa tu email para recuperar tu contraseña',
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.orange.shade600,
-        colorText: Colors.white,
-      );
-      return;
-    }
-
-    setState(() => _isLoading = true);
-
-    final result = await forgotPasswordApi(_emailController.text.trim());
-
-    setState(() => _isLoading = false);
-
-    if (result['success']) {
-      Get.snackbar(
-        'Éxito', 
-        result['message'],
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.green.shade600,
-        colorText: Colors.white,
-        duration: const Duration(seconds: 5),
-      );
-    } else {
-      Get.snackbar(
-        'Error', 
-        result['message'],
-        snackPosition: SnackPosition.BOTTOM,
-        backgroundColor: Colors.red.shade600,
-        colorText: Colors.white,
-      );
-    }
+  // 📧 FUNCIÓN ACTUALIZADA PARA RECUPERAR CONTRASEÑA - SOLO NAVEgACIÓN
+  void _handleForgotPassword() {
+    // 🆕 Navegar a la nueva pantalla de recuperación
+    Get.to(() => ViewForgotPassword());
   }
 
   @override
@@ -110,10 +79,10 @@ class _ViewLoginCPICState extends State<ViewLoginCPIC> {
             begin: Alignment.topCenter,
             end: Alignment.bottomCenter,
             colors: [
-              Color.fromARGB(255, 7, 25, 83), // Verde azulado más oscuro
-              Color.fromARGB(255, 23, 214, 214), // Verde azulado medio
-              Color.fromARGB(255, 23, 214, 214), // Verde azulado medio
-              Color.fromARGB(255, 23, 214, 214), // Verde azulado medio
+              Color.fromARGB(255, 7, 25, 83),
+              Color.fromARGB(255, 23, 214, 214),
+              Color.fromARGB(255, 23, 214, 214),
+              Color.fromARGB(255, 23, 214, 214),
             ],
           ),
         ),
@@ -299,16 +268,19 @@ class _ViewLoginCPICState extends State<ViewLoginCPIC> {
                           ),
                           const SizedBox(height: 20),
 
-                          // Enlace para recuperar contraseña
-                          GestureDetector(
-                            onTap: _handleForgotPassword,
-                            child: const Text(
-                              '¿Olvidaste tu contraseña?',
-                              style: TextStyle(
-                                color: Colors.blueAccent,
-                                fontSize: 14,
+                          // 🆕 ENLACE ACTUALIZADO - Solo navegación tipo pointer
+                          MouseRegion(
+                            cursor: SystemMouseCursors.click, // cambia el cursor a mano
+                            child: GestureDetector(
+                              onTap: _handleForgotPassword,
+                              child: const Text(
+                                '¿Olvidaste tu contraseña?',
+                                style: TextStyle(
+                                  color: Colors.blueAccent,
+                                  fontSize: 14,
+                                ),
+                                textAlign: TextAlign.center,
                               ),
-                              textAlign: TextAlign.center,
                             ),
                           ),
                           const SizedBox(height: 40),
