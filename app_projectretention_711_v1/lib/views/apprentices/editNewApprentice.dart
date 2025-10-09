@@ -3,7 +3,7 @@ import 'package:app_projectretention_711_v1/main.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 
-//**********Controladores para los campos de Aprendices**********//
+//********** Controladores para los campos de Aprendices **********//
 final TextEditingController documentTypeController = TextEditingController();
 final TextEditingController documentController = TextEditingController();
 final TextEditingController firstNameController = TextEditingController();
@@ -14,11 +14,9 @@ final TextEditingController statusController = TextEditingController();
 final TextEditingController quarterController = TextEditingController();
 final TextEditingController groupIdController = TextEditingController();
 
-modalEditNewApprentice(context, option, dynamic listItem) {
-  // Creamos una clave global para el formulario
+modalEditNewApprentice(BuildContext context, String option, dynamic listItem) {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Variables para los valores seleccionados en los dropdowns
   String? selectedDocumentType;
   String? selectedStatus;
   String? selectedQuarter;
@@ -27,9 +25,9 @@ modalEditNewApprentice(context, option, dynamic listItem) {
   showModalBottomSheet(
     isScrollControlled: true,
     context: context,
+    backgroundColor: Colors.transparent,
     builder: (context) {
       if (option == "new") {
-        // Limpiar campos para nuevo aprendiz
         documentTypeController.clear();
         documentController.clear();
         firstNameController.clear();
@@ -40,13 +38,11 @@ modalEditNewApprentice(context, option, dynamic listItem) {
         quarterController.clear();
         groupIdController.clear();
 
-        // Inicializar valores por defecto
         selectedDocumentType = null;
         selectedStatus = null;
         selectedQuarter = null;
         selectedGroupId = null;
       } else {
-        // Cargar datos existentes para editar
         documentTypeController.text = listItem['documentType'] ?? '';
         documentController.text = listItem['document'] ?? '';
         firstNameController.text = listItem['firtsName'] ?? '';
@@ -57,7 +53,6 @@ modalEditNewApprentice(context, option, dynamic listItem) {
         quarterController.text = listItem['quarter'] ?? '';
         groupIdController.text = listItem['fkIdGroups']?.toString() ?? '';
 
-        // Validar y asignar valores para los dropdowns
         List<String> validDocTypes = ['CC', 'TI'];
         List<String> validStatus = ['En formación', 'En práctica', 'Certificado', 'Desertado'];
         List<String> validQuarters = List.generate(9, (i) => (i + 1).toString());
@@ -71,240 +66,248 @@ modalEditNewApprentice(context, option, dynamic listItem) {
         selectedGroupId = listItem['fkIdGroups']?.toString();
       }
 
-      return StatefulBuilder(builder: (BuildContext context, StateSetter setState) {
-        // Capturar los grupos solo si no están en memoria
+      return StatefulBuilder(builder: (context, setState) {
         if (myReactController.getListGroups.isEmpty) {
-          fetchAPIGroups().then((_) {
-            setState(() {}); // Refresca cuando termine la API
-          });
+          fetchAPIGroups().then((_) => setState(() {}));
+        }
+
+        InputDecoration customInputDecoration(String label, {IconData? icon}) {
+          return InputDecoration(
+            labelText: label,
+            prefixIcon: icon != null
+                ? Icon(icon, color: const Color.fromARGB(255, 7, 25, 83))
+                : null,
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          );
         }
 
         return Scaffold(
+          backgroundColor: const Color(0xFFF5F5F5),
           appBar: AppBar(
-            title: (option == "new") ? Text('Crear Nuevo Aprendiz') : Text('Editar Aprendiz'),
-            backgroundColor: (option == "new") ? Colors.green : Colors.blue,
+            title: Text(
+              (option == "new") ? 'Nuevo Aprendiz' : 'Editar Aprendiz',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: const Color.fromARGB(255, 7, 25, 83),
             foregroundColor: Colors.white,
             centerTitle: true,
           ),
-          floatingActionButton: FloatingActionButton(
-              backgroundColor: (option == "new") ? Colors.green : Colors.blue,
-              foregroundColor: Colors.white,
-              child: Icon(option == "new" ? Icons.add : Icons.edit),
-              onPressed: () async {
-                // Validar formulario
-                if (!_formKey.currentState!.validate()) {
-                  Get.snackbar('Campos incompletos', 'Por favor, complete todos los campos obligatorios',
-                      colorText: Colors.white, backgroundColor: Colors.orange);
-                  return;
-                }
+          floatingActionButton: FloatingActionButton.extended(
+            backgroundColor: const Color.fromARGB(255, 7, 25, 83),
+            foregroundColor: Colors.white,
+            icon: Icon(option == "new" ? Icons.person_add : Icons.edit),
+            label: Text(option == "new" ? 'Crear' : 'Guardar'),
+            onPressed: () async {
+              if (!_formKey.currentState!.validate()) {
+                Get.snackbar(
+                  'Campos incompletos',
+                  'Por favor complete todos los campos obligatorios',
+                  colorText: Colors.white,
+                  backgroundColor: const Color.fromARGB(255, 23, 214, 214),
+                );
+                return;
+              }
 
-                if (option == "new") {
-                  // Crear nuevo aprendiz
-                  bool resp = await newApprenticeApi(
-                    selectedDocumentType ?? 'CC',
-                    documentController.text,
-                    firstNameController.text,
-                    lastNameController.text,
-                    phoneController.text,
-                    emailController.text,
-                    selectedStatus ?? 'En formación',
-                    selectedQuarter ?? '1',
-                    selectedGroupId ?? '',
-                  );
-                  Get.back();
-                  if (resp) {
-                    Get.snackbar('Mensaje', "Se ha añadido correctamente un nuevo aprendiz",
-                        colorText: Colors.white, backgroundColor: Colors.green);
-                  } else {
-                    Get.snackbar('Mensaje', "Error al agregar el nuevo aprendiz",
-                        colorText: Colors.white, backgroundColor: Colors.red);
-                  }
-                } else {
-                  // Editar aprendiz existente
-                  bool resp = await editApprenticeApi(
-                    listItem['id'],
-                    selectedDocumentType ?? 'CC',
-                    documentController.text,
-                    firstNameController.text,
-                    lastNameController.text,
-                    phoneController.text,
-                    emailController.text,
-                    selectedStatus ?? 'En formación',
-                    selectedQuarter ?? '1',
-                    selectedGroupId ?? '',
-                  );
-                  Get.back();
-                  if (resp) {
-                    Get.snackbar('Mensaje', "Se ha editado correctamente el aprendiz",
-                        colorText: Colors.green, backgroundColor: Colors.greenAccent);
-                  } else {
-                    Get.snackbar('Mensaje', "Error al editar el aprendiz", colorText: Colors.red);
-                  }
-                }
-              }),
+              bool resp;
+              if (option == "new") {
+                resp = await newApprenticeApi(
+                  selectedDocumentType ?? 'CC',
+                  documentController.text,
+                  firstNameController.text,
+                  lastNameController.text,
+                  phoneController.text,
+                  emailController.text,
+                  selectedStatus ?? 'En formación',
+                  selectedQuarter ?? '1',
+                  selectedGroupId ?? '',
+                );
+                Get.back();
+                Get.snackbar(
+                  'Mensaje',
+                  resp
+                      ? 'Se ha añadido correctamente un nuevo aprendiz'
+                      : 'Error al agregar el nuevo aprendiz',
+                  colorText: Colors.white,
+                  backgroundColor:
+                      resp ? const Color.fromARGB(255, 7, 25, 83) : Colors.red,
+                );
+              } else {
+                resp = await editApprenticeApi(
+                  listItem['id'],
+                  selectedDocumentType ?? 'CC',
+                  documentController.text,
+                  firstNameController.text,
+                  lastNameController.text,
+                  phoneController.text,
+                  emailController.text,
+                  selectedStatus ?? 'En formación',
+                  selectedQuarter ?? '1',
+                  selectedGroupId ?? '',
+                );
+                Get.back();
+                Get.snackbar(
+                  'Mensaje',
+                  resp
+                      ? 'Se ha editado correctamente el aprendiz'
+                      : 'Error al editar el aprendiz',
+                  colorText: Colors.white,
+                  backgroundColor:
+                      resp ? const Color.fromARGB(255, 7, 25, 83) : Colors.red,
+                );
+              }
+            },
+          ),
           body: Padding(
-            padding: const EdgeInsets.all(8.0),
+            padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
               child: ListView(
+                physics: const BouncingScrollPhysics(),
                 children: [
-                  // Dropdown para Tipo de Documento
-                  DropdownButtonFormField<String>(
-                    value: selectedDocumentType,
-                    decoration: InputDecoration(
-                      labelText: 'Tipo de Documento *',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          DropdownButtonFormField<String>(
+                            value: selectedDocumentType,
+                            decoration:
+                                customInputDecoration('Tipo de Documento *', icon: Icons.badge),
+                            items: const [
+                              DropdownMenuItem(value: 'CC', child: Text('Cédula de ciudadanía')),
+                              DropdownMenuItem(value: 'TI', child: Text('Tarjeta de identidad')),
+                            ],
+                            onChanged: (value) {
+                              setState(() {
+                                selectedDocumentType = value;
+                                documentTypeController.text = value ?? 'CC';
+                              });
+                            },
+                            validator: (value) =>
+                                value == null ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: documentController,
+                            decoration:
+                                customInputDecoration('Documento *', icon: Icons.credit_card),
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: firstNameController,
+                            decoration: customInputDecoration('Nombre *', icon: Icons.person),
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: lastNameController,
+                            decoration:
+                                customInputDecoration('Apellido *', icon: Icons.person_outline),
+                            validator: (v) =>
+                                (v == null || v.isEmpty) ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: phoneController,
+                            decoration: customInputDecoration('Teléfono', icon: Icons.phone),
+                          ),
+                          const SizedBox(height: 10),
+                          TextFormField(
+                            controller: emailController,
+                            decoration: customInputDecoration('Email *', icon: Icons.email),
+                            validator: (v) {
+                              if (v == null || v.isEmpty) return 'Campo obligatorio';
+                              if (!v.contains('@')) return 'Ingrese un email válido';
+                              return null;
+                            },
+                          ),
+                        ],
+                      ),
                     ),
-                    hint: Text('Seleccione el tipo de documento'),
-                    items: [
-                      DropdownMenuItem(value: 'CC', child: Text('Cédula de ciudadanía')),
-                      DropdownMenuItem(value: 'TI', child: Text('Tarjeta de identidad')),
-                    ],
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedDocumentType = newValue;
-                        documentTypeController.text = newValue ?? 'CC';
-                      });
-                    },
-                    validator: (value) => value == null ? 'Este campo es obligatorio' : null,
                   ),
-
-                  SizedBox(height: 16),
-
-                  TextFormField(
-                    controller: documentController,
-                    decoration: InputDecoration(
-                      labelText: 'Documento *',
-                      hintText: 'Ingrese número de documento',
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          DropdownButtonFormField<String>(
+                            value: selectedStatus,
+                            decoration: customInputDecoration('Estado *', icon: Icons.school),
+                            items: const [
+                              DropdownMenuItem(value: 'En formación', child: Text('En formación')),
+                              DropdownMenuItem(value: 'En práctica', child: Text('En práctica')),
+                              DropdownMenuItem(value: 'Certificado', child: Text('Certificado')),
+                              DropdownMenuItem(value: 'Desertado', child: Text('Desertado')),
+                            ],
+                            onChanged: (v) {
+                              setState(() {
+                                selectedStatus = v;
+                                statusController.text = v ?? '';
+                              });
+                            },
+                            validator: (v) => v == null ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
+                          DropdownButtonFormField<String>(
+                            value: selectedQuarter,
+                            decoration: customInputDecoration('Trimestre *',
+                                icon: Icons.format_list_numbered),
+                            items: List.generate(
+                              9,
+                              (i) => DropdownMenuItem(
+                                value: (i + 1).toString(),
+                                child: Text('Trimestre ${i + 1}'),
+                              ),
+                            ),
+                            onChanged: (v) {
+                              setState(() {
+                                selectedQuarter = v;
+                                quarterController.text = v ?? '1';
+                              });
+                            },
+                            validator: (v) => v == null ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
+                          DropdownButtonFormField<String>(
+                            value: selectedGroupId != null &&
+                                    myReactController.getListGroups
+                                        .any((g) => g['id'].toString() == selectedGroupId)
+                                ? selectedGroupId
+                                : null,
+                            decoration: customInputDecoration('Grupo *', icon: Icons.group),
+                            items: myReactController.getListGroups
+                                .map<DropdownMenuItem<String>>((group) => DropdownMenuItem<String>(
+                                      value: group['id'].toString(),
+                                      child:
+                                          Text('${group['file']} - ${group['managerName']}'),
+                                    ))
+                                .toList(),
+                            onChanged: (v) {
+                              setState(() {
+                                selectedGroupId = v;
+                                groupIdController.text = v ?? '';
+                              });
+                            },
+                            validator: (v) => v == null ? 'Campo obligatorio' : null,
+                          ),
+                        ],
+                      ),
                     ),
-                    validator: (value) =>
-                        (value == null || value.isEmpty) ? 'Este campo es obligatorio' : null,
-                  ),
-
-                  TextFormField(
-                    controller: firstNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Nombre *',
-                      hintText: 'Ingrese el nombre del aprendiz',
-                    ),
-                    validator: (value) =>
-                        (value == null || value.isEmpty) ? 'Este campo es obligatorio' : null,
-                  ),
-
-                  TextFormField(
-                    controller: lastNameController,
-                    decoration: InputDecoration(
-                      labelText: 'Apellido *',
-                      hintText: 'Ingrese el apellido del aprendiz',
-                    ),
-                    validator: (value) =>
-                        (value == null || value.isEmpty) ? 'Este campo es obligatorio' : null,
-                  ),
-
-                  TextFormField(
-                    controller: phoneController,
-                    decoration: InputDecoration(
-                      labelText: 'Teléfono',
-                      hintText: 'Ingrese el teléfono',
-                    ),
-                  ),
-
-                  TextFormField(
-                    controller: emailController,
-                    decoration: InputDecoration(
-                      labelText: 'Email *',
-                      hintText: 'Ingrese el email',
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) return 'Este campo es obligatorio';
-                      if (!value.contains('@')) return 'Ingrese un email válido';
-                      return null;
-                    },
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // Dropdown para Estado del aprendiz
-                  DropdownButtonFormField<String>(
-                    value: selectedStatus,
-                    decoration: InputDecoration(
-                      labelText: 'Estado *',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    ),
-                    hint: Text('Seleccione el estado'),
-                    items: [
-                      DropdownMenuItem(value: 'En formación', child: Text('En formación')),
-                      DropdownMenuItem(value: 'En práctica', child: Text('En práctica')),
-                      DropdownMenuItem(value: 'Certificado', child: Text('Certificado')),
-                      DropdownMenuItem(value: 'Desertado', child: Text('Desertado')),
-                    ],
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedStatus = newValue;
-                        statusController.text = newValue ?? '';
-                      });
-                    },
-                    validator: (value) => value == null ? 'Este campo es obligatorio' : null,
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // Dropdown para Trimestre
-                  DropdownButtonFormField<String>(
-                    value: selectedQuarter,
-                    decoration: InputDecoration(
-                      labelText: 'Trimestre *',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    ),
-                    hint: Text('Seleccione el trimestre'),
-                    items: List.generate(9, (index) {
-                      int trimestre = index + 1;
-                      return DropdownMenuItem(
-                        value: trimestre.toString(),
-                        child: Text('Trimestre $trimestre'),
-                      );
-                    }),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedQuarter = newValue;
-                        quarterController.text = newValue ?? '1';
-                      });
-                    },
-                    validator: (value) => value == null ? 'Este campo es obligatorio' : null,
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // Dropdown para Grupo
-                  DropdownButtonFormField<String>(
-                    value: selectedGroupId != null &&
-                            myReactController.getListGroups
-                                .any((g) => g['id'].toString() == selectedGroupId)
-                        ? selectedGroupId
-                        : null,
-                    decoration: InputDecoration(
-                      labelText: 'Grupo *',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    ),
-                    hint: Text('Seleccione un grupo'),
-                    items:
-                        myReactController.getListGroups.map<DropdownMenuItem<String>>((group) {
-                      return DropdownMenuItem<String>(
-                        value: group['id'].toString(),
-                        child: Text('${group['file']} - ${group['managerName']}'),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedGroupId = newValue;
-                        groupIdController.text = newValue ?? '';
-                      });
-                    },
-                    validator: (value) => value == null ? 'Este campo es obligatorio' : null,
                   ),
                 ],
               ),

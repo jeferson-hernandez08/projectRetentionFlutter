@@ -10,12 +10,10 @@ class HomePrincipal extends StatefulWidget {
 }
 
 class _HomePrincipalState extends State<HomePrincipal> {
-  
-  // Método para obtener el mensaje de bienvenida según el rol
   Map<String, dynamic> _getWelcomeData() {
     final userRole = myReactController.userRole;
     final userName = myReactController.fullName;
-    
+
     Map<String, dynamic> welcomeData = {
       'title': '¡Bienvenido!',
       'role': userRole,
@@ -26,7 +24,8 @@ class _HomePrincipalState extends State<HomePrincipal> {
 
     switch (userRole) {
       case 'Administrador':
-        welcomeData['message'] = 'Como **Administrador**, tienes acceso completo al sistema para gestionar roles y usuarios.\n\n¡Bienvenido al Sistema de Retención Estudiantil SENA! Este espacio está diseñado para acompañar a los usuarios en su proceso formativo, brindándoles el apoyo necesario para superar cualquier desafío que pueda afectar la permanencia en la institución.';
+        welcomeData['message'] =
+            'Como **Administrador**, tienes acceso completo al sistema para gestionar roles y usuarios.\n\n¡Bienvenido al Sistema de Retención Estudiantil SENA! Este espacio está diseñado para acompañar a los usuarios en su proceso formativo.';
         welcomeData['quickActions'] = [
           {'title': 'Administrar Roles', 'page': 1, 'icon': Icons.security, 'color': Colors.teal},
           {'title': 'Gestionar Usuarios', 'page': 2, 'icon': Icons.people, 'color': Colors.green},
@@ -34,7 +33,8 @@ class _HomePrincipalState extends State<HomePrincipal> {
         break;
 
       case 'Instructor':
-        welcomeData['message'] = 'Como **Instructor**, eres fundamental en el proceso de detección temprana de situaciones que afecten la permanencia de los aprendices.\n\nTu labor es clave para identificar oportunidades de mejora y reportar casos que requieran intervención, contribuyendo así al éxito formativo de nuestros aprendices.';
+        welcomeData['message'] =
+            'Como **Instructor**, eres fundamental en el proceso de detección temprana de situaciones que afecten la permanencia de los aprendices.\n\nTu labor es clave para reportar casos que requieran intervención y contribuir al éxito formativo.';
         welcomeData['quickActions'] = [
           {'title': 'Gestionar Aprendices', 'page': 5, 'icon': Icons.person, 'color': Colors.orange},
           {'title': 'Crear Reportes', 'page': 9, 'icon': Icons.description, 'color': Colors.brown},
@@ -42,7 +42,8 @@ class _HomePrincipalState extends State<HomePrincipal> {
         break;
 
       case 'Coordinador':
-        welcomeData['message'] = 'Como **Coordinador**, tienes una visión integral del proceso formativo y lideras las estrategias de retención estudiantil.\n\nDesde este espacio podrás gestionar programas, grupos, aprendices y coordinar las intervenciones necesarias para garantizar la permanencia y éxito de nuestros estudiantes.';
+        welcomeData['message'] =
+            'Como **Coordinador**, lideras las estrategias de retención estudiantil y monitoreas el avance académico.';
         welcomeData['quickActions'] = [
           {'title': 'Programas', 'page': 3, 'icon': Icons.school, 'color': Colors.deepPurple},
           {'title': 'Grupos', 'page': 4, 'icon': Icons.groups, 'color': Colors.cyan},
@@ -54,7 +55,8 @@ class _HomePrincipalState extends State<HomePrincipal> {
         break;
 
       case 'Profesional de Bienestar':
-        welcomeData['message'] = 'Como **Profesional de Bienestar**, eres el pilar del acompañamiento psicosocial y emocional de nuestros aprendices.\n\nTu expertise es fundamental para diseñar estrategias de intervención que fortalezcan la resiliencia y el bienestar integral de la comunidad educativa.';
+        welcomeData['message'] =
+            'Como **Profesional de Bienestar**, acompañas el desarrollo psicosocial y emocional de los aprendices.';
         welcomeData['quickActions'] = [
           {'title': 'Categorías', 'page': 6, 'icon': Icons.category, 'color': Colors.purple},
           {'title': 'Causas', 'page': 7, 'icon': Icons.warning_amber, 'color': Colors.red},
@@ -66,7 +68,8 @@ class _HomePrincipalState extends State<HomePrincipal> {
         break;
 
       case 'Aprendiz Vocero':
-        welcomeData['message'] = 'Como **Aprendiz Vocero**, eres el puente entre la comunidad estudiantil y las instancias de apoyo institucional.\n\nTu rol es fundamental para representar las necesidades de tus compañeros y promover una cultura de acompañamiento y solidaridad entre pares.';
+        welcomeData['message'] =
+            'Como **Aprendiz Vocero**, representas a tus compañeros y fortaleces la comunicación institucional.';
         welcomeData['quickActions'] = [
           {'title': 'Ver Aprendices', 'page': 5, 'icon': Icons.person, 'color': Colors.orange},
           {'title': 'Crear Reportes', 'page': 9, 'icon': Icons.description, 'color': Colors.brown},
@@ -74,59 +77,61 @@ class _HomePrincipalState extends State<HomePrincipal> {
         break;
 
       default:
-        welcomeData['message'] = '¡Bienvenido al Sistema de Retención Estudiantil SENA! Este espacio está diseñado para acompañarte en tu proceso de formación, brindándote el apoyo necesario para superar cualquier desafío que pueda afectar tu permanencia en la institución.';
+        welcomeData['message'] =
+            '¡Bienvenido a **SENA Contigo**! Este espacio está diseñado para acompañarte en tu proceso de formación.';
         welcomeData['quickActions'] = [];
     }
 
     return welcomeData;
   }
 
-  // Widget para las tarjetas de acciones rápidas
-  Widget _buildQuickActionCard(Map<String, dynamic> action) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      child: InkWell(
-        borderRadius: BorderRadius.circular(12),
-        onTap: () {
-          myReactController.setPagina(action['page']);
-          myReactController.setTituloAppBar('Listado ${action['title']} CPIC');
-        },
-        child: Container(
-          width: 150,
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Container(
-                padding: const EdgeInsets.all(12),
-                decoration: BoxDecoration(
-                  color: action['color'].withOpacity(0.1),
-                  shape: BoxShape.circle,
-                ),
-                child: Icon(
-                  action['icon'],
-                  color: action['color'],
-                  size: 30,
-                ),
+  /// ✅ SOLO mejora visual de botones de acciones rápidas
+Widget _buildQuickActionCard(Map<String, dynamic> action) {
+  return Card(
+    color: Colors.white,
+    elevation: 4, // Reducido para un estilo más sutil y moderno
+    shadowColor: action['color'].withOpacity(0.2), // Opacidad más baja para sombra más suave
+    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)), // Radio más pequeño para una forma menos "píldora" y más compacta
+    child: InkWell(
+      borderRadius: BorderRadius.circular(80), // Coincide con el Card para consistencia
+      splashColor: action['color'].withOpacity(0.12), // Splash más sutil
+      onTap: () {
+        myReactController.setPagina(action['page']);
+        myReactController.setTituloAppBar('Listado ${action['title']} CPIC');
+      },
+      child: Padding(
+        padding: const EdgeInsets.all(12), // Padding reducido para hacer el widget más pequeño
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Container(
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                color: action['color'].withOpacity(0.1), // Opacidad más baja para fondo de icono más discreto
               ),
-              const SizedBox(height: 12),
-              Text(
-                action['title'],
-                textAlign: TextAlign.center,
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
-                ),
+              padding: const EdgeInsets.all(12), // Padding del icono reducido para tamaño general más pequeño
+              child: Icon(
+                action['icon'],
+                color: action['color'],
+                size: 28, // Icono un poco más pequeño
               ),
-            ],
-          ),
+            ),
+            const SizedBox(height: 8), // Espacio reducido entre icono y texto
+            Text(
+              action['title'],
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                fontWeight: FontWeight.w600,
+                fontSize: 14, // Tamaño de fuente un poco más pequeño
+                color: Colors.black87,
+              ),
+            ),
+          ],
         ),
       ),
-    );
-  }
+    ),
+  );
+}
 
   @override
   Widget build(BuildContext context) {
@@ -134,224 +139,211 @@ class _HomePrincipalState extends State<HomePrincipal> {
     final quickActions = welcomeData['quickActions'] as List<dynamic>;
 
     return Scaffold(
-      backgroundColor: Colors.grey[50],
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(20),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Encabezado de bienvenida
-            Container(
-              width: double.infinity,
-              padding: const EdgeInsets.all(24),
-              decoration: BoxDecoration(
-                gradient: LinearGradient(
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                  colors: [Colors.amber.shade700, Colors.amber.shade400],
-                ),
-                borderRadius: BorderRadius.circular(16),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.amber.withOpacity(0.3),
-                    blurRadius: 10,
-                    offset: const Offset(0, 4),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 7, 25, 83),
+              Color.fromARGB(255, 23, 214, 214),
+              Color.fromARGB(255, 23, 214, 214),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+        ),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.all(20),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                // ✅ LOGO CENTRADO
+                Center(
+                  child: Image.asset(
+                    '../assets/images/logoSenaContigo.png',
+                    height: 85,
+                    fit: BoxFit.contain,
                   ),
-                ],
-              ),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    welcomeData['title'],
-                    style: const TextStyle(
-                      fontSize: 28,
+                ),
+
+                const SizedBox(height: 25),
+
+                // TARJETA DE BIENVENIDA (igual)
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.all(24),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.95),
+                    borderRadius: BorderRadius.circular(18),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.1),
+                        blurRadius: 10,
+                        offset: const Offset(0, 5),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Icon(Icons.waving_hand,
+                          color: Color.fromARGB(255, 7, 25, 83), size: 34),
+                      const SizedBox(height: 10),
+                      Text(
+                        welcomeData['title'],
+                        style: const TextStyle(
+                          fontSize: 26,
+                          fontWeight: FontWeight.bold,
+                          color: Color.fromARGB(255, 7, 25, 83),
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        welcomeData['userName'],
+                        style: const TextStyle(
+                          fontSize: 18,
+                          color: Colors.black87,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                        decoration: BoxDecoration(
+                          color: const Color.fromARGB(255, 23, 214, 214).withOpacity(0.2),
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Text(
+                          welcomeData['role'],
+                          style: const TextStyle(
+                            fontSize: 14,
+                            color: Color.fromARGB(255, 7, 25, 83),
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // MENSAJE DE BIENVENIDA (igual)
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(14),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black12.withOpacity(0.1),
+                        blurRadius: 8,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Row(
+                        children: [
+                          Icon(Icons.message_rounded,
+                              color: Color.fromARGB(255, 7, 25, 83)),
+                          SizedBox(width: 8),
+                          Text(
+                            'Mensaje de Bienvenida',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 7, 25, 83),
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 12),
+                      Text(
+                        welcomeData['message'],
+                        style: const TextStyle(fontSize: 15, height: 1.5, color: Colors.black87),
+                      ),
+                    ],
+                  ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // ✅ ACCIONES RÁPIDAS (solo visual mejorado)
+                if (quickActions.isNotEmpty) ...[
+                  const Text(
+                    'Acciones Rápidas',
+                    style: TextStyle(
+                      fontSize: 20,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
-                  const SizedBox(height: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: Colors.white.withOpacity(0.2),
-                      borderRadius: BorderRadius.circular(20),
+                  const SizedBox(height: 14),
+                  GridView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 16,
+                      mainAxisSpacing: 16,
+                      childAspectRatio: 1,
                     ),
-                    child: Text(
-                      welcomeData['role'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    welcomeData['userName'],
-                    style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w500,
-                      color: Colors.white,
-                    ),
+                    itemCount: quickActions.length,
+                    itemBuilder: (context, index) {
+                      return _buildQuickActionCard(quickActions[index]);
+                    },
                   ),
                 ],
-              ),
-            ),
 
-            const SizedBox(height: 24),
+                const SizedBox(height: 40),
 
-            // Mensaje de bienvenida
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Mensaje de Bienvenida',
-                      style: TextStyle(
-                        fontSize: 18,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.amber,
-                      ),
-                    ),
-                    const SizedBox(height: 12),
-                    Text(
-                      welcomeData['message'],
-                      style: const TextStyle(
-                        fontSize: 16,
-                        height: 1.5,
-                        color: Colors.black87,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-
-            const SizedBox(height: 24),
-
-            // Acciones rápidas
-            if (quickActions.isNotEmpty) ...[
-              const Text(
-                'Acciones Rápidas',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.black87,
-                ),
-              ),
-              const SizedBox(height: 16),
-              const Text(
-                'Accede rápidamente a las funcionalidades principales de tu rol:',
-                style: TextStyle(
-                  fontSize: 14,
-                  color: Colors.black54,
-                ),
-              ),
-              const SizedBox(height: 20),
-              
-              // Grid de acciones rápidas
-              GridView.builder(
-                shrinkWrap: true,
-                physics: const NeverScrollableScrollPhysics(),
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2,
-                  crossAxisSpacing: 16,
-                  mainAxisSpacing: 16,
-                  childAspectRatio: 0.9,
-                ),
-                itemCount: quickActions.length,
-                itemBuilder: (context, index) {
-                  return _buildQuickActionCard(quickActions[index] as Map<String, dynamic>);
-                },
-              ),
-            ],
-
-            const SizedBox(height: 32),
-
-            // Información del sistema
-            Card(
-              elevation: 2,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(20),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Row(
-                      children: [
-                        Icon(Icons.info, color: Colors.amber, size: 24),
-                        SizedBox(width: 8),
-                        Text(
-                          'Sobre el Sistema',
-                          style: TextStyle(
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
-                          ),
-                        ),
-                      ],
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'En Sena Contigo: Plataforma de Apoyo y Retención de Aprendices SENA está diseñado para prevenir la deserción estudiantil, fortalecer el acompañamiento a los aprendices y mejorar la permanencia en la Regional Caldas.',
-                      style: TextStyle(
-                        fontSize: 14,
-                        height: 1.5,
-                        color: Colors.black54,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    Row(
-                      children: [
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.amber.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.amber.withOpacity(0.3)),
-                          ),
-                          child: const Text(
-                            'Regional Caldas',
+                // SOBRE EL SISTEMA (igual)
+                Container(
+                  padding: const EdgeInsets.all(20),
+                  decoration: BoxDecoration(
+                    color: Colors.white.withOpacity(0.9),
+                    borderRadius: BorderRadius.circular(14),
+                  ),
+                  child: const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Icon(Icons.info_outline,
+                              color: Color.fromARGB(255, 7, 25, 83)),
+                          SizedBox(width: 8),
+                          Text(
+                            'Sobre el Sistema',
                             style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.amber,
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 7, 25, 83),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: Colors.green.withOpacity(0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: Colors.green.withOpacity(0.3)),
-                          ),
-                          child: const Text(
-                            'CPIC',
-                            style: TextStyle(
-                              fontSize: 12,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.green,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                        ],
+                      ),
+                      SizedBox(height: 12),
+                      Text(
+                        'SENA Contigo: Plataforma de Apoyo y Retención Estudiantil.\nFortalece el acompañamiento a los aprendices y mejora la permanencia en la Regional Caldas.',
+                        style: TextStyle(fontSize: 14, height: 1.5, color: Colors.black87),
+                      ),
+                    ],
+                  ),
                 ),
-              ),
+
+                const SizedBox(height: 25),
+                Center(
+                  child: Text(
+                    '© 2025 SENA Contigo · Regional Caldas',
+                    style: TextStyle(color: Colors.white.withOpacity(0.9), fontSize: 13),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

@@ -77,7 +77,7 @@ class _ViewResetPasswordState extends State<ViewResetPassword> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color.fromARGB(255, 23, 214, 214),
+      backgroundColor: Color.fromARGB(255, 0, 247, 247),
       body: SafeArea(
         child: SingleChildScrollView(
           child: Column(
