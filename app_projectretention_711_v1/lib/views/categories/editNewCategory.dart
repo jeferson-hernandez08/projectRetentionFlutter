@@ -11,14 +11,15 @@ final TextEditingController descriptionCategoryController = TextEditingControlle
 String? selectedAddressing;
 
 modalEditNewCategory(context, option, dynamic listItem) {
-  // Creamos una clave global para el formulario
+  // Clave global para el formulario
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
   showModalBottomSheet(
     isScrollControlled: true,
-    context: context, 
+    context: context,
+    backgroundColor: Colors.transparent,
     builder: (context) {
-      if(option == "new") { 
+      if (option == "new") {
         // Limpiar campos para nueva categoría
         nameCategoryController.clear();
         descriptionCategoryController.clear();
@@ -32,147 +33,195 @@ modalEditNewCategory(context, option, dynamic listItem) {
 
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
+          // 🎨 Colores personalizados para los íconos
+          InputDecoration customInputDecoration(String label, {IconData? icon}) {
+            Color iconColor;
+            switch (icon) {
+              case Icons.category:
+                iconColor = Colors.deepPurple;
+                break;
+              case Icons.description:
+                iconColor = Colors.blueAccent;
+                break;
+              case Icons.supervisor_account:
+                iconColor = Colors.teal;
+                break;
+              default:
+                iconColor = const Color.fromARGB(255, 7, 25, 83);
+            }
+
+            return InputDecoration(
+              labelText: label,
+              prefixIcon:
+                  icon != null ? Icon(icon, color: iconColor) : null,
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            );
+          }
 
           return Scaffold(
+            backgroundColor: const Color(0xFFF5F5F5),
             appBar: AppBar(
-              title: (option == "new") ? Text('Crear Nueva Categoría') : Text('Editar Categoría'),
-              backgroundColor: (option == "new") ? Colors.green : Colors.blue,
+              title: Text(
+                (option == "new") ? 'Nueva Categoría' : 'Editar Categoría',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: const Color.fromARGB(255, 7, 25, 83),
               foregroundColor: Colors.white,
               centerTitle: true,
             ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: (option == "new") ? Colors.green : Colors.blue,
+            floatingActionButton: FloatingActionButton.extended(
+              backgroundColor: option == "new"
+                  ? const Color(0xFF00BFFF) // 💙 Celeste para "Crear"
+                  : Colors.orange, // 🟧 Naranja para "Editar"
               foregroundColor: Colors.white,
-              child: Icon(option == "new" ? Icons.add : Icons.edit),
+              icon: Icon(option == "new" ? Icons.add : Icons.edit),
+              label: Text(option == "new" ? 'Crear' : 'Editar'),
               onPressed: () async {
-                // Validar formulario
                 if (!_formKey.currentState!.validate()) {
                   Get.snackbar(
-                    'Campos incompletos', 
-                    'Por favor, complete todos los campos obligatorios',
+                    'Campos incompletos',
+                    'Por favor complete todos los campos obligatorios',
                     colorText: Colors.white,
-                    backgroundColor: Colors.orange
+                    backgroundColor:
+                        const Color.fromARGB(255, 23, 214, 214),
                   );
                   return;
                 }
-                
-                if(option == "new") {
+
+                bool resp;
+                if (option == "new") {
                   // Crear nueva categoría
-                  bool resp = await newCategoryApi(
+                  resp = await newCategoryApi(
                     nameCategoryController.text,
                     descriptionCategoryController.text,
                     selectedAddressing,
                   );
                   Get.back();
-                  if(resp) {
-                    Get.snackbar(
-                      'Mensaje', "Se ha añadido correctamente una nueva categoría", 
-                      colorText: Colors.white,
-                      backgroundColor: Colors.green
-                    );
-                  } else {
-                    Get.snackbar(
-                      'Mensaje', "Error al agregar la nueva categoría", 
-                      colorText: Colors.white,
-                      backgroundColor: Colors.red
-                    );
-                  }
-                } else {   
+                  Get.snackbar(
+                    'Mensaje',
+                    resp
+                        ? 'Se ha añadido correctamente una nueva categoría'
+                        : 'Error al agregar la nueva categoría',
+                    colorText: Colors.white,
+                    backgroundColor:
+                        resp ? Colors.green : Colors.red, // ✅🟥 colores de mensaje
+                  );
+                } else {
                   // Editar categoría existente
-                  bool resp = await editCategoryApi(
+                  resp = await editCategoryApi(
                     listItem['id'],
                     nameCategoryController.text,
                     descriptionCategoryController.text,
                     selectedAddressing,
                   );
                   Get.back();
-                  if(resp) {
-                    Get.snackbar(
-                      'Mensaje', "Se ha editado correctamente la categoría", 
-                      colorText: Colors.green,
-                      backgroundColor: Colors.greenAccent
-                    );
-                  } else {
-                    Get.snackbar('Mensaje', "Error al editar la categoría", colorText: Colors.red);
-                  }
+                  Get.snackbar(
+                    'Mensaje',
+                    resp
+                        ? 'Se ha editado correctamente la categoría'
+                        : 'Error al editar la categoría',
+                    colorText: Colors.white,
+                    backgroundColor:
+                        resp ? Colors.green : Colors.red, // ✅🟥 colores de mensaje
+                  );
                 }
-              }),
+              },
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: [
+                            // Campo Nombre
+                            TextFormField(
+                              controller: nameCategoryController,
+                              decoration: customInputDecoration(
+                                'Nombre *',
+                                icon: Icons.category,
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Campo obligatorio';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
 
-              body: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Form(
-                  key: _formKey,
-                  child: ListView(
-                    children: [
-                      // Campo de nombre de la categoría
-                      TextFormField(
-                        controller: nameCategoryController,
-                        decoration: InputDecoration(
-                          labelText: 'Nombre *',
-                          hintText: 'Ingrese el nombre de la categoría',
+                            // Campo Descripción
+                            TextFormField(
+                              controller: descriptionCategoryController,
+                              decoration: customInputDecoration(
+                                'Descripción *',
+                                icon: Icons.description,
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Campo obligatorio';
+                                }
+                                return null;
+                              },
+                            ),
+                            const SizedBox(height: 10),
+
+                            // Campo Responsable de Atención
+                            DropdownButtonFormField<String>(
+                              value: selectedAddressing,
+                              decoration: customInputDecoration(
+                                'Responsable de Atención *',
+                                icon: Icons.supervisor_account,
+                              ),
+                              items: const [
+                                DropdownMenuItem(
+                                  value: 'Coordinador Académico',
+                                  child: Text('Coordinador Académico'),
+                                ),
+                                DropdownMenuItem(
+                                  value: 'Coordinador de Formación',
+                                  child: Text('Coordinador de Formación'),
+                                ),
+                              ],
+                              onChanged: (value) {
+                                setState(() {
+                                  selectedAddressing = value;
+                                });
+                              },
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return 'Debe seleccionar una opción';
+                                }
+                                return null;
+                              },
+                            ),
+                          ],
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Este campo es obligatorio';
-                          }
-                          return null;
-                        },
                       ),
-
-                      SizedBox(height: 16),
-
-                      // Campo de descripción
-                      TextFormField(
-                        controller: descriptionCategoryController,
-                        decoration: InputDecoration(
-                          labelText: 'Descripción *',
-                          hintText: 'Ingrese la descripción de la categoría',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Este campo es obligatorio';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      SizedBox(height: 16),
-
-                      // Campo de responsable de atención (addressing) con opciones fijas
-                      DropdownButtonFormField<String>(
-                        value: selectedAddressing,
-                        decoration: InputDecoration(
-                          labelText: 'Responsable de Atención *',
-                        ),
-                        items: [
-                          DropdownMenuItem(
-                            value: 'Coordinador Académico',
-                            child: Text('Coordinador Académico'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Coordinador de Formación',
-                            child: Text('Coordinador de Formación'),
-                          ),
-                        ],
-                        onChanged: (value) {
-                          setState(() {
-                            selectedAddressing = value;
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Debe seleccionar una opción';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
+            ),
           );
-        }
+        },
       );
-    }
+    },
   );
 }

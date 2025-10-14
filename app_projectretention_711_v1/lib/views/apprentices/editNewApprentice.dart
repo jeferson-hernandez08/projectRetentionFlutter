@@ -71,12 +71,45 @@ modalEditNewApprentice(BuildContext context, String option, dynamic listItem) {
           fetchAPIGroups().then((_) => setState(() {}));
         }
 
+        // 🎨 Definimos colores personalizados según el ícono
         InputDecoration customInputDecoration(String label, {IconData? icon}) {
+          Color iconColor;
+
+          switch (icon) {
+            case Icons.badge:
+              iconColor = Colors.blueAccent;
+              break;
+            case Icons.credit_card:
+              iconColor = Colors.teal;
+              break;
+            case Icons.person:
+              iconColor = Colors.deepPurple;
+              break;
+            case Icons.person_outline:
+              iconColor = Colors.orangeAccent;
+              break;
+            case Icons.phone:
+              iconColor = Colors.green;
+              break;
+            case Icons.email:
+              iconColor = Colors.redAccent;
+              break;
+            case Icons.school:
+              iconColor = Colors.cyan;
+              break;
+            case Icons.format_list_numbered:
+              iconColor = Colors.pinkAccent;
+              break;
+            case Icons.group:
+              iconColor = Colors.amber;
+              break;
+            default:
+              iconColor = const Color.fromARGB(255, 7, 25, 83);
+          }
+
           return InputDecoration(
             labelText: label,
-            prefixIcon: icon != null
-                ? Icon(icon, color: const Color.fromARGB(255, 7, 25, 83))
-                : null,
+            prefixIcon: icon != null ? Icon(icon, color: iconColor) : null,
             filled: true,
             fillColor: Colors.white,
             border: OutlineInputBorder(
@@ -98,71 +131,74 @@ modalEditNewApprentice(BuildContext context, String option, dynamic listItem) {
             foregroundColor: Colors.white,
             centerTitle: true,
           ),
-          floatingActionButton: FloatingActionButton.extended(
-            backgroundColor: const Color.fromARGB(255, 7, 25, 83),
-            foregroundColor: Colors.white,
-            icon: Icon(option == "new" ? Icons.person_add : Icons.edit),
-            label: Text(option == "new" ? 'Crear' : 'Guardar'),
-            onPressed: () async {
-              if (!_formKey.currentState!.validate()) {
-                Get.snackbar(
-                  'Campos incompletos',
-                  'Por favor complete todos los campos obligatorios',
-                  colorText: Colors.white,
-                  backgroundColor: const Color.fromARGB(255, 23, 214, 214),
-                );
-                return;
-              }
+floatingActionButton: FloatingActionButton.extended(
+  backgroundColor: option == "new"
+      ? const Color(0xFF00BFFF) // 💙 Celeste para "Crear"
+      : Colors.orange,          // 🟧 Naranja para "Editar"
+  foregroundColor: Colors.white,
+  icon: Icon(option == "new" ? Icons.person_add : Icons.edit),
+  label: Text(option == "new" ? 'Crear' : 'Editar'),
+  onPressed: () async {
+    if (!_formKey.currentState!.validate()) {
+      Get.snackbar(
+        'Campos incompletos',
+        'Por favor complete todos los campos obligatorios',
+        colorText: Colors.white,
+        backgroundColor: const Color.fromARGB(255, 23, 214, 214),
+      );
+      return;
+    }
 
-              bool resp;
-              if (option == "new") {
-                resp = await newApprenticeApi(
-                  selectedDocumentType ?? 'CC',
-                  documentController.text,
-                  firstNameController.text,
-                  lastNameController.text,
-                  phoneController.text,
-                  emailController.text,
-                  selectedStatus ?? 'En formación',
-                  selectedQuarter ?? '1',
-                  selectedGroupId ?? '',
-                );
-                Get.back();
-                Get.snackbar(
-                  'Mensaje',
-                  resp
-                      ? 'Se ha añadido correctamente un nuevo aprendiz'
-                      : 'Error al agregar el nuevo aprendiz',
-                  colorText: Colors.white,
-                  backgroundColor:
-                      resp ? const Color.fromARGB(255, 7, 25, 83) : Colors.red,
-                );
-              } else {
-                resp = await editApprenticeApi(
-                  listItem['id'],
-                  selectedDocumentType ?? 'CC',
-                  documentController.text,
-                  firstNameController.text,
-                  lastNameController.text,
-                  phoneController.text,
-                  emailController.text,
-                  selectedStatus ?? 'En formación',
-                  selectedQuarter ?? '1',
-                  selectedGroupId ?? '',
-                );
-                Get.back();
-                Get.snackbar(
-                  'Mensaje',
-                  resp
-                      ? 'Se ha editado correctamente el aprendiz'
-                      : 'Error al editar el aprendiz',
-                  colorText: Colors.white,
-                  backgroundColor:
-                      resp ? const Color.fromARGB(255, 7, 25, 83) : Colors.red,
-                );
-              }
-            },
-          ),
+    bool resp;
+    if (option == "new") {
+      resp = await newApprenticeApi(
+        selectedDocumentType ?? 'CC',
+        documentController.text,
+        firstNameController.text,
+        lastNameController.text,
+        phoneController.text,
+        emailController.text,
+        selectedStatus ?? 'En formación',
+        selectedQuarter ?? '1',
+        selectedGroupId ?? '',
+      );
+      Get.back();
+      Get.snackbar(
+        'Mensaje',
+        resp
+            ? 'Se ha añadido correctamente un nuevo aprendiz'
+            : 'Error al agregar el nuevo aprendiz',
+        colorText: Colors.white,
+        backgroundColor:
+            resp ? Colors.green : Colors.red,
+      );
+    } else {
+      resp = await editApprenticeApi(
+        listItem['id'],
+        selectedDocumentType ?? 'CC',
+        documentController.text,
+        firstNameController.text,
+        lastNameController.text,
+        phoneController.text,
+        emailController.text,
+        selectedStatus ?? 'En formación',
+        selectedQuarter ?? '1',
+        selectedGroupId ?? '',
+      );
+      Get.back();
+      Get.snackbar(
+        'Mensaje',
+        resp
+            ? 'Se ha editado correctamente el aprendiz'
+            : 'Error al editar el aprendiz',
+        colorText: Colors.white,
+        backgroundColor:
+            resp ? Colors.green : Colors.red,
+      );
+    }
+  },
+),
+
           body: Padding(
             padding: const EdgeInsets.all(16.0),
             child: Form(
@@ -170,6 +206,7 @@ modalEditNewApprentice(BuildContext context, String option, dynamic listItem) {
               child: ListView(
                 physics: const BouncingScrollPhysics(),
                 children: [
+                  // 📘 Información Personal
                   Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 2,
@@ -237,6 +274,8 @@ modalEditNewApprentice(BuildContext context, String option, dynamic listItem) {
                       ),
                     ),
                   ),
+
+                  // 🧩 Información Académica
                   Card(
                     shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                     elevation: 2,

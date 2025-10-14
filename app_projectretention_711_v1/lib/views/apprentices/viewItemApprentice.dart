@@ -60,61 +60,73 @@ viewItemApprentice(context, itemList) async {
                     icon: Icons.key,
                     title: 'ID',
                     value: itemList['id'].toString(),
+                    color: Colors.blueAccent,
                   ),
                   _buildDetailCard(
                     icon: Icons.badge,
                     title: 'Tipo de Documento',
                     value: itemList['documentType'] ?? 'No disponible',
+                    color: Colors.teal,
                   ),
                   _buildDetailCard(
                     icon: Icons.credit_card,
                     title: 'Documento',
                     value: itemList['document'] ?? 'No disponible',
+                    color: Colors.indigo,
                   ),
                   _buildDetailCard(
                     icon: Icons.person,
                     title: 'Nombre',
                     value: itemList['firtsName'] ?? 'No disponible',
+                    color: Colors.deepPurple,
                   ),
                   _buildDetailCard(
                     icon: Icons.person_outline,
                     title: 'Apellido',
                     value: itemList['lastName'] ?? 'No disponible',
+                    color: Colors.orangeAccent,
                   ),
                   _buildDetailCard(
                     icon: Icons.phone,
                     title: 'Teléfono',
                     value: itemList['phone'] ?? 'No disponible',
+                    color: Colors.green,
                   ),
                   _buildDetailCard(
                     icon: Icons.email,
                     title: 'Email',
                     value: itemList['email'] ?? 'No disponible',
+                    color: Colors.redAccent,
                   ),
                   _buildDetailCard(
                     icon: Icons.school,
                     title: 'Estado',
                     value: itemList['status'] ?? 'No disponible',
+                    color: Colors.cyan,
                   ),
                   _buildDetailCard(
                     icon: Icons.format_list_numbered,
                     title: 'Trimestre',
                     value: itemList['quarter'] ?? 'No disponible',
+                    color: Colors.pinkAccent,
                   ),
                   _buildDetailCard(
                     icon: Icons.group,
                     title: 'Grupo',
                     value: getGroupName(itemList['fkIdGroups']),
+                    color: Colors.amber,
                   ),
                   _buildDetailCard(
                     icon: Icons.calendar_today,
                     title: 'Fecha de Creación',
                     value: itemList['createdAt']?.toString() ?? 'No disponible',
+                    color: Colors.deepOrange,
                   ),
                   _buildDetailCard(
                     icon: Icons.update,
                     title: 'Fecha de Actualización',
                     value: itemList['updatedAt']?.toString() ?? 'No disponible',
+                    color: Colors.lightGreen,
                   ),
 
                   const SizedBox(height: 20),
@@ -128,11 +140,12 @@ viewItemApprentice(context, itemList) async {
   );
 }
 
-// 🔹 Widget para cada tarjeta de detalle
+// 🔹 Widget para cada tarjeta de detalle con color personalizado
 Widget _buildDetailCard({
   required IconData icon,
   required String title,
   required String value,
+  required Color color,
 }) {
   return Card(
     elevation: 2,
@@ -147,13 +160,13 @@ Widget _buildDetailCard({
         children: [
           Container(
             decoration: BoxDecoration(
-              color: const Color.fromARGB(255, 23, 214, 214).withOpacity(0.2),
+              color: color.withOpacity(0.2),
               borderRadius: BorderRadius.circular(10),
             ),
             padding: const EdgeInsets.all(10),
             child: Icon(
               icon,
-              color: const Color.fromARGB(255, 7, 25, 83),
+              color: color,
               size: 26,
             ),
           ),
@@ -164,10 +177,10 @@ Widget _buildDetailCard({
               children: [
                 Text(
                   title,
-                  style: const TextStyle(
+                  style: TextStyle(
                     fontSize: 15,
                     fontWeight: FontWeight.bold,
-                    color: Color.fromARGB(255, 7, 25, 83),
+                    color: color,
                   ),
                 ),
                 const SizedBox(height: 6),

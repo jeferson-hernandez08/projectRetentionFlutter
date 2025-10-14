@@ -25,6 +25,25 @@ class Inicio extends StatefulWidget {
 
 class _InicioState extends State<Inicio> {
   
+  // Mapa para asociar cada página con su ícono y color
+  final Map<int, Map<String, dynamic>> _pageIcons = {
+    0: {'icon': Icons.home, 'color': Color.fromARGB(255, 23, 214, 214)},
+    1: {'icon': Icons.security, 'color': Colors.teal},
+    2: {'icon': Icons.people, 'color': Colors.green},
+    3: {'icon': Icons.school, 'color': Colors.deepPurple},
+    4: {'icon': Icons.groups, 'color': Colors.cyan},
+    5: {'icon': Icons.person, 'color': Colors.orange},
+    6: {'icon': Icons.category, 'color': Colors.purple},
+    7: {'icon': Icons.warning_amber, 'color': Colors.redAccent},
+    8: {'icon': Icons.flag, 'color': Colors.teal},
+    9: {'icon': Icons.description, 'color': Colors.brown},
+    10: {'icon': Icons.handshake, 'color': Colors.indigo},
+  };
+
+  IconData _getCurrentIcon() {
+    return _pageIcons[myReactController.getPagina]?['icon'] ?? Icons.home;
+  }
+
   List<Widget> _getMenuOptionsByRole() {
     final userRole = myReactController.userRole;
     final List<Widget> menuOptions = [];
@@ -144,15 +163,17 @@ class _InicioState extends State<Inicio> {
     return Obx(
       () => Scaffold(
         appBar: AppBar(
-          title: Center(
-            child: Column(
-              children: [
-                Text(
+          title: Row(
+            children: [
+              Icon(_getCurrentIcon(), size: 22),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Text(
                   myReactController.getTituloAppBar,
                   style: const TextStyle(fontWeight: FontWeight.bold),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
           backgroundColor: const Color.fromARGB(255, 7, 25, 83),
           foregroundColor: Colors.white,

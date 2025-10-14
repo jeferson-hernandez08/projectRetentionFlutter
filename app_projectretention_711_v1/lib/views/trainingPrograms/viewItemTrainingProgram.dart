@@ -1,64 +1,154 @@
 import 'package:app_projectretention_711_v1/main.dart';
 import 'package:flutter/material.dart';
-import 'package:app_projectretention_711_v1/api/apiRetention.dart'; // Importa tu API
+import 'package:app_projectretention_711_v1/api/apiRetention.dart';
 
 viewItemTrainingProgram(context, itemList) async {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    backgroundColor: Colors.transparent,
     builder: (context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Detalle del Programa de Formación'),
-          backgroundColor: Colors.deepPurple,
-          foregroundColor: Colors.white,
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 7, 25, 83), // Azul oscuro
+              Color.fromARGB(255, 23, 214, 214), // Azul celeste
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
         ),
-        body: ListView(
-          children: [
-            ListTile(
-              leading: Icon(Icons.key),
-              title: Text('ID'),
-              subtitle: Text(itemList['id'].toString()),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            elevation: 0,
+            centerTitle: true,
+            title: const Text(
+              'Detalle del Programa de Formación',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            Divider(),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+          ),
+          body: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: ListView(
+                children: [
+                  const SizedBox(height: 10),
 
-            ListTile(
-              leading: Icon(Icons.school),
-              title: Text('Nombre'),
-              subtitle: Text(itemList['name'] ?? 'No disponible'),
-            ),
-            Divider(),
+                  // 🔹 Íconos con colores variados como en viewItemApprentice
+                  _buildDetailCard(
+                    icon: Icons.key,
+                    title: 'ID',
+                    value: itemList['id'].toString(),
+                    color: Colors.blueAccent,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.school,
+                    title: 'Nombre del Programa',
+                    value: itemList['name'] ?? 'No disponible',
+                    color: Colors.deepPurple,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.bar_chart,
+                    title: 'Nivel',
+                    value: itemList['level'] ?? 'No disponible',
+                    color: Colors.teal,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.code,
+                    title: 'Versión',
+                    value: itemList['version']?.toString() ?? 'No disponible',
+                    color: Colors.orangeAccent,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.calendar_today,
+                    title: 'Fecha de Creación',
+                    value: itemList['createdAt']?.toString() ?? 'No disponible',
+                    color: Colors.pinkAccent,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.update,
+                    title: 'Fecha de Actualización',
+                    value: itemList['updatedAt']?.toString() ?? 'No disponible',
+                    color: Colors.lightGreen,
+                  ),
 
-            ListTile(
-              leading: Icon(Icons.bar_chart),
-              title: Text('Nivel'),
-              subtitle: Text(itemList['level'] ?? 'No disponible'),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
-            Divider(),
-
-            ListTile(
-              leading: Icon(Icons.code),
-              title: Text('Versión'),
-              subtitle: Text(itemList['version'] ?? 'No disponible'),
-            ),
-            Divider(),
-
-            ListTile(
-              leading: Icon(Icons.calendar_today),
-              title: Text('Fecha de Creación'),
-              subtitle: Text(itemList['createdAt']?.toString() ?? 'No disponible'),
-            ),
-            Divider(),
-
-            ListTile(
-              leading: Icon(Icons.update),
-              title: Text('Fecha de Actualización'),
-              subtitle: Text(itemList['updatedAt']?.toString() ?? 'No disponible'),
-            ),
-            Divider(),
-          ],
+          ),
         ),
       );
     },
+  );
+}
+
+// 🔹 Widget reutilizable para cada campo con color personalizado
+Widget _buildDetailCard({
+  required IconData icon,
+  required String title,
+  required String value,
+  required Color color,
+}) {
+  return Card(
+    elevation: 2,
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Icon(
+              icon,
+              color: color,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }

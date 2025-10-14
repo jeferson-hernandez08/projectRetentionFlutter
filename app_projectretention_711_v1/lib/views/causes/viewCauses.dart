@@ -17,63 +17,197 @@ class _ViewCausesCPICState extends State<ViewCausesCPIC> {
   @override
   void initState() {
     super.initState();
-    // Aquí puedes inicializar cualquier cosa que necesites antes de que se construya el widget
-    fetchAPICauses();         // Método del ambiente que trae las causas
+    fetchAPICauses(); // Cargar causas al iniciar
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Botón flotante para crear
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Llamamos la función para crear una nueva causa
-          //viewCreateCause(context);
+          // viewCreateCause(context);
         },
-        child: const Icon(Icons.add),
-        backgroundColor: Colors.blue, // Personaliza el color
+        backgroundColor: Colors.blue,
+        child: const Icon(Icons.add, color: Colors.white),
       ),
       body: Obx(
-        () => ListView.builder(
-          itemCount: myReactController.getListCauses.length,
-          itemBuilder: (BuildContext context, int index) {
-            final itemList = myReactController.getListCauses[index];
-            return Card(
-              child: ListTile(
-                leading: Column(
+        () => myReactController.getListCauses.isEmpty
+            ? Center(
+                child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    const Icon(Icons.warning_amber_outlined), // Icono representativo de "causa"
-                    Text(itemList['id'].toString()),
+                    Icon(Icons.warning_amber_rounded, size: 90, color: Colors.grey[400]),
+                    SizedBox(height: 18),
+                    Text(
+                      'No hay causas registradas',
+                      style: TextStyle(
+                        fontSize: 20,
+                        color: Colors.grey[600],
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                    SizedBox(height: 8),
+                    Text(
+                      'Presiona el botón + para agregar una nueva',
+                      style: TextStyle(
+                        fontSize: 16,
+                        color: Colors.grey[500],
+                      ),
+                    ),
                   ],
                 ),
-                title: Text(itemList['cause'] ?? 'Sin causa'),
-                subtitle: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(itemList['variable'] ?? 'Sin variable'),
-                    Text(itemList['category']?['name'] ?? 'Sin categoría'),
-                  ],
-                ),
-                trailing: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    IconButton(onPressed: (){
-                      viewItemCause(context, itemList);
-                    }, icon: const Icon(Icons.visibility)),
-                    IconButton(onPressed: () async {
-                      await modalEditNewCause(context, "edit", itemList);
-                    }, icon: const Icon(Icons.edit)),
-                    IconButton(onPressed: (){
-                      viewDeleteCause(context, itemList);
-                    }, icon: const Icon(Icons.delete)),
-                  ],
-                ),
+              )
+            : ListView.builder(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                itemCount: myReactController.getListCauses.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final itemList = myReactController.getListCauses[index];
+                  final cause = itemList['cause'] ?? 'Sin causa';
+                  final variable = itemList['variable'] ?? 'Sin variable';
+                  final category = itemList['category']?['name'] ?? 'Sin categoría';
+
+                  return Card(
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(18),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // Columna izquierda con ícono e ID
+                          Column(
+                            children: [
+                              Container(
+                                width: 65,
+                                height: 65,
+                                decoration: BoxDecoration(
+                                  color: Colors.blue[50],
+                                  borderRadius: BorderRadius.circular(14),
+                                  border: Border.all(
+                                    color: Colors.blue,
+                                    width: 2,
+                                  ),
+                                ),
+                                child: Center(
+                                  child: Column(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.warning_amber_rounded,
+                                          color: Colors.blue, size: 26),
+                                      SizedBox(height: 4),
+                                      Text(
+                                        'ID: ${itemList['id']}',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.blue,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+
+                          SizedBox(width: 20),
+
+                          // Contenido principal
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  cause,
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.w700,
+                                    fontSize: 18,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    Icon(Icons.scatter_plot_outlined,
+                                        size: 18, color: Colors.grey[600]),
+                                    SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        'Variable: $variable',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.grey[700],
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    Icon(Icons.category_outlined,
+                                        size: 18, color: Colors.grey[600]),
+                                    SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        'Categoría: $category',
+                                        style: TextStyle(
+                                          fontSize: 15,
+                                          color: Colors.grey[700],
+                                        ),
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ],
+                            ),
+                          ),
+
+                          SizedBox(width: 14),
+
+                          // Acciones
+                          Column(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: [
+                              IconButton(
+                                tooltip: 'Ver causa',
+                                onPressed: () {
+                                  viewItemCause(context, itemList);
+                                },
+                                icon: Icon(Icons.visibility,
+                                    color: Colors.blue, size: 26),
+                              ),
+                              IconButton(
+                                tooltip: 'Editar causa',
+                                onPressed: () async {
+                                  await modalEditNewCause(
+                                      context, "edit", itemList);
+                                },
+                                icon: Icon(Icons.edit,
+                                    color: Colors.orange, size: 26),
+                              ),
+                              IconButton(
+                                tooltip: 'Eliminar causa',
+                                onPressed: () {
+                                  viewDeleteCause(context, itemList);
+                                },
+                                icon: Icon(Icons.delete,
+                                    color: Colors.red, size: 26),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
-        ),
       ),
-    );  
+    );
   }
 }

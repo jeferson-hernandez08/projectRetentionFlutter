@@ -3,12 +3,11 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart'; // 👈 Para formatear fechas
 
 viewItemIntervention(context, itemList) async {
-  // Formateador de fecha + hora
+  // 🔹 Formateador de fecha + hora
   String formatDateTime(String? date) {
     if (date == null) return 'No disponible';
     try {
       final parsedDate = DateTime.parse(date);
-      // 👇 Formato con fecha + hora completa
       return DateFormat('dd/MM/yyyy HH:mm:ss').format(parsedDate);
     } catch (e) {
       return 'Formato inválido';
@@ -18,122 +17,195 @@ viewItemIntervention(context, itemList) async {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    backgroundColor: Colors.transparent,
     builder: (context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: const Text('Detalle de la Intervención'),
-          backgroundColor: Colors.teal,
-          foregroundColor: Colors.white,
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 7, 25, 83), // Azul oscuro
+              Color.fromARGB(255, 23, 214, 214), // Azul celeste
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
         ),
-        body: ListView(
-          children: [
-            // ID de la intervención
-            ListTile(
-              leading: const Icon(Icons.key),
-              title: const Text('ID'),
-              subtitle: Text(itemList['id'].toString()),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            elevation: 0,
+            centerTitle: true,
+            title: const Text(
+              'Detalle de la Intervención',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            const Divider(),
-
-            // Fecha de creación con hora
-            ListTile(
-              leading: const Icon(Icons.date_range),
-              title: const Text('Fecha de Creación'),
-              subtitle: Text(formatDateTime(itemList['creationDate'])),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+          ),
+          body: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
             ),
-            const Divider(),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: ListView(
+                children: [
+                  const SizedBox(height: 10),
 
-            // Descripción
-            ListTile(
-              leading: const Icon(Icons.description),
-              title: const Text('Descripción'),
-              subtitle: Text(itemList['description'] ?? 'No disponible'),
-            ),
-            const Divider(),
+                  _buildDetailCard(
+                    icon: Icons.key,
+                    title: 'ID',
+                    value: itemList['id'].toString(),
+                    color: Colors.blueAccent,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.date_range,
+                    title: 'Fecha de Creación',
+                    value: formatDateTime(itemList['creationDate']),
+                    color: Colors.teal,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.description,
+                    title: 'Descripción',
+                    value: itemList['description'] ?? 'No disponible',
+                    color: Colors.indigo,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.lightbulb,
+                    title: 'Estrategia',
+                    value: itemList['strategy']?['strategy'] ?? 'No disponible',
+                    color: Colors.deepPurple,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.category,
+                    title: 'Categoría de Estrategia',
+                    value: itemList['strategy']?['category']?['name'] ??
+                        'No disponible',
+                    color: Colors.orangeAccent,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.assignment,
+                    title: 'Reporte Asociado',
+                    value: itemList['report']?['description'] ?? 'No disponible',
+                    color: Colors.green,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.flag,
+                    title: 'Estado del Reporte',
+                    value: itemList['report']?['state'] ?? 'No disponible',
+                    color: Colors.cyan,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.school,
+                    title: 'Aprendiz',
+                    value: "${itemList['report']?['apprentice']?['firtsName'] ?? ''} "
+                                "${itemList['report']?['apprentice']?['lastName'] ?? ''}"
+                            .trim()
+                            .isNotEmpty
+                        ? "${itemList['report']?['apprentice']?['firtsName'] ?? ''} ${itemList['report']?['apprentice']?['lastName'] ?? ''}"
+                        : 'No disponible',
+                    color: Colors.pinkAccent,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.person,
+                    title: 'Usuario Responsable',
+                    value:
+                        "${itemList['user']?['firstName'] ?? ''} ${itemList['user']?['lastName'] ?? ''}"
+                                .trim()
+                                .isNotEmpty
+                            ? "${itemList['user']?['firstName'] ?? ''} ${itemList['user']?['lastName'] ?? ''}"
+                            : 'No disponible',
+                    color: Colors.amber,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.badge,
+                    title: 'Documento del Usuario',
+                    value: itemList['user']?['document'] ?? 'No disponible',
+                    color: Colors.deepOrange,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.security,
+                    title: 'Rol del Usuario',
+                    value: itemList['user']?['rol']?['name'] ?? 'No disponible',
+                    color: Colors.lightGreen,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.email,
+                    title: 'Email del Usuario',
+                    value: itemList['user']?['email'] ?? 'No disponible',
+                    color: Colors.redAccent,
+                  ),
 
-            // Estrategia asociada
-            ListTile(
-              leading: const Icon(Icons.lightbulb),
-              title: const Text('Estrategia'),
-              subtitle: Text(itemList['strategy']?['strategy'] ?? 'No disponible'),
-            ),
-            const Divider(),
-
-            // Categoría de la estrategia
-            ListTile(
-              leading: const Icon(Icons.category),
-              title: const Text('Categoría de Estrategia'),
-              subtitle: Text(itemList['strategy']?['category']?['name'] ?? 'No disponible'),
-            ),
-            const Divider(),
-
-            // Reporte asociado
-            ListTile(
-              leading: const Icon(Icons.assignment),
-              title: const Text('Reporte Asociado'),
-              subtitle: Text(itemList['report']?['description'] ?? 'No disponible'),
-            ),
-            const Divider(),
-
-            // Estado del reporte
-            ListTile(
-              leading: const Icon(Icons.flag),
-              title: const Text('Estado del Reporte'),
-              subtitle: Text(itemList['report']?['state'] ?? 'No disponible'),
-            ),
-            const Divider(),
-
-            // Aprendiz asociado al reporte
-            ListTile(
-              leading: const Icon(Icons.school),
-              title: const Text('Aprendiz'),
-              subtitle: Text(
-                "${itemList['report']?['apprentice']?['firtsName'] ?? ''} "
-                "${itemList['report']?['apprentice']?['lastName'] ?? ''}".trim().isNotEmpty
-                    ? "${itemList['report']?['apprentice']?['firtsName'] ?? ''} ${itemList['report']?['apprentice']?['lastName'] ?? ''}"
-                    : 'No disponible',
+                  const SizedBox(height: 20),
+                ],
               ),
             ),
-            const Divider(),
-
-            // Usuario que realizó la intervención
-            ListTile(
-              leading: const Icon(Icons.person),
-              title: const Text('Usuario Responsable'),
-              subtitle: Text(
-                "${itemList['user']?['firstName'] ?? ''} ${itemList['user']?['lastName'] ?? ''}".trim().isNotEmpty
-                    ? "${itemList['user']?['firstName'] ?? ''} ${itemList['user']?['lastName'] ?? ''}"
-                    : 'No disponible',
-              ),
-            ),
-            const Divider(),
-
-            // Documento del usuario
-            ListTile(
-              leading: const Icon(Icons.badge),
-              title: const Text('Documento del Usuario'),
-              subtitle: Text(itemList['user']?['document'] ?? 'No disponible'),
-            ),
-            const Divider(),
-
-            // Rol del usuario
-            ListTile(
-              leading: const Icon(Icons.security),
-              title: const Text('Rol del Usuario'),
-              subtitle: Text(itemList['user']?['rol']?['name'] ?? 'No disponible'),
-            ),
-            const Divider(),
-
-            // Email del usuario
-            ListTile(
-              leading: const Icon(Icons.email),
-              title: const Text('Email del Usuario'),
-              subtitle: Text(itemList['user']?['email'] ?? 'No disponible'),
-            ),
-            const Divider(),
-          ],
+          ),
         ),
       );
     },
+  );
+}
+
+// 🔹 Widget reutilizable para cada campo de detalle con color personalizado
+Widget _buildDetailCard({
+  required IconData icon,
+  required String title,
+  required String value,
+  required Color color,
+}) {
+  return Card(
+    elevation: 2,
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Icon(
+              icon,
+              color: color,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }

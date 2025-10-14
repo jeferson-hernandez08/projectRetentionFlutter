@@ -34,6 +34,7 @@ modalEditNewReport(context, option, dynamic listItem) {
   showModalBottomSheet(
     isScrollControlled: true,
     context: context,
+    backgroundColor: Colors.transparent,
     builder: (context) {
       if (option == "new") {
         // Fecha y hora actual automáticamente 
@@ -198,7 +199,7 @@ modalEditNewReport(context, option, dynamic listItem) {
                 'Información',
                 'No hay causas disponibles para esta categoría',
                 colorText: Colors.white,
-                backgroundColor: Colors.blue,
+                backgroundColor: Color.fromARGB(255, 23, 214, 214),
                 duration: Duration(seconds: 2),
               );
             }
@@ -231,7 +232,7 @@ modalEditNewReport(context, option, dynamic listItem) {
               'Selección requerida',
               'Por favor seleccione una causa',
               colorText: Colors.white,
-              backgroundColor: Colors.orange,
+              backgroundColor: Color.fromARGB(255, 23, 214, 214),
             );
             return;
           }
@@ -255,7 +256,7 @@ modalEditNewReport(context, option, dynamic listItem) {
                 '✅ Causa agregada',
                 'La causa ha sido agregada a la lista',
                 colorText: Colors.white,
-                backgroundColor: Colors.green,
+                backgroundColor: Color.fromARGB(255, 7, 25, 83),
                 duration: Duration(seconds: 1),
               );
             } else {
@@ -263,7 +264,7 @@ modalEditNewReport(context, option, dynamic listItem) {
                 '⚠️ Causa duplicada',
                 'Esta causa ya fue agregada',
                 colorText: Colors.white,
-                backgroundColor: Colors.orange,
+                backgroundColor: Color.fromARGB(255, 23, 214, 214),
               );
             }
           }
@@ -305,7 +306,7 @@ modalEditNewReport(context, option, dynamic listItem) {
               'Campos incompletos',
               'Por favor, complete todos los campos obligatorios',
               colorText: Colors.white,
-              backgroundColor: Colors.orange,
+              backgroundColor: Color.fromARGB(255, 23, 214, 214),
             );
             return;
           }
@@ -315,7 +316,7 @@ modalEditNewReport(context, option, dynamic listItem) {
               'Causas requeridas',
               'Por favor agregue al menos una causa',
               colorText: Colors.white,
-              backgroundColor: Colors.orange,
+              backgroundColor: Color.fromARGB(255, 23, 214, 214),
             );
             return;
           }
@@ -391,17 +392,17 @@ modalEditNewReport(context, option, dynamic listItem) {
             
             if (allCausesSaved) {
               Get.snackbar(
-                '✅ Éxito',
+                'Mensaje',
                 option == "new" 
-                    ? "Reporte creado con $savedCount causa(s)"
-                    : "Reporte actualizado con $savedCount causa(s)",
+                    ? "Se ha creado correctamente un nuevo reporte con $savedCount causa(s)"
+                    : "Se ha editado correctamente el reporte con $savedCount causa(s)",
                 colorText: Colors.white,
                 backgroundColor: Colors.green,
                 duration: Duration(seconds: 3),
               );
             } else {
               Get.snackbar(
-                '⚠️ Advertencia',
+                'Mensaje',
                 'Reporte guardado pero $savedCount de ${selectedCauses.length} causa(s) se asociaron correctamente',
                 colorText: Colors.white,
                 backgroundColor: Colors.orange,
@@ -411,10 +412,10 @@ modalEditNewReport(context, option, dynamic listItem) {
           } else {
             Get.back();
             Get.snackbar(
-              '❌ Error',
+              'Mensaje',
               option == "new" 
-                  ? "Error al crear el reporte"
-                  : "Error al actualizar el reporte",
+                  ? "Error al crear el nuevo reporte"
+                  : "Error al editar el reporte",
               colorText: Colors.white, 
               backgroundColor: Colors.red,
             );
@@ -436,502 +437,480 @@ modalEditNewReport(context, option, dynamic listItem) {
           fetchAPICauses();
         }
 
-        return Scaffold(
-          appBar: AppBar(
-            title: (option == "new")
-                ? Text('Crear Nuevo Reporte')
-                : Text('Editar Reporte'),
-            backgroundColor: (option == "new") ? Colors.green : Colors.blue,
-            foregroundColor: Colors.white,
-            centerTitle: true,
-          ),
-          floatingActionButton: FloatingActionButton(
-            backgroundColor: (option == "new") ? Colors.green : Colors.blue,
-            foregroundColor: Colors.white,
-            child: option == "new" 
-                ? Icon(Icons.add) 
-                : Icon(Icons.edit),
-            onPressed: saveReportAndCauses,
-          ),
-          body: Padding(
-            padding: EdgeInsets.only(
-              left: 8,
-              right: 8,
-              top: 8,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 8,
+        // Estilo del campo de texto con color de icono personalizado
+        InputDecoration customInputDecoration(String label, {IconData? icon, Color? iconColor}) {
+          return InputDecoration(
+            labelText: label,
+            prefixIcon: icon != null
+                ? Icon(icon, color: iconColor ?? const Color.fromARGB(255, 7, 25, 83))
+                : null,
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
             ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+          );
+        }
+
+        // Estilo del dropdown con color de icono personalizado
+        InputDecoration customDropdownDecoration(String label, {IconData? icon, Color? iconColor}) {
+          return InputDecoration(
+            labelText: label,
+            prefixIcon: icon != null
+                ? Icon(icon, color: iconColor ?? const Color.fromARGB(255, 7, 25, 83))
+                : null,
+            filled: true,
+            fillColor: Colors.white,
+            border: OutlineInputBorder(
+              borderRadius: BorderRadius.circular(10),
+              borderSide: BorderSide.none,
+            ),
+            contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+          );
+        }
+
+        return Scaffold(
+          backgroundColor: const Color(0xFFF5F5F5),
+          appBar: AppBar(
+  title: Text(
+    (option == "new") ? 'Nuevo Reporte' : 'Editar Reporte',
+    style: const TextStyle(fontWeight: FontWeight.bold),
+  ),
+  backgroundColor: const Color.fromARGB(255, 7, 25, 83), // Azul oscuro siempre
+  foregroundColor: Colors.white,
+  centerTitle: true,
+),
+
+floatingActionButton: FloatingActionButton.extended(
+  backgroundColor: option == "new"
+      ? Colors.blue // Celeste para crear
+      : Colors.orange,   // Naranja para editar
+  foregroundColor: Colors.white,
+  icon: Icon(option == "new" ? Icons.add : Icons.edit),
+  label: Text(option == "new" ? 'Crear' : 'Guardar'),
+  onPressed: saveReportAndCauses,
+),
+
+          body: Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Form(
               key: _formKey,
               child: ListView(
-                shrinkWrap: true,
-                physics: ClampingScrollPhysics(),
+                physics: const BouncingScrollPhysics(),
                 children: [
-                  // Fecha de creación
-                  TextFormField(
-                    controller: creationDateController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: 'Fecha y hora de creación *',
-                      hintText: 'Fecha generada automáticamente',
-                      suffixIcon: Icon(Icons.lock_clock, color: Colors.grey),
-                    ),
-                  ),
+                  // SECCIÓN PRINCIPAL DEL REPORTE
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Column(
+                        children: [
+                          // Fecha de creación
+                          TextFormField(
+                            controller: creationDateController,
+                            readOnly: true,
+                            decoration: customInputDecoration(
+                              'Fecha y Hora de Creación *', 
+                              icon: Icons.lock_clock,
+                              iconColor: Colors.blue,
+                            ),
+                            validator: (v) => 
+                                (v == null || v.isEmpty) ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
 
-                  SizedBox(height: 16),
+                          // Descripción
+                          TextFormField(
+                            controller: descriptionController,
+                            maxLines: 3,
+                            decoration: customInputDecoration(
+                              'Descripción *', 
+                              icon: Icons.description,
+                              iconColor: Colors.purple,
+                            ),
+                            validator: (v) => 
+                                (v == null || v.isEmpty) ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
 
-                  // Descripción
-                  TextFormField(
-                    controller: descriptionController,
-                    maxLines: 3,
-                    decoration: InputDecoration(
-                      labelText: 'Descripción *',
-                      hintText: 'Ingrese la descripción del reporte',
-                      border: OutlineInputBorder(),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Este campo es obligatorio';
-                      }
-                      return null;
-                    },
-                  ),
+                          // Dropdown para Direccionamiento
+                          DropdownButtonFormField<String>(
+                            value: selectedAddressing,
+                            decoration: customDropdownDecoration(
+                              'Direccionamiento *',
+                              icon: Icons.directions,
+                              iconColor: Colors.teal,
+                            ),
+                            hint: Text('Seleccione el direccionamiento'),
+                            items: [
+                              DropdownMenuItem(
+                                value: 'Coordinador Académico',
+                                child: Text('Coordinador Académico'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'Coordinador de Formación',
+                                child: Text('Coordinador de Formación'),
+                              ),
+                            ],
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedAddressing = newValue;
+                                addressingController.text = newValue ?? '';
+                              });
+                            },
+                            validator: (value) =>
+                                (value == null || value.isEmpty) ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
 
-                  SizedBox(height: 16),
+                          // Dropdown para Estado
+                          DropdownButtonFormField<String>(
+                            value: selectedState,
+                            decoration: customDropdownDecoration(
+                              'Estado *',
+                              icon: Icons.stacked_line_chart,
+                              iconColor: Colors.deepOrange,
+                            ),
+                            hint: Text('Seleccione un estado'),
+                            items: [
+                              DropdownMenuItem(
+                                value: 'Registrado',
+                                child: Text('Registrado'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'En proceso',
+                                child: Text('En proceso'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'Retenido',
+                                child: Text('Retenido'),
+                              ),
+                              DropdownMenuItem(
+                                value: 'Desertado',
+                                child: Text('Desertado'),
+                              ),
+                            ],
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedState = newValue;
+                                stateController.text = newValue ?? '';
+                              });
+                            },
+                            validator: (value) =>
+                                (value == null || value.isEmpty) ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
 
-                  // Dropdown para Addressing
-                  DropdownButtonFormField<String>(
-                    value: selectedAddressing,
-                    decoration: InputDecoration(
-                      labelText: 'Direccionamiento *',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    ),
-                    hint: Text('Seleccione el direccionamiento'),
-                    items: [
-                      DropdownMenuItem(
-                        value: 'Coordinador Académico',
-                        child: Text('Coordinador Académico'),
+                          // Dropdown para Aprendiz
+                          DropdownButtonFormField<String>(
+                            value: selectedApprenticeId,
+                            decoration: customDropdownDecoration(
+                              'Aprendiz *',
+                              icon: Icons.school,
+                              iconColor: Colors.indigo,
+                            ),
+                            hint: Text('Seleccione un aprendiz'),
+                            items: myReactController.getListApprentices
+                                .map<DropdownMenuItem<String>>((apprentice) {
+                              return DropdownMenuItem<String>(
+                                value: apprentice['id'].toString(),
+                                child: Text(
+                                  "${apprentice['firtsName']} ${apprentice['lastName']} - ${apprentice['document']}",
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedApprenticeId = newValue;
+                                apprenticeIdController.text = newValue ?? '';
+                              });
+                            },
+                            validator: (value) =>
+                                (value == null || value.isEmpty) ? 'Campo obligatorio' : null,
+                          ),
+                          const SizedBox(height: 10),
+
+                          // Campo Usuario - Solo lectura
+                          TextFormField(
+                            controller: userNameDisplayController,
+                            readOnly: true,
+                            decoration: customInputDecoration(
+                              'Usuario *', 
+                              icon: Icons.person,
+                              iconColor: Colors.green,
+                            ),
+                            validator: (v) => 
+                                (v == null || v.isEmpty) ? 'Campo obligatorio' : null,
+                          ),
+                        ],
                       ),
-                      DropdownMenuItem(
-                        value: 'Coordinador de Formación',
-                        child: Text('Coordinador de Formación'),
-                      ),
-                    ],
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedAddressing = newValue;
-                        addressingController.text = newValue ?? '';
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Este campo es obligatorio';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // Dropdown para State
-                  DropdownButtonFormField<String>(
-                    value: selectedState,
-                    decoration: InputDecoration(
-                      labelText: 'Estado *',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
                     ),
-                    hint: Text('Seleccione un estado'),
-                    items: [
-                      DropdownMenuItem(
-                        value: 'Registrado',
-                        child: Text('Registrado'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'En proceso',
-                        child: Text('En proceso'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Retenido',
-                        child: Text('Retenido'),
-                      ),
-                      DropdownMenuItem(
-                        value: 'Desertado',
-                        child: Text('Desertado'),
-                      ),
-                    ],
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedState = newValue;
-                        stateController.text = newValue ?? '';
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Este campo es obligatorio';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // Dropdown para Aprendiz
-                  DropdownButtonFormField<String>(
-                    value: selectedApprenticeId,
-                    decoration: InputDecoration(
-                      labelText: 'Aprendiz *',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                    ),
-                    hint: Text('Seleccione un aprendiz'),
-                    items: myReactController.getListApprentices
-                        .map<DropdownMenuItem<String>>((apprentice) {
-                      return DropdownMenuItem<String>(
-                        value: apprentice['id'].toString(),
-                        child: Text(
-                          "${apprentice['firtsName']} ${apprentice['lastName']} - ${apprentice['document']}",
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedApprenticeId = newValue;
-                        apprenticeIdController.text = newValue ?? '';
-                      });
-                    },
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Este campo es obligatorio';
-                      }
-                      return null;
-                    },
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // Campo Usuario - Solo lectura
-                  TextFormField(
-                    controller: userNameDisplayController,
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      labelText: 'Usuario *',
-                      hintText: 'Usuario asignado al reporte',
-                      border: OutlineInputBorder(),
-                      suffixIcon: Icon(Icons.person, color: Colors.grey),
-                    ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return 'Este campo es obligatorio';
-                      }
-                      return null;
-                    },
                   ),
 
                   // SECCIÓN DE CAUSAS
-                  SizedBox(height: 24),
-                  Divider(thickness: 2),
-                  Text(
-                    'Causas del Reporte *',
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.blue,
-                    ),
-                  ),
-                  SizedBox(height: 16),
-
-                  // Dropdown para Categorías
-                  DropdownButtonFormField<String>(
-                    value: selectedCategoryId,
-                    decoration: InputDecoration(
-                      labelText: 'Seleccione una categoría *',
-                      border: OutlineInputBorder(),
-                      contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      suffixIcon: Icon(Icons.category),
-                    ),
-                    hint: Text('Seleccione una categoría para filtrar causas'),
-                    items: myReactController.getListCategories
-                        .map<DropdownMenuItem<String>>((category) {
-                      return DropdownMenuItem<String>(
-                        value: category['id'].toString(),
-                        child: Text(
-                          category['name'],
-                          overflow: TextOverflow.ellipsis,
-                        ),
-                      );
-                    }).toList(),
-                    onChanged: (String? newValue) {
-                      setState(() {
-                        selectedCategoryId = newValue;
-                        selectedCauseId = null;
-                        causesByCategory = [];
-                      });
-                      if (newValue != null && newValue.isNotEmpty) {
-                        loadCausesByCategory(newValue);
-                      }
-                    },
-                  ),
-
-                  SizedBox(height: 16),
-
-                  // 🔥 DROPDOWN PARA CAUSAS - AHORA FUNCIONA CORRECTAMENTE
-                  if (selectedCategoryId != null) ...[
-                    Container(
-                      decoration: BoxDecoration(
-                        color: Colors.grey[50],
-                        borderRadius: BorderRadius.circular(8),
-                        border: Border.all(color: Colors.grey[300]!),
-                      ),
+                  Card(
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                    elevation: 2,
+                    margin: const EdgeInsets.symmetric(vertical: 8),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          Padding(
-                            padding: EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-                            child: Row(
-                              children: [
-                                Icon(Icons.filter_alt, size: 16, color: Colors.blue),
-                                SizedBox(width: 6),
-                                Expanded(
-                                  child: Text(
-                                    'Causas de: ${getSelectedCategoryName()}',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w500,
-                                      color: Colors.blue[700],
-                                    ),
-                                    overflow: TextOverflow.ellipsis,
-                                  ),
-                                ),
-                              ],
+                          Text(
+                            'Causas del Reporte *',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: Color.fromARGB(255, 7, 25, 83),
                             ),
                           ),
+                          const SizedBox(height: 16),
+
+                          // Dropdown para Categorías
                           DropdownButtonFormField<String>(
-                            value: selectedCauseId,
-                            decoration: InputDecoration(
-                              labelText: 'Seleccione una causa *',
-                              border: InputBorder.none,
-                              contentPadding: EdgeInsets.symmetric(horizontal: 12, vertical: 4),
-                              floatingLabelBehavior: FloatingLabelBehavior.never,
+                            value: selectedCategoryId,
+                            decoration: customDropdownDecoration(
+                              'Seleccione una categoría *',
+                              icon: Icons.category,
+                              iconColor: Colors.pink,
                             ),
-                            hint: isLoadingCauses 
-                                ? Text('Cargando causas...')
-                                : causesByCategory.isEmpty
-                                    ? Text('No hay causas disponibles')
-                                    : Text('Seleccione una causa'),
-                            items: isLoadingCauses
-                                ? [DropdownMenuItem(value: null, child: Text('Cargando...'))]
-                                : causesByCategory.map<DropdownMenuItem<String>>((cause) {
-                                    return DropdownMenuItem<String>(
-                                      value: cause['id'].toString(),
-                                      child: Container(
-                                        constraints: BoxConstraints(maxWidth: 300),
-                                        child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
-                                          mainAxisSize: MainAxisSize.min,
-                                          children: [
-                                            Text(
-                                              cause['cause'] ?? 'Sin descripción',
-                                              style: TextStyle(fontSize: 14),
-                                              maxLines: 2,
-                                              overflow: TextOverflow.ellipsis,
-                                            ),
-                                            if (cause['variable'] != null)
-                                              Text(
-                                                'Variable: ${cause['variable']}',
-                                                style: TextStyle(
-                                                  fontSize: 12,
-                                                  color: Colors.grey[600],
-                                                ),
-                                                maxLines: 1,
-                                                overflow: TextOverflow.ellipsis,
-                                              ),
-                                          ],
-                                        ),
-                                      ),
-                                    );
-                                  }).toList(),
-                            onChanged: isLoadingCauses ? null : (String? newValue) {
+                            hint: Text('Seleccione una categoría para filtrar causas'),
+                            items: myReactController.getListCategories
+                                .map<DropdownMenuItem<String>>((category) {
+                              return DropdownMenuItem<String>(
+                                value: category['id'].toString(),
+                                child: Text(
+                                  category['name'],
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
                               setState(() {
-                                selectedCauseId = newValue;
+                                selectedCategoryId = newValue;
+                                selectedCauseId = null;
+                                causesByCategory = [];
                               });
+                              if (newValue != null && newValue.isNotEmpty) {
+                                loadCausesByCategory(newValue);
+                              }
                             },
                           ),
-                        ],
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                  ],
+                          const SizedBox(height: 10),
 
-                  // Botón para agregar causa
-                  if (selectedCategoryId != null && causesByCategory.isNotEmpty && selectedCauseId != null) ...[
-                    ElevatedButton(
-                      onPressed: addCause,
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Icon(Icons.add_circle_outline, size: 20),
-                          SizedBox(width: 8),
-                          Text('Agregar Causa a la Lista'),
-                        ],
-                      ),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blue,
-                        foregroundColor: Colors.white,
-                        minimumSize: Size(double.infinity, 50),
-                      ),
-                    ),
-                    SizedBox(height: 16),
-                  ],
-
-                  // LISTA DE CAUSAS AGREGADAS
-                  Text(
-                    'Causas Agregadas:',
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 16,
-                    ),
-                  ),
-                  SizedBox(height: 8),
-
-                  isLoadingCauses && option == "edit"
-                      ? Container(
-                          padding: EdgeInsets.all(16),
-                          decoration: BoxDecoration(
-                            color: Colors.blue[50],
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Column(
-                            children: [
-                              CircularProgressIndicator(),
-                              SizedBox(height: 8),
-                              Text(
-                                'Cargando causas existentes...',
-                                textAlign: TextAlign.center,
-                                style: TextStyle(color: Colors.blue[700]),
+                          // Dropdown para Causas
+                          if (selectedCategoryId != null) ...[
+                            DropdownButtonFormField<String>(
+                              value: selectedCauseId,
+                              decoration: customDropdownDecoration(
+                                'Seleccione una causa *',
+                                icon: Icons.flag,
+                                iconColor: Colors.red,
                               ),
-                            ],
-                          ),
-                        )
-                      : selectedCauses.isEmpty
-                          ? Container(
-                              padding: EdgeInsets.all(16),
-                              decoration: BoxDecoration(
-                                color: Colors.grey[100],
-                                borderRadius: BorderRadius.circular(8),
+                              hint: isLoadingCauses 
+                                  ? Text('Cargando causas...')
+                                  : causesByCategory.isEmpty
+                                      ? Text('No hay causas disponibles')
+                                      : Text('Seleccione una causa'),
+                              items: isLoadingCauses
+                                  ? [DropdownMenuItem(value: null, child: Text('Cargando...'))]
+                                  : causesByCategory.map<DropdownMenuItem<String>>((cause) {
+                                      return DropdownMenuItem<String>(
+                                        value: cause['id'].toString(),
+                                        child: Text(
+                                          cause['cause'] ?? 'Sin descripción',
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      );
+                                    }).toList(),
+                              onChanged: isLoadingCauses ? null : (String? newValue) {
+                                setState(() {
+                                  selectedCauseId = newValue;
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 10),
+                          ],
+
+                          // Botón para agregar causa
+                          if (selectedCategoryId != null && causesByCategory.isNotEmpty && selectedCauseId != null) ...[
+                            ElevatedButton(
+                              onPressed: addCause,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Color.fromARGB(255, 7, 25, 83),
+                                foregroundColor: Colors.white,
+                                minimumSize: Size(double.infinity, 50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                ),
                               ),
-                              child: Column(
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
                                 children: [
-                                  Icon(Icons.info_outline, size: 40, color: Colors.grey[400]),
-                                  SizedBox(height: 8),
-                                  Text(
-                                    option == "new" 
-                                        ? 'No hay causas agregadas\nSeleccione una categoría y luego una causa para agregar'
-                                        : 'No hay causas asociadas a este reporte\nAgregue causas usando los controles arriba',
-                                    textAlign: TextAlign.center,
-                                    style: TextStyle(color: Colors.grey[600]),
-                                  ),
+                                  Icon(Icons.add_circle_outline, size: 20),
+                                  SizedBox(width: 8),
+                                  Text('Agregar Causa a la Lista'),
                                 ],
                               ),
-                            )
-                          : Column(
-                              children: [
-                                Container(
-                                  padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+
+                          // LISTA DE CAUSAS AGREGADAS
+                          Text(
+                            'Causas Agregadas:',
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
+
+                          isLoadingCauses && option == "edit"
+                              ? Container(
+                                  padding: EdgeInsets.all(16),
                                   decoration: BoxDecoration(
-                                    color: Colors.green[50],
+                                    color: Colors.blue[50],
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: Colors.green[200]!),
                                   ),
-                                  child: Row(
-                                    mainAxisAlignment: MainAxisAlignment.center,
+                                  child: Column(
                                     children: [
-                                      Icon(Icons.check_circle, color: Colors.green, size: 16),
-                                      SizedBox(width: 8),
+                                      CircularProgressIndicator(),
+                                      SizedBox(height: 8),
                                       Text(
-                                        'Total: ${selectedCauses.length} causa(s)',
-                                        style: TextStyle(
-                                          fontWeight: FontWeight.w500,
-                                          color: Colors.green[800],
-                                        ),
+                                        'Cargando causas existentes...',
+                                        textAlign: TextAlign.center,
+                                        style: TextStyle(color: Colors.blue[700]),
                                       ),
                                     ],
                                   ),
-                                ),
-                                SizedBox(height: 8),
-                                ConstrainedBox(
-                                  constraints: BoxConstraints(
-                                    maxHeight: 200,
-                                  ),
-                                  child: ListView.builder(
-                                    shrinkWrap: true,
-                                    physics: ClampingScrollPhysics(),
-                                    itemCount: selectedCauses.length,
-                                    itemBuilder: (context, index) {
-                                      final cause = selectedCauses[index];
-                                      final categoryName = getCategoryName(cause);
-                                      
-                                      return Card(
-                                        margin: EdgeInsets.symmetric(vertical: 4),
-                                        elevation: 1,
-                                        child: ListTile(
-                                          dense: true,
-                                          leading: Container(
-                                            width: 30,
-                                            height: 30,
-                                            decoration: BoxDecoration(
-                                              color: option == "edit" ? Colors.orange[100] : Colors.blue[100],
-                                              shape: BoxShape.circle,
-                                            ),
-                                            child: Center(
-                                              child: Text(
-                                                '${index + 1}',
-                                                style: TextStyle(
-                                                  color: option == "edit" ? Colors.orange[800] : Colors.blue[800],
-                                                  fontWeight: FontWeight.bold,
-                                                  fontSize: 12,
-                                                ),
-                                              ),
-                                            ),
+                                )
+                              : selectedCauses.isEmpty
+                                  ? Container(
+                                      padding: EdgeInsets.all(16),
+                                      decoration: BoxDecoration(
+                                        color: Colors.grey[100],
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: Column(
+                                        children: [
+                                          Icon(Icons.info_outline, size: 40, color: Colors.grey[400]),
+                                          SizedBox(height: 8),
+                                          Text(
+                                            option == "new" 
+                                                ? 'No hay causas agregadas\nSeleccione una categoría y luego una causa para agregar'
+                                                : 'No hay causas asociadas a este reporte\nAgregue causas usando los controles arriba',
+                                            textAlign: TextAlign.center,
+                                            style: TextStyle(color: Colors.grey[600]),
                                           ),
-                                          title: Text(
-                                            cause['cause'] ?? 'Sin descripción',
-                                            style: TextStyle(fontSize: 13),
-                                            maxLines: 2,
-                                            overflow: TextOverflow.ellipsis,
+                                        ],
+                                      ),
+                                    )
+                                  : Column(
+                                      children: [
+                                        Container(
+                                          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                          decoration: BoxDecoration(
+                                            color: Colors.green[50],
+                                            borderRadius: BorderRadius.circular(8),
+                                            border: Border.all(color: Colors.green[200]!),
                                           ),
-                                          subtitle: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.start,
+                                          child: Row(
+                                            mainAxisAlignment: MainAxisAlignment.center,
                                             children: [
+                                              Icon(Icons.check_circle, color: Colors.green, size: 16),
+                                              SizedBox(width: 8),
                                               Text(
-                                                'Categoría: $categoryName',
-                                                style: TextStyle(fontSize: 11),
-                                              ),
-                                              if (cause['variable'] != null)
-                                                Text(
-                                                  'Variable: ${cause['variable']}',
-                                                  style: TextStyle(
-                                                    fontSize: 10,
-                                                    color: Colors.grey[600],
-                                                  ),
+                                                'Total: ${selectedCauses.length} causa(s)',
+                                                style: TextStyle(
+                                                  fontWeight: FontWeight.w500,
+                                                  color: Colors.green[800],
                                                 ),
+                                              ),
                                             ],
                                           ),
-                                          trailing: IconButton(
-                                            icon: Icon(Icons.delete, color: Colors.red, size: 18),
-                                            onPressed: () => removeCause(index),
-                                            tooltip: 'Eliminar causa',
+                                        ),
+                                        SizedBox(height: 8),
+                                        ConstrainedBox(
+                                          constraints: BoxConstraints(
+                                            maxHeight: 200,
+                                          ),
+                                          child: ListView.builder(
+                                            shrinkWrap: true,
+                                            physics: ClampingScrollPhysics(),
+                                            itemCount: selectedCauses.length,
+                                            itemBuilder: (context, index) {
+                                              final cause = selectedCauses[index];
+                                              final categoryName = getCategoryName(cause);
+                                              
+                                              return Card(
+                                                margin: EdgeInsets.symmetric(vertical: 4),
+                                                elevation: 1,
+                                                child: ListTile(
+                                                  dense: true,
+                                                  leading: Container(
+                                                    width: 30,
+                                                    height: 30,
+                                                    decoration: BoxDecoration(
+                                                      color: option == "edit" ? Colors.orange[100] : Colors.blue[100],
+                                                      shape: BoxShape.circle,
+                                                    ),
+                                                    child: Center(
+                                                      child: Text(
+                                                        '${index + 1}',
+                                                        style: TextStyle(
+                                                          color: option == "edit" ? Colors.orange[800] : Colors.blue[800],
+                                                          fontWeight: FontWeight.bold,
+                                                          fontSize: 12,
+                                                        ),
+                                                      ),
+                                                    ),
+                                                  ),
+                                                  title: Text(
+                                                    cause['cause'] ?? 'Sin descripción',
+                                                    style: TextStyle(fontSize: 13),
+                                                    maxLines: 2,
+                                                    overflow: TextOverflow.ellipsis,
+                                                  ),
+                                                  subtitle: Column(
+                                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                                    children: [
+                                                      Text(
+                                                        'Categoría: $categoryName',
+                                                        style: TextStyle(fontSize: 11),
+                                                      ),
+                                                      if (cause['variable'] != null)
+                                                        Text(
+                                                          'Variable: ${cause['variable']}',
+                                                          style: TextStyle(
+                                                            fontSize: 10,
+                                                            color: Colors.grey[600],
+                                                          ),
+                                                        ),
+                                                    ],
+                                                  ),
+                                                  trailing: IconButton(
+                                                    icon: Icon(Icons.delete, color: Colors.red, size: 18),
+                                                    onPressed: () => removeCause(index),
+                                                    tooltip: 'Eliminar causa',
+                                                  ),
+                                                ),
+                                              );
+                                            },
                                           ),
                                         ),
-                                      );
-                                    },
-                                  ),
-                                ),
-                              ],
-                            ),
-
-                  SizedBox(height: 20),
+                                      ],
+                                    ),
+                        ],
+                      ),
+                    ),
+                  ),
                 ],
               ),
             ),

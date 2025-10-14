@@ -4,13 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart'; // Para formatear fechas
 
-// Controladores para los campos de la intervención
+// Controladores
 final TextEditingController creationDateController = TextEditingController();
 final TextEditingController descriptionController = TextEditingController();
 final TextEditingController fkIdStrategiesController = TextEditingController();
 final TextEditingController fkIdReportsController = TextEditingController();
 final TextEditingController fkIdUsersController = TextEditingController();
-// 🔥 NUEVOS CONTROLADORES PARA MOSTRAR NOMBRES
 final TextEditingController userNameDisplayController = TextEditingController();
 
 modalEditNewIntervention(context, option, dynamic listItem) {
@@ -24,39 +23,26 @@ modalEditNewIntervention(context, option, dynamic listItem) {
   showModalBottomSheet(
     isScrollControlled: true,
     context: context,
+    backgroundColor: Colors.transparent,
     builder: (context) {
       if (option == "new") {
-        // 🔥 FECHA ACTUAL AUTOMÁTICAMENTE
         selectedCreationDate = DateTime.now();
-        creationDateController.text = 
+        creationDateController.text =
             DateFormat('yyyy-MM-dd HH:mm:ss').format(selectedCreationDate!);
-        
         descriptionController.clear();
         fkIdStrategiesController.clear();
         fkIdReportsController.clear();
         fkIdUsersController.clear();
-        userNameDisplayController.clear(); // 🔥 LIMPIAR CONTROLADOR DE NOMBRE
+        userNameDisplayController.clear();
 
-        selectedStrategyId = null;
-        selectedReportId = null;
-        selectedUserId = null;
-        
-        // 🔥 OBTENER USUARIO LOGUEADO Y SELECCIONARLO AUTOMÁTICAMENTE
         final currentUser = myReactController.getUser;
         if (currentUser != null && currentUser['id'] != null) {
           selectedUserId = currentUser['id'].toString();
           fkIdUsersController.text = selectedUserId!;
-          // 🔥 MOSTRAR NOMBRE COMPLETO EN LUGAR DEL ID
-          userNameDisplayController.text = "${currentUser['firstName']} ${currentUser['lastName']}";
-          print('✅ Usuario autoseleccionado: ${currentUser['firstName']} ${currentUser['lastName']} (ID: ${currentUser['id']})');
-        } else {
-          selectedUserId = null;
-          fkIdUsersController.clear();
-          userNameDisplayController.clear();
-          print('⚠️ No se pudo obtener el usuario logueado');
+          userNameDisplayController.text =
+              "${currentUser['firstName']} ${currentUser['lastName']}";
         }
       } else {
-        // 🔥 PARA EDICIÓN: CARGAR DATOS EXISTENTES
         if (listItem['creationDate'] != null) {
           try {
             selectedCreationDate = DateTime.parse(listItem['creationDate']);
@@ -69,31 +55,29 @@ modalEditNewIntervention(context, option, dynamic listItem) {
 
         descriptionController.text = listItem['description'] ?? '';
 
-        String strategyValue = listItem['fkIdStrategies']?.toString() ?? '';
-        selectedStrategyId = strategyValue.isNotEmpty ? strategyValue : null;
+        selectedStrategyId =
+            listItem['fkIdStrategies']?.toString().isNotEmpty == true
+                ? listItem['fkIdStrategies'].toString()
+                : null;
         fkIdStrategiesController.text = selectedStrategyId ?? '';
 
-        String reportValue = listItem['fkIdReports']?.toString() ?? '';
-        selectedReportId = reportValue.isNotEmpty ? reportValue : null;
+        selectedReportId =
+            listItem['fkIdReports']?.toString().isNotEmpty == true
+                ? listItem['fkIdReports'].toString()
+                : null;
         fkIdReportsController.text = selectedReportId ?? '';
 
-        String userValue = listItem['fkIdUsers']?.toString() ?? '';
-        selectedUserId = userValue.isNotEmpty ? userValue : null;
+        selectedUserId = listItem['fkIdUsers']?.toString();
         fkIdUsersController.text = selectedUserId ?? '';
-        
-        // 🔥 PARA EDICIÓN: BUSCAR Y MOSTRAR EL NOMBRE DEL USUARIO
+
         if (selectedUserId != null) {
           final user = myReactController.getListUsers.firstWhere(
             (u) => u['id'].toString() == selectedUserId,
             orElse: () => null,
           );
-          if (user != null) {
-            userNameDisplayController.text = "${user['firstName']} ${user['lastName']}";
-          } else {
-            userNameDisplayController.text = selectedUserId!; // Fallback al ID si no encuentra
-          }
-        } else {
-          userNameDisplayController.clear();
+          userNameDisplayController.text = user != null
+              ? "${user['firstName']} ${user['lastName']}"
+              : selectedUserId!;
         }
       }
 
@@ -109,32 +93,105 @@ modalEditNewIntervention(context, option, dynamic listItem) {
             fetchAPIUsers().then((_) => setState(() {}));
           }
 
+          // 🎨 Colores personalizados de íconos (como en el ejemplo del aprendiz)
+          InputDecoration customInputDecoration(String label, {IconData? icon}) {
+            Color iconColor;
+            switch (icon) {
+              case Icons.lock_clock:
+                iconColor = Colors.blueAccent;
+                break;
+              case Icons.description:
+                iconColor = Colors.teal;
+                break;
+              case Icons.flag:
+                iconColor = Colors.orangeAccent;
+                break;
+              case Icons.report:
+                iconColor = Colors.pinkAccent;
+                break;
+              case Icons.person:
+                iconColor = Colors.green;
+                break;
+              default:
+                iconColor = const Color.fromARGB(255, 7, 25, 83);
+            }
+            return InputDecoration(
+              labelText: label,
+              prefixIcon:
+                  icon != null ? Icon(icon, color: iconColor) : null,
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            );
+          }
+
+          InputDecoration customDropdownDecoration(String label, {IconData? icon}) {
+            Color iconColor;
+            switch (icon) {
+              case Icons.flag:
+                iconColor = Colors.orangeAccent;
+                break;
+              case Icons.report:
+                iconColor = Colors.pinkAccent;
+                break;
+              default:
+                iconColor = const Color.fromARGB(255, 7, 25, 83);
+            }
+            return InputDecoration(
+              labelText: label,
+              prefixIcon:
+                  icon != null ? Icon(icon, color: iconColor) : null,
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 4),
+            );
+          }
+
           return Scaffold(
+            backgroundColor: const Color(0xFFF5F5F5),
             appBar: AppBar(
-              title: (option == "new")
-                  ? Text('Crear Nueva Intervención')
-                  : Text('Editar Intervención'),
-              backgroundColor: (option == "new") ? Colors.green : Colors.blue,
+              title: Text(
+                (option == "new")
+                    ? 'Nueva Intervención'
+                    : 'Editar Intervención',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: const Color.fromARGB(255, 7, 25, 83),
               foregroundColor: Colors.white,
               centerTitle: true,
             ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: (option == "new") ? Colors.green : Colors.blue,
+            floatingActionButton: FloatingActionButton.extended(
+              backgroundColor: option == "new"
+                  ? const Color(0xFF00BFFF) // 💙 Celeste para "Crear"
+                  : Colors.orange, // 🟧 Naranja para "Editar"
               foregroundColor: Colors.white,
-              child: Icon(option == "new" ? Icons.add : Icons.edit),
+              icon: Icon(option == "new" ? Icons.add : Icons.edit),
+              label: Text(option == "new" ? 'Crear' : 'Editar'),
               onPressed: () async {
                 if (!_formKey.currentState!.validate()) {
                   Get.snackbar(
                     'Campos incompletos',
-                    'Por favor, complete todos los campos obligatorios',
+                    'Por favor complete todos los campos obligatorios',
                     colorText: Colors.white,
-                    backgroundColor: Colors.orange,
+                    backgroundColor:
+                        const Color.fromARGB(255, 23, 214, 214), // 💬 Celeste
                   );
                   return;
                 }
 
+                bool resp;
                 if (option == "new") {
-                  bool resp = await newInterventionApi(
+                  resp = await newInterventionApi(
                     creationDateController.text,
                     descriptionController.text,
                     selectedStrategyId ?? '',
@@ -142,23 +199,17 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                     selectedUserId ?? '',
                   );
                   Get.back();
-                  if (resp) {
-                    Get.snackbar(
-                      'Éxito',
-                      "Se ha creado correctamente la nueva intervención",
-                      colorText: Colors.white,
-                      backgroundColor: Colors.green,
-                    );
-                  } else {
-                    Get.snackbar(
-                      'Error',
-                      "Error al crear la nueva intervención",
-                      colorText: Colors.white,
-                      backgroundColor: Colors.red,
-                    );
-                  }
+                  Get.snackbar(
+                    'Mensaje',
+                    resp
+                        ? 'Se ha creado correctamente la intervención'
+                        : 'Error al crear la intervención',
+                    colorText: Colors.white,
+                    backgroundColor:
+                        resp ? Colors.green : Colors.red, // ✅❌ colores de mensaje
+                  );
                 } else {
-                  bool resp = await editInterventionApi(
+                  resp = await editInterventionApi(
                     listItem['id'],
                     creationDateController.text,
                     descriptionController.text,
@@ -167,165 +218,155 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                     selectedUserId ?? '',
                   );
                   Get.back();
-                  if (resp) {
-                    Get.snackbar(
-                      'Éxito',
-                      "Se ha editado correctamente la intervención",
-                      colorText: Colors.white,
-                      backgroundColor: Colors.green,
-                    );
-                  } else {
-                    Get.snackbar(
-                      'Error',
-                      "Error al editar la intervención",
-                      colorText: Colors.white,
-                      backgroundColor: Colors.red,
-                    );
-                  }
+                  Get.snackbar(
+                    'Mensaje',
+                    resp
+                        ? 'Se ha editado correctamente la intervención'
+                        : 'Error al editar la intervención',
+                    colorText: Colors.white,
+                    backgroundColor:
+                        resp ? Colors.green : Colors.red, // ✅❌ colores de mensaje
+                  );
                 }
               },
             ),
             body: Padding(
-              padding: EdgeInsets.only(
-                left: 8,
-                right: 8,
-                top: 8,
-                bottom: MediaQuery.of(context).viewInsets.bottom,
-              ),
+              padding: const EdgeInsets.all(16.0),
               child: Form(
                 key: _formKey,
                 child: ListView(
+                  physics: const BouncingScrollPhysics(),
                   children: [
-                    // 🔥 CAMPO FECHA - AUTOMÁTICA Y SOLO LECTURA
-                    TextFormField(
-                      controller: creationDateController,
-                      readOnly: true, // 🔥 SIEMPRE DE SOLO LECTURA
-                      decoration: InputDecoration(
-                        labelText: 'Fecha y Hora de Creación *',
-                        hintText: 'Fecha generada automáticamente',
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(
-                          Icons.lock_clock,
-                          color: Colors.grey,
+                    Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: creationDateController,
+                              readOnly: true,
+                              decoration: customInputDecoration(
+                                'Fecha y Hora de Creación *',
+                                icon: Icons.lock_clock,
+                              ),
+                              validator: (v) =>
+                                  (v == null || v.isEmpty)
+                                      ? 'Campo obligatorio'
+                                      : null,
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: descriptionController,
+                              decoration: customInputDecoration(
+                                  'Descripción *',
+                                  icon: Icons.description),
+                              maxLines: 3,
+                              validator: (v) =>
+                                  (v == null || v.isEmpty)
+                                      ? 'Campo obligatorio'
+                                      : null,
+                            ),
+                            const SizedBox(height: 10),
+                            DropdownButtonFormField<String>(
+                              value: selectedStrategyId,
+                              decoration: customDropdownDecoration(
+                                  'Estrategia *', icon: Icons.flag),
+                              hint: const Text('Seleccione una estrategia'),
+                              isExpanded: true,
+                              items: myReactController.getListStrategies
+                                  .map<DropdownMenuItem<String>>((strategy) {
+                                return DropdownMenuItem<String>(
+                                  value: strategy['id'].toString(),
+                                  child: Text(
+                                    strategy['strategy'],
+                                    overflow: TextOverflow.visible,
+                                    softWrap: true,
+                                  ),
+                                );
+                              }).toList(),
+                              selectedItemBuilder: (BuildContext context) {
+                                return myReactController.getListStrategies
+                                    .map<Widget>((strategy) {
+                                  final text = strategy['strategy'] ?? '';
+                                  return Text(
+                                    text.length > 40
+                                        ? '${text.substring(0, 40)}...'
+                                        : text,
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                }).toList();
+                              },
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedStrategyId = newValue;
+                                  fkIdStrategiesController.text =
+                                      newValue ?? '';
+                                });
+                              },
+                              validator: (value) => value == null || value.isEmpty
+                                  ? 'Campo obligatorio'
+                                  : null,
+                            ),
+                            const SizedBox(height: 10),
+                            DropdownButtonFormField<String>(
+                              value: selectedReportId,
+                              decoration: customDropdownDecoration(
+                                  'Reporte *', icon: Icons.report),
+                              hint: const Text('Seleccione un reporte'),
+                              isExpanded: true,
+                              items: myReactController.getListReports
+                                  .map<DropdownMenuItem<String>>((report) {
+                                return DropdownMenuItem<String>(
+                                  value: report['id'].toString(),
+                                  child: Text(
+                                    report['description'] ?? 'Sin descripción',
+                                    overflow: TextOverflow.visible,
+                                    softWrap: true,
+                                  ),
+                                );
+                              }).toList(),
+                              selectedItemBuilder: (BuildContext context) {
+                                return myReactController.getListReports
+                                    .map<Widget>((report) {
+                                  final desc = report['description'] ?? '';
+                                  return Text(
+                                    desc.length > 50
+                                        ? '${desc.substring(0, 50)}...'
+                                        : desc,
+                                    overflow: TextOverflow.ellipsis,
+                                  );
+                                }).toList();
+                              },
+                              onChanged: (String? newValue) {
+                                setState(() {
+                                  selectedReportId = newValue;
+                                  fkIdReportsController.text =
+                                      newValue ?? '';
+                                });
+                              },
+                              validator: (value) => value == null || value.isEmpty
+                                  ? 'Campo obligatorio'
+                                  : null,
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: userNameDisplayController,
+                              readOnly: true,
+                              decoration: customInputDecoration(
+                                  'Usuario *', icon: Icons.person),
+                              validator: (v) =>
+                                  (v == null || v.isEmpty)
+                                      ? 'Campo obligatorio'
+                                      : null,
+                            ),
+                          ],
                         ),
                       ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
                     ),
-
-                    SizedBox(height: 16),
-
-                    // Campo para Descripción
-                    TextFormField(
-                      controller: descriptionController,
-                      decoration: InputDecoration(
-                        labelText: 'Descripción *',
-                        hintText: 'Ingrese la descripción de la intervención',
-                        border: OutlineInputBorder(),
-                      ),
-                      maxLines: 3,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    SizedBox(height: 16),
-
-                    // Dropdown Estrategia
-                    DropdownButtonFormField<String>(
-                      value: selectedStrategyId,
-                      decoration: InputDecoration(
-                        labelText: 'Estrategia *',
-                        border: OutlineInputBorder(),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      ),
-                      hint: Text('Seleccione una estrategia'),
-                      items: myReactController.getListStrategies
-                          .map<DropdownMenuItem<String>>((strategy) {
-                        return DropdownMenuItem<String>(
-                          value: strategy['id'].toString(),
-                          child: Text(strategy['strategy']),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedStrategyId = newValue;
-                          fkIdStrategiesController.text = newValue ?? '';
-                        });
-                      },
-                      validator: (value) =>
-                          value == null || value.isEmpty
-                              ? 'Este campo es obligatorio'
-                              : null,
-                    ),
-
-                    SizedBox(height: 16),
-
-                    // Dropdown Reporte
-                    DropdownButtonFormField<String>(
-                      value: selectedReportId,
-                      decoration: InputDecoration(
-                        labelText: 'Reporte *',
-                        border: OutlineInputBorder(),
-                        contentPadding:
-                            EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                      ),
-                      hint: Text('Seleccione un reporte'),
-                      items: myReactController.getListReports
-                          .map<DropdownMenuItem<String>>((report) {
-                        return DropdownMenuItem<String>(
-                          value: report['id'].toString(),
-                          child: Text(
-                            report['description']?.length > 50 
-                                ? '${report['description']?.substring(0, 50)}...' 
-                                : report['description'] ?? 'Sin descripción',
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          selectedReportId = newValue;
-                          fkIdReportsController.text = newValue ?? '';
-                        });
-                      },
-                      validator: (value) =>
-                          value == null || value.isEmpty
-                              ? 'Este campo es obligatorio'
-                              : null,
-                    ),
-
-                    SizedBox(height: 16),
-
-                    // 🔥 CAMPO USUARIO - SOLO LECTURA TANTO PARA CREAR COMO EDITAR
-                    TextFormField(
-                      controller: userNameDisplayController, // 🔥 USAR CONTROLADOR DE NOMBRE
-                      readOnly: true, // 🔥 SIEMPRE DE SOLO LECTURA
-                      decoration: InputDecoration(
-                        labelText: 'Usuario *',
-                        hintText: 'Usuario asignado a la intervención',
-                        border: OutlineInputBorder(),
-                        suffixIcon: Icon(
-                          Icons.person,
-                          color: Colors.grey,
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Este campo es obligatorio';
-                        }
-                        return null;
-                      },
-                    ),
-
-                    SizedBox(height: 30),
                   ],
                 ),
               ),

@@ -15,20 +15,21 @@ final TextEditingController modalityController = TextEditingController();
 final TextEditingController trainingProgramIdController = TextEditingController();
 
 modalEditNewGroup(context, option, dynamic listItem) {
-  // Creamos una clave global para el formulario
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
 
-  // Variables para los valores seleccionados en los dropdowns
   String? selectedShift;
   String? selectedModality;
   String? selectedTrainingProgramId;
+
   DateTime? selectedTrainingStart;
   DateTime? selectedTrainingEnd;
   DateTime? selectedPracticeStart;
   DateTime? selectedPracticeEnd;
 
-  // Función para seleccionar fecha
-  Future<void> _selectDate(BuildContext context, TextEditingController controller, Function(DateTime?) onDateSelected) async {
+  Future<void> _selectDate(
+      BuildContext context,
+      TextEditingController controller,
+      Function(DateTime?) onDateSelected) async {
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: DateTime.now(),
@@ -43,10 +44,10 @@ modalEditNewGroup(context, option, dynamic listItem) {
 
   showModalBottomSheet(
     isScrollControlled: true,
-    context: context, 
+    context: context,
+    backgroundColor: Colors.transparent,
     builder: (context) {
-      if(option == "new") { 
-        // Limpiar campos para nuevo grupo
+      if (option == "new") {
         fileController.clear();
         trainingStartController.clear();
         trainingEndController.clear();
@@ -56,106 +57,117 @@ modalEditNewGroup(context, option, dynamic listItem) {
         shiftController.clear();
         modalityController.clear();
         trainingProgramIdController.clear();
-        
-        // Inicializar valores por defecto
-        selectedShift = null;
-        selectedModality = null;
-        selectedTrainingProgramId = null;
-        selectedTrainingStart = null;
-        selectedTrainingEnd = null;
-        selectedPracticeStart = null;
-        selectedPracticeEnd = null;
       } else {
-        // Cargar datos existentes para editar
         fileController.text = listItem['file'] ?? '';
         managerNameController.text = listItem['managerName'] ?? '';
-        
-        // Establecer valores para los dropdowns con validación
-        String shiftValue = listItem['shift']?.toString() ?? '';
-        selectedShift = shiftValue; // Usamos el valor directamente ya que coinciden
-        shiftController.text = selectedShift ?? '';
-        
-        String modalityValue = listItem['modality']?.toString() ?? '';
-        selectedModality = modalityValue; // Usamos el valor directamente ya que coinciden
-        modalityController.text = selectedModality ?? '';
-        
-        String trainingProgramValue = listItem['fkIdTrainingPrograms']?.toString() ?? '';
-        selectedTrainingProgramId = trainingProgramValue.isNotEmpty ? trainingProgramValue : null;
-        trainingProgramIdController.text = selectedTrainingProgramId ?? '';
-        
-        // Procesar fechas si existen
-        if (listItem['trainingStart'] != null) {
-          try {
-            selectedTrainingStart = DateTime.parse(listItem['trainingStart']);
-            trainingStartController.text = DateFormat('yyyy-MM-dd').format(selectedTrainingStart!);
-          } catch (e) {
-            selectedTrainingStart = null;
-          }
-        }
-        
-        if (listItem['trainingEnd'] != null) {
-          try {
-            selectedTrainingEnd = DateTime.parse(listItem['trainingEnd']);
-            trainingEndController.text = DateFormat('yyyy-MM-dd').format(selectedTrainingEnd!);
-          } catch (e) {
-            selectedTrainingEnd = null;
-          }
-        }
-        
-        if (listItem['practiceStart'] != null) {
-          try {
-            selectedPracticeStart = DateTime.parse(listItem['practiceStart']);
-            practiceStartController.text = DateFormat('yyyy-MM-dd').format(selectedPracticeStart!);
-          } catch (e) {
-            selectedPracticeStart = null;
-          }
-        }
-        
-        if (listItem['practiceEnd'] != null) {
-          try {
-            selectedPracticeEnd = DateTime.parse(listItem['practiceEnd']);
-            practiceEndController.text = DateFormat('yyyy-MM-dd').format(selectedPracticeEnd!);
-          } catch (e) {
-            selectedPracticeEnd = null;
-          }
-        }
+        selectedShift = listItem['shift']?.toString();
+        selectedModality = listItem['modality']?.toString();
+        selectedTrainingProgramId =
+            listItem['fkIdTrainingPrograms']?.toString();
+
+        trainingStartController.text = listItem['trainingStart'] ?? '';
+        trainingEndController.text = listItem['trainingEnd'] ?? '';
+        practiceStartController.text = listItem['practiceStart'] ?? '';
+        practiceEndController.text = listItem['practiceEnd'] ?? '';
       }
 
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
-          // Capturar los programas de formación solo si no están en memoria
           if (myReactController.getListTrainingPrograms.isEmpty) {
-            fetchAPITrainingPrograms().then((_) {
-              setState(() {}); // Refresca cuando termine la API
-            });
+            fetchAPITrainingPrograms().then((_) => setState(() {}));
+          }
+
+          // 🎨 Estilo de campos reutilizable con colores por ícono
+          InputDecoration customInputDecoration(String label, {IconData? icon}) {
+            Color iconColor;
+
+            switch (icon) {
+              case Icons.folder_copy:
+                iconColor = Colors.blueAccent;
+                break;
+              case Icons.person:
+                iconColor = Colors.deepPurple;
+                break;
+              case Icons.calendar_today:
+              case Icons.calendar_today_outlined:
+              case Icons.date_range:
+                iconColor = Colors.teal;
+                break;
+              case Icons.play_circle_outline:
+                iconColor = Colors.green;
+                break;
+              case Icons.stop_circle_outlined:
+                iconColor = Colors.redAccent;
+                break;
+              case Icons.access_time:
+                iconColor = Colors.orangeAccent;
+                break;
+              case Icons.school:
+                iconColor = Colors.cyan;
+                break;
+              case Icons.book:
+                iconColor = Colors.amber;
+                break;
+              default:
+                iconColor = const Color.fromARGB(255, 7, 25, 83);
+            }
+
+            return InputDecoration(
+              labelText: label,
+              prefixIcon: icon != null ? Icon(icon, color: iconColor) : null,
+              filled: true,
+              fillColor: Colors.white,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10),
+                borderSide: BorderSide.none,
+              ),
+              contentPadding:
+                  const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+            );
+          }
+
+          // 🔹 Función para obtener el nombre del programa seleccionado
+          String? getSelectedProgramName() {
+            if (selectedTrainingProgramId == null) return null;
+            final program = myReactController.getListTrainingPrograms.firstWhere(
+              (p) => p['id'].toString() == selectedTrainingProgramId,
+              orElse: () => {'name': ''},
+            );
+            return program['name'];
           }
 
           return Scaffold(
+            backgroundColor: const Color(0xFFF5F5F5),
             appBar: AppBar(
-              title: (option == "new") ? Text('Crear Nuevo Grupo') : Text('Editar Grupo'),
-              backgroundColor: (option == "new") ? Colors.green : Colors.blue,
+              title: Text(
+                (option == "new") ? 'Nuevo Grupo' : 'Editar Grupo',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+              backgroundColor: const Color.fromARGB(255, 7, 25, 83),
               foregroundColor: Colors.white,
               centerTitle: true,
             ),
-            floatingActionButton: FloatingActionButton(
-              backgroundColor: (option == "new") ? Colors.green : Colors.blue,
+            floatingActionButton: FloatingActionButton.extended(
+              backgroundColor: option == "new"
+                  ? const Color(0xFF00BFFF) // 💙 Celeste para "Crear"
+                  : Colors.orange,          // 🟧 Naranja para "Editar"
               foregroundColor: Colors.white,
-              child: Icon(option == "new" ? Icons.add : Icons.edit),
+              icon: Icon(option == "new" ? Icons.add : Icons.edit),
+              label: Text(option == "new" ? 'Crear' : 'Editar'),
               onPressed: () async {
-                // Validar formulario
                 if (!_formKey.currentState!.validate()) {
                   Get.snackbar(
-                    'Campos incompletos', 
-                    'Por favor, complete todos los campos obligatorios',
+                    'Campos incompletos',
+                    'Por favor complete todos los campos obligatorios',
                     colorText: Colors.white,
-                    backgroundColor: Colors.orange
+                    backgroundColor: const Color.fromARGB(255, 23, 214, 214),
                   );
                   return;
                 }
-                
-                if(option == "new") {
-                  // Crear nuevo grupo
-                  bool resp = await newGroupApi(
+
+                bool resp;
+                if (option == "new") {
+                  resp = await newGroupApi(
                     fileController.text,
                     trainingStartController.text,
                     trainingEndController.text,
@@ -167,22 +179,17 @@ modalEditNewGroup(context, option, dynamic listItem) {
                     selectedTrainingProgramId ?? '',
                   );
                   Get.back();
-                  if(resp) {
-                    Get.snackbar(
-                      'Mensaje', "Se ha añadido correctamente un nuevo grupo", 
-                      colorText: Colors.white,
-                      backgroundColor: Colors.green
-                    );
-                  } else {
-                    Get.snackbar(
-                      'Mensaje', "Error al agregar el nuevo grupo", 
-                      colorText: Colors.white,
-                      backgroundColor: Colors.red
-                    );
-                  }
-                } else {   
-                  // Editar grupo existente
-                  bool resp = await editGroupApi(
+                  Get.snackbar(
+                    'Mensaje',
+                    resp
+                        ? 'Se ha añadido correctamente un nuevo grupo'
+                        : 'Error al agregar el nuevo grupo',
+                    colorText: Colors.white,
+                    backgroundColor:
+                        resp ? Colors.green : Colors.red, // ✅ Igual que en el ejemplo
+                  );
+                } else {
+                  resp = await editGroupApi(
                     listItem['id'],
                     fileController.text,
                     trainingStartController.text,
@@ -195,235 +202,223 @@ modalEditNewGroup(context, option, dynamic listItem) {
                     selectedTrainingProgramId ?? '',
                   );
                   Get.back();
-                  if(resp) {
-                    Get.snackbar(
-                      'Mensaje', "Se ha editado correctamente el grupo", 
-                      colorText: Colors.green,
-                      backgroundColor: Colors.greenAccent
-                    );
-                  } else {
-                    Get.snackbar('Mensaje', "Error al editar el grupo", colorText: Colors.red);
-                  }
+                  Get.snackbar(
+                    'Mensaje',
+                    resp
+                        ? 'Se ha editado correctamente el grupo'
+                        : 'Error al editar el grupo',
+                    colorText: Colors.white,
+                    backgroundColor:
+                        resp ? Colors.green : Colors.red, // ✅ Igual que en el ejemplo
+                  );
                 }
-              }),
+              },
+            ),
+            body: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Form(
+                key: _formKey,
+                child: ListView(
+                  physics: const BouncingScrollPhysics(),
+                  children: [
+                    Card(
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                      elevation: 2,
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Padding(
+                        padding: const EdgeInsets.all(12.0),
+                        child: Column(
+                          children: [
+                            TextFormField(
+                              controller: fileController,
+                              decoration: customInputDecoration('Ficha *',
+                                  icon: Icons.folder_copy),
+                              validator: (v) => (v == null || v.isEmpty)
+                                  ? 'Campo obligatorio'
+                                  : null,
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: managerNameController,
+                              decoration: customInputDecoration(
+                                  'Nombre del Gestor *',
+                                  icon: Icons.person),
+                              validator: (v) => (v == null || v.isEmpty)
+                                  ? 'Campo obligatorio'
+                                  : null,
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: trainingStartController,
+                              readOnly: true,
+                              decoration: customInputDecoration(
+                                  'Inicio Etapa Lectiva',
+                                  icon: Icons.calendar_today).copyWith(
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.date_range,
+                                      color: Colors.teal),
+                                  onPressed: () => _selectDate(context,
+                                      trainingStartController, (date) {
+                                    setState(() {
+                                      selectedTrainingStart = date;
+                                    });
+                                  }),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: trainingEndController,
+                              readOnly: true,
+                              decoration: customInputDecoration(
+                                  'Fin Etapa Lectiva',
+                                  icon: Icons.calendar_today_outlined).copyWith(
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.date_range,
+                                      color: Colors.teal),
+                                  onPressed: () => _selectDate(
+                                      context, trainingEndController, (date) {
+                                    setState(() {
+                                      selectedTrainingEnd = date;
+                                    });
+                                  }),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: practiceStartController,
+                              readOnly: true,
+                              decoration: customInputDecoration(
+                                  'Inicio Etapa Productiva',
+                                  icon: Icons.play_circle_outline).copyWith(
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.date_range,
+                                      color: Colors.teal),
+                                  onPressed: () => _selectDate(
+                                      context, practiceStartController, (date) {
+                                    setState(() {
+                                      selectedPracticeStart = date;
+                                    });
+                                  }),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            TextFormField(
+                              controller: practiceEndController,
+                              readOnly: true,
+                              decoration: customInputDecoration(
+                                  'Fin Etapa Productiva',
+                                  icon: Icons.stop_circle_outlined).copyWith(
+                                suffixIcon: IconButton(
+                                  icon: const Icon(Icons.date_range,
+                                      color: Colors.teal),
+                                  onPressed: () => _selectDate(
+                                      context, practiceEndController, (date) {
+                                    setState(() {
+                                      selectedPracticeEnd = date;
+                                    });
+                                  }),
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            DropdownButtonFormField<String>(
+                              value: selectedShift,
+                              decoration: customInputDecoration('Jornada *',
+                                  icon: Icons.access_time),
+                              items: const [
+                                DropdownMenuItem(
+                                    value: 'Diurna', child: Text('Diurna')),
+                                DropdownMenuItem(
+                                    value: 'Mixta', child: Text('Mixta')),
+                                DropdownMenuItem(
+                                    value: 'Nocturna',
+                                    child: Text('Nocturna')),
+                              ],
+                              onChanged: (val) {
+                                setState(() {
+                                  selectedShift = val;
+                                });
+                              },
+                              validator: (v) => (v == null || v.isEmpty)
+                                  ? 'Campo obligatorio'
+                                  : null,
+                            ),
+                            const SizedBox(height: 10),
+                            DropdownButtonFormField<String>(
+                              value: selectedModality,
+                              decoration: customInputDecoration('Modalidad *',
+                                  icon: Icons.school),
+                              items: const [
+                                DropdownMenuItem(
+                                    value: 'Presencial',
+                                    child: Text('Presencial')),
+                                DropdownMenuItem(
+                                    value: 'Virtual', child: Text('Virtual')),
+                              ],
+                              onChanged: (val) {
+                                setState(() {
+                                  selectedModality = val;
+                                });
+                              },
+                              validator: (v) => (v == null || v.isEmpty)
+                                  ? 'Campo obligatorio'
+                                  : null,
+                            ),
+                            const SizedBox(height: 10),
 
-              body: Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Form(
-                  key: _formKey,
-                  child: ListView(
-                    children: [
-                      TextFormField(
-                        controller: fileController,
-                        decoration: InputDecoration(
-                          labelText: 'Ficha *',
-                          hintText: 'Ingrese la ficha del grupo',
+                            // 🔹 Campo mejorado: muestra nombre completo al abrir, pero truncado dentro
+                            DropdownButtonFormField<String>(
+                              value: selectedTrainingProgramId,
+                              decoration: customInputDecoration(
+                                'Programa de Formación *',
+                                icon: Icons.book,
+                              ),
+                              selectedItemBuilder: (BuildContext context) {
+                                return myReactController
+                                    .getListTrainingPrograms
+                                    .map<Widget>((program) {
+                                  return SizedBox(
+                                    width:
+                                        MediaQuery.of(context).size.width * 0.6,
+                                    child: Text(
+                                      program['name'] ?? 'Sin nombre',
+                                      overflow: TextOverflow.ellipsis,
+                                      maxLines: 1,
+                                    ),
+                                  );
+                                }).toList();
+                              },
+                              items: myReactController.getListTrainingPrograms
+                                  .map<DropdownMenuItem<String>>((program) {
+                                return DropdownMenuItem<String>(
+                                  value: program['id'].toString(),
+                                  child: Text(program['name'] ?? 'Sin nombre'),
+                                );
+                              }).toList(),
+                              onChanged: (val) {
+                                setState(() {
+                                  selectedTrainingProgramId = val;
+                                });
+                              },
+                              validator: (v) => (v == null || v.isEmpty)
+                                  ? 'Campo obligatorio'
+                                  : null,
+                            ),
+                          ],
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Este campo es obligatorio';
-                          }
-                          return null;
-                        },
                       ),
-
-                      // Campo de fecha de inicio de formación
-                      TextFormField(
-                        controller: trainingStartController,
-                        decoration: InputDecoration(
-                          labelText: 'Fecha inicio formación',
-                          hintText: 'Seleccione la fecha',
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () => _selectDate(context, trainingStartController, (date) {
-                              setState(() {
-                                selectedTrainingStart = date;
-                              });
-                            }),
-                          ),
-                        ),
-                        readOnly: true,
-                      ),
-
-                      // Campo de fecha de fin de formación
-                      TextFormField(
-                        controller: trainingEndController,
-                        decoration: InputDecoration(
-                          labelText: 'Fecha fin formación',
-                          hintText: 'Seleccione la fecha',
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () => _selectDate(context, trainingEndController, (date) {
-                              setState(() {
-                                selectedTrainingEnd = date;
-                              });
-                            }),
-                          ),
-                        ),
-                        readOnly: true,
-                      ),
-
-                      // Campo de fecha de inicio de práctica
-                      TextFormField(
-                        controller: practiceStartController,
-                        decoration: InputDecoration(
-                          labelText: 'Fecha inicio práctica',
-                          hintText: 'Seleccione la fecha',
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () => _selectDate(context, practiceStartController, (date) {
-                              setState(() {
-                                selectedPracticeStart = date;
-                              });
-                            }),
-                          ),
-                        ),
-                        readOnly: true,
-                      ),
-
-                      // Campo de fecha de fin de práctica
-                      TextFormField(
-                        controller: practiceEndController,
-                        decoration: InputDecoration(
-                          labelText: 'Fecha fin práctica',
-                          hintText: 'Seleccione la fecha',
-                          suffixIcon: IconButton(
-                            icon: Icon(Icons.calendar_today),
-                            onPressed: () => _selectDate(context, practiceEndController, (date) {
-                              setState(() {
-                                selectedPracticeEnd = date;
-                              });
-                            }),
-                          ),
-                        ),
-                        readOnly: true,
-                      ),
-
-                      TextFormField(
-                        controller: managerNameController,
-                        decoration: InputDecoration(
-                          labelText: 'Nombre del manager *',
-                          hintText: 'Ingrese el nombre del manager',
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Este campo es obligatorio';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      SizedBox(height: 16),
-
-                      // Dropdown para Jornada - ACTUALIZADO
-                      DropdownButtonFormField<String>(
-                        value: selectedShift,
-                        decoration: InputDecoration(
-                          labelText: 'Jornada *',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        ),
-                        hint: Text('Seleccione la jornada'),
-                        items: [
-                          DropdownMenuItem(
-                            value: 'Diurna',
-                            child: Text('Diurna'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Mixta',
-                            child: Text('Mixta'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Nocturna',
-                            child: Text('Nocturna'),
-                          ),
-                        ],
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedShift = newValue;
-                            shiftController.text = newValue ?? '';
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Este campo es obligatorio';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      SizedBox(height: 16),
-
-                      // Dropdown para Modalidad - ACTUALIZADO
-                      DropdownButtonFormField<String>(
-                        value: selectedModality,
-                        decoration: InputDecoration(
-                          labelText: 'Modalidad *',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        ),
-                        hint: Text('Seleccione la modalidad'),
-                        items: [
-                          DropdownMenuItem(
-                            value: 'Presencial',
-                            child: Text('Presencial'),
-                          ),
-                          DropdownMenuItem(
-                            value: 'Virtual',
-                            child: Text('Virtual'),
-                          ),
-                        ],
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedModality = newValue;
-                            modalityController.text = newValue ?? '';
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Este campo es obligatorio';
-                          }
-                          return null;
-                        },
-                      ),
-
-                      SizedBox(height: 16),
-
-                      // Dropdown para Programa de Formación
-                      DropdownButtonFormField<String>(
-                        value: selectedTrainingProgramId,
-                        decoration: InputDecoration(
-                          labelText: 'Programa de Formación *',
-                          border: OutlineInputBorder(),
-                          contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 4),
-                        ),
-                        hint: Text('Seleccione un programa de formación'),
-                        items: myReactController.getListTrainingPrograms.map<DropdownMenuItem<String>>((program) {
-                          return DropdownMenuItem<String>(
-                            value: program['id'].toString(),
-                            child: Text(program['name'] ?? 'Sin nombre'),
-                          );
-                        }).toList(),
-                        onChanged: (String? newValue) {
-                          setState(() {
-                            selectedTrainingProgramId = newValue;
-                            trainingProgramIdController.text = newValue ?? '';
-                          });
-                        },
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Este campo es obligatorio';
-                          }
-                          return null;
-                        },
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
+            ),
           );
-        }
+        },
       );
-    }
+    },
   );
 }

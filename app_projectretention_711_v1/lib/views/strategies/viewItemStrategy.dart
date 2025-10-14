@@ -23,65 +23,150 @@ viewItemStrategy(context, itemList) async {
   showModalBottomSheet(
     context: context,
     isScrollControlled: true,
+    backgroundColor: Colors.transparent,
     builder: (context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Text('Detalle de la Estrategia'),
-          backgroundColor: Colors.teal,
-          foregroundColor: Colors.white,
+      return Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 7, 25, 83), // Azul oscuro
+              Color.fromARGB(255, 23, 214, 214), // Azul celeste
+            ],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+          borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
         ),
-        body: ListView(
-          children: [
-            // ID de la estrategia
-            ListTile(
-              leading: Icon(Icons.key),
-              title: Text('ID'),
-              subtitle: Text(itemList['id'].toString()),
+        child: Scaffold(
+          backgroundColor: Colors.transparent,
+          appBar: AppBar(
+            elevation: 0,
+            centerTitle: true,
+            title: const Text(
+              'Detalle de la Estrategia',
+              style: TextStyle(fontWeight: FontWeight.bold),
             ),
-            Divider(),
+            backgroundColor: Colors.transparent,
+            foregroundColor: Colors.white,
+          ),
+          body: Container(
+            decoration: const BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.vertical(top: Radius.circular(25)),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: ListView(
+                children: [
+                  const SizedBox(height: 10),
 
-            // Texto de la estrategia
-            ListTile(
-              leading: Icon(Icons.lightbulb),
-              title: Text('Estrategia'),
-              subtitle: Text(itemList['strategy'] ?? 'No disponible'),
-            ),
-            Divider(),
+                  _buildDetailCard(
+                    icon: Icons.key,
+                    title: 'ID',
+                    value: itemList['id'].toString(),
+                    color: Colors.blueAccent,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.lightbulb,
+                    title: 'Estrategia',
+                    value: itemList['strategy'] ?? 'No disponible',
+                    color: Colors.teal,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.category,
+                    title: 'Categoría',
+                    value: getCategoryName(itemList['fkIdCategories']),
+                    color: Colors.indigo,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.label,
+                    title: 'Nombre de la Categoría',
+                    value: itemList['category']?['name'] ?? 'No disponible',
+                    color: Colors.deepPurple,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.description,
+                    title: 'Descripción de la Categoría',
+                    value:
+                        itemList['category']?['description'] ?? 'No disponible',
+                    color: Colors.orangeAccent,
+                  ),
+                  _buildDetailCard(
+                    icon: Icons.account_circle,
+                    title: 'Responsable',
+                    value:
+                        itemList['category']?['addressing'] ?? 'No disponible',
+                    color: Colors.green,
+                  ),
 
-            // Categoría (FK)
-            ListTile(
-              leading: Icon(Icons.category),
-              title: Text('Categoría'),
-              subtitle: Text(getCategoryName(itemList['fkIdCategories'])),
+                  const SizedBox(height: 20),
+                ],
+              ),
             ),
-            Divider(),
-
-            // Nombre de la categoría (si viene expandida en el objeto)
-            ListTile(
-              leading: Icon(Icons.label),
-              title: Text('Nombre de la Categoría'),
-              subtitle: Text(itemList['category']?['name'] ?? 'No disponible'),
-            ),
-            Divider(),
-
-            // Descripción de la categoría
-            ListTile(
-              leading: Icon(Icons.description),
-              title: Text('Descripción de la Categoría'),
-              subtitle: Text(itemList['category']?['description'] ?? 'No disponible'),
-            ),
-            Divider(),
-
-            // Responsable (addressing)
-            ListTile(
-              leading: Icon(Icons.account_circle),
-              title: Text('Responsable'),
-              subtitle: Text(itemList['category']?['addressing'] ?? 'No disponible'),
-            ),
-            Divider(),
-          ],
+          ),
         ),
       );
     },
+  );
+}
+
+// 🔹 Widget reutilizable con colores personalizados
+Widget _buildDetailCard({
+  required IconData icon,
+  required String title,
+  required String value,
+  required Color color,
+}) {
+  return Card(
+    elevation: 2,
+    margin: const EdgeInsets.symmetric(vertical: 8),
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.circular(15),
+    ),
+    child: Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Container(
+            decoration: BoxDecoration(
+              color: color.withOpacity(0.2),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            padding: const EdgeInsets.all(10),
+            child: Icon(
+              icon,
+              color: color,
+              size: 26,
+            ),
+          ),
+          const SizedBox(width: 14),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 15,
+                    fontWeight: FontWeight.bold,
+                    color: color,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontSize: 15,
+                    color: Colors.black87,
+                  ),
+                  overflow: TextOverflow.ellipsis,
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
   );
 }
