@@ -20,6 +20,14 @@ modalEditNewIntervention(context, option, dynamic listItem) {
   String? selectedUserId;
   DateTime? selectedCreationDate;
 
+  // 🔍 CONTROLADORES DE BÚSQUEDA
+  final TextEditingController strategySearchController = TextEditingController();
+  final TextEditingController reportSearchController = TextEditingController();
+  
+  // 🔍 LISTAS FILTRADAS
+  List<dynamic> filteredStrategies = [];
+  List<dynamic> filteredReports = [];
+
   showModalBottomSheet(
     isScrollControlled: true,
     context: context,
@@ -83,17 +91,105 @@ modalEditNewIntervention(context, option, dynamic listItem) {
 
       return StatefulBuilder(
         builder: (BuildContext context, StateSetter setState) {
+          
+          // 🔍 FUNCIÓN: Filtrar estrategias (CON PROTECCIÓN PARA VALOR SELECCIONADO)
+          void filterStrategies(String query) {
+            setState(() {
+              if (query.isEmpty) {
+                filteredStrategies = myReactController.getListStrategies;
+              } else {
+                filteredStrategies = myReactController.getListStrategies.where((strategy) {
+                  final strategyName = strategy['strategy'].toString().toLowerCase();
+                  final searchLower = query.toLowerCase();
+                  return strategyName.contains(searchLower);
+                }).toList();
+
+                // 🔥 CRÍTICO: Si hay un valor seleccionado, asegurarse de que esté en la lista filtrada
+                if (selectedStrategyId != null && selectedStrategyId!.isNotEmpty) {
+                  final selectedExists = filteredStrategies.any(
+                    (strategy) => strategy['id'].toString() == selectedStrategyId
+                  );
+                  
+                  if (!selectedExists) {
+                    // Buscar el item seleccionado en la lista completa y agregarlo
+                    final selectedItem = myReactController.getListStrategies.firstWhere(
+                      (strategy) => strategy['id'].toString() == selectedStrategyId,
+                      orElse: () => null,
+                    );
+                    if (selectedItem != null) {
+                      filteredStrategies.insert(0, selectedItem);
+                    }
+                  }
+                }
+              }
+            });
+          }
+
+          // 🔍 FUNCIÓN: Filtrar reportes (CON PROTECCIÓN PARA VALOR SELECCIONADO)
+          void filterReports(String query) {
+            setState(() {
+              if (query.isEmpty) {
+                filteredReports = myReactController.getListReports;
+              } else {
+                filteredReports = myReactController.getListReports.where((report) {
+                  final description = report['description']?.toString().toLowerCase() ?? '';
+                  final searchLower = query.toLowerCase();
+                  return description.contains(searchLower);
+                }).toList();
+
+                // 🔥 CRÍTICO: Si hay un valor seleccionado, asegurarse de que esté en la lista filtrada
+                if (selectedReportId != null && selectedReportId!.isNotEmpty) {
+                  final selectedExists = filteredReports.any(
+                    (report) => report['id'].toString() == selectedReportId
+                  );
+                  
+                  if (!selectedExists) {
+                    // Buscar el item seleccionado en la lista completa y agregarlo
+                    final selectedItem = myReactController.getListReports.firstWhere(
+                      (report) => report['id'].toString() == selectedReportId,
+                      orElse: () => null,
+                    );
+                    if (selectedItem != null) {
+                      filteredReports.insert(0, selectedItem);
+                    }
+                  }
+                }
+              }
+            });
+          }
+
+          // 🔥 INICIALIZAR LISTAS FILTRADAS
+          if (filteredStrategies.isEmpty && myReactController.getListStrategies.isNotEmpty) {
+            filteredStrategies = myReactController.getListStrategies;
+          }
+          if (filteredReports.isEmpty && myReactController.getListReports.isNotEmpty) {
+            filteredReports = myReactController.getListReports;
+          }
+
+          // Cargar datos si no están en memoria
           if (myReactController.getListStrategies.isEmpty) {
-            fetchAPIStrategies().then((_) => setState(() {}));
+            fetchAPIStrategies().then((_) => setState(() {
+              filteredStrategies = myReactController.getListStrategies;
+            }));
           }
           if (myReactController.getListReports.isEmpty) {
-            fetchAPIReports().then((_) => setState(() {}));
+            fetchAPIReports().then((_) => setState(() {
+              filteredReports = myReactController.getListReports;
+            }));
           }
           if (myReactController.getListUsers.isEmpty) {
             fetchAPIUsers().then((_) => setState(() {}));
           }
 
-          // 🎨 Colores personalizados de íconos (como en el ejemplo del aprendiz)
+          // 📏 FUNCIÓN: Truncar texto largo
+          String truncateText(String text, int maxLength) {
+            if (text.length <= maxLength) {
+              return text;
+            }
+            return '${text.substring(0, maxLength)}...';
+          }
+
+          // 🎨 Colores personalizados de íconos
           InputDecoration customInputDecoration(String label, {IconData? icon}) {
             Color iconColor;
             switch (icon) {
@@ -271,35 +367,62 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                                       : null,
                             ),
                             const SizedBox(height: 10),
+
+                            // 🔍 BUSCADOR DE ESTRATEGIAS
+                            TextField(
+                              controller: strategySearchController,
+                              decoration: InputDecoration(
+                                labelText: 'Buscar estrategia',
+                                prefixIcon: Icon(Icons.search, color: Colors.orangeAccent),
+                                suffixIcon: strategySearchController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(Icons.clear, size: 20),
+                                        onPressed: () {
+                                          setState(() {
+                                            strategySearchController.clear();
+                                            filterStrategies('');
+                                          });
+                                        },
+                                      )
+                                    : null,
+                                filled: true,
+                                fillColor: Colors.orange[50],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                              ),
+                              onChanged: filterStrategies,
+                            ),
+                            const SizedBox(height: 8),
+
+                            // 🎯 Dropdown para Estrategia - TEXTO COMPLETO EN MENÚ, TRUNCADO SELECCIONADO
                             DropdownButtonFormField<String>(
                               value: selectedStrategyId,
                               decoration: customDropdownDecoration(
                                   'Estrategia *', icon: Icons.flag),
                               hint: const Text('Seleccione una estrategia'),
                               isExpanded: true,
-                              items: myReactController.getListStrategies
-                                  .map<DropdownMenuItem<String>>((strategy) {
-                                return DropdownMenuItem<String>(
-                                  value: strategy['id'].toString(),
-                                  child: Text(
-                                    strategy['strategy'],
-                                    overflow: TextOverflow.visible,
-                                    softWrap: true,
-                                  ),
-                                );
-                              }).toList(),
                               selectedItemBuilder: (BuildContext context) {
-                                return myReactController.getListStrategies
+                                // TEXTO TRUNCADO para el valor seleccionado en el formulario
+                                return filteredStrategies
                                     .map<Widget>((strategy) {
                                   final text = strategy['strategy'] ?? '';
                                   return Text(
-                                    text.length > 40
-                                        ? '${text.substring(0, 40)}...'
-                                        : text,
+                                    truncateText(text, 40),
                                     overflow: TextOverflow.ellipsis,
                                   );
                                 }).toList();
                               },
+                              items: filteredStrategies
+                                  .map<DropdownMenuItem<String>>((strategy) {
+                                // TEXTO COMPLETO en el menú desplegable
+                                return DropdownMenuItem<String>(
+                                  value: strategy['id'].toString(),
+                                  child: Text(strategy['strategy']), // Sin truncar
+                                );
+                              }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
                                   selectedStrategyId = newValue;
@@ -312,35 +435,64 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                                   : null,
                             ),
                             const SizedBox(height: 10),
+
+                            // 🔍 BUSCADOR DE REPORTES
+                            TextField(
+                              controller: reportSearchController,
+                              decoration: InputDecoration(
+                                labelText: 'Buscar reporte',
+                                prefixIcon: Icon(Icons.search, color: Colors.pinkAccent),
+                                suffixIcon: reportSearchController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(Icons.clear, size: 20),
+                                        onPressed: () {
+                                          setState(() {
+                                            reportSearchController.clear();
+                                            filterReports('');
+                                          });
+                                        },
+                                      )
+                                    : null,
+                                filled: true,
+                                fillColor: Colors.pink[50],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                              ),
+                              onChanged: filterReports,
+                            ),
+                            const SizedBox(height: 8),
+
+                            // 🎯 Dropdown para Reporte - TEXTO COMPLETO EN MENÚ, TRUNCADO SELECCIONADO
                             DropdownButtonFormField<String>(
                               value: selectedReportId,
                               decoration: customDropdownDecoration(
                                   'Reporte *', icon: Icons.report),
                               hint: const Text('Seleccione un reporte'),
                               isExpanded: true,
-                              items: myReactController.getListReports
-                                  .map<DropdownMenuItem<String>>((report) {
-                                return DropdownMenuItem<String>(
-                                  value: report['id'].toString(),
-                                  child: Text(
-                                    report['description'] ?? 'Sin descripción',
-                                    overflow: TextOverflow.visible,
-                                    softWrap: true,
-                                  ),
-                                );
-                              }).toList(),
                               selectedItemBuilder: (BuildContext context) {
-                                return myReactController.getListReports
+                                // TEXTO TRUNCADO para el valor seleccionado en el formulario
+                                return filteredReports
                                     .map<Widget>((report) {
-                                  final desc = report['description'] ?? '';
+                                  final desc = report['description'] ?? 'Sin descripción';
                                   return Text(
-                                    desc.length > 50
-                                        ? '${desc.substring(0, 50)}...'
-                                        : desc,
+                                    truncateText(desc, 50),
                                     overflow: TextOverflow.ellipsis,
                                   );
                                 }).toList();
                               },
+                              items: filteredReports
+                                  .map<DropdownMenuItem<String>>((report) {
+                                // TEXTO COMPLETO en el menú desplegable
+                                return DropdownMenuItem<String>(
+                                  value: report['id'].toString(),
+                                  child: Text(
+                                    report['description'] ?? 'Sin descripción',
+                                  ), // Sin truncar
+                                );
+                              }).toList(),
                               onChanged: (String? newValue) {
                                 setState(() {
                                   selectedReportId = newValue;
@@ -353,6 +505,7 @@ modalEditNewIntervention(context, option, dynamic listItem) {
                                   : null,
                             ),
                             const SizedBox(height: 10),
+
                             TextFormField(
                               controller: userNameDisplayController,
                               readOnly: true,

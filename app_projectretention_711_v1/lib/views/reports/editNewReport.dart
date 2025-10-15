@@ -31,6 +31,16 @@ modalEditNewReport(context, option, dynamic listItem) {
   bool isLoadingCauses = false;
   bool _causesLoaded = false;
 
+  // 🔍 CONTROLADORES DE BÚSQUEDA
+  final TextEditingController apprenticeSearchController = TextEditingController();
+  final TextEditingController categorySearchController = TextEditingController();
+  final TextEditingController causeSearchController = TextEditingController();
+  
+  // 🔍 LISTAS FILTRADAS
+  List<dynamic> filteredApprentices = [];
+  List<dynamic> filteredCategories = [];
+  List<dynamic> filteredCauses = [];
+
   showModalBottomSheet(
     isScrollControlled: true,
     context: context,
@@ -53,7 +63,8 @@ modalEditNewReport(context, option, dynamic listItem) {
 
         // Inicializar valores por defecto
         selectedAddressing = null;
-        selectedState = null;
+        selectedState = 'Registrado'; // PRE-SELECCIONADO
+        stateController.text = 'Registrado'; // PRE-SELECCIONADO
         selectedApprenticeId = null;
         
         // OBTENER USUARIO LOGUEADO Y SELECCIONARLO AUTOMÁTICAMENTE
@@ -112,13 +123,17 @@ modalEditNewReport(context, option, dynamic listItem) {
         
         // PARA EDICIÓN: BUSCAR Y MOSTRAR EL NOMBRE DEL USUARIO
         if (selectedUserId != null) {
-          final user = myReactController.getListUsers.firstWhere(
-            (u) => u['id'].toString() == selectedUserId,
-            orElse: () => null,
-          );
-          if (user != null) {
-            userNameDisplayController.text = "${user['firstName']} ${user['lastName']}";
-          } else {
+          try {
+            final user = myReactController.getListUsers.firstWhere(
+              (u) => u['id'].toString() == selectedUserId,
+              orElse: () => {},
+            );
+            if (user.isNotEmpty) {
+              userNameDisplayController.text = "${user['firstName']} ${user['lastName']}";
+            } else {
+              userNameDisplayController.text = selectedUserId!;
+            }
+          } catch (e) {
             userNameDisplayController.text = selectedUserId!;
           }
         } else {
@@ -131,6 +146,61 @@ modalEditNewReport(context, option, dynamic listItem) {
 
       return StatefulBuilder(
           builder: (BuildContext context, StateSetter setState) {
+        
+        // 🔍 FUNCIÓN: Filtrar aprendices
+        void filterApprentices(String query) {
+          setState(() {
+            if (query.isEmpty) {
+              filteredApprentices = myReactController.getListApprentices;
+            } else {
+              filteredApprentices = myReactController.getListApprentices.where((apprentice) {
+                final name = "${apprentice['firtsName']} ${apprentice['lastName']}".toLowerCase();
+                final document = apprentice['document'].toString().toLowerCase();
+                final searchLower = query.toLowerCase();
+                return name.contains(searchLower) || document.contains(searchLower);
+              }).toList();
+            }
+          });
+        }
+
+        // 🔍 FUNCIÓN: Filtrar categorías
+        void filterCategories(String query) {
+          setState(() {
+            if (query.isEmpty) {
+              filteredCategories = myReactController.getListCategories;
+            } else {
+              filteredCategories = myReactController.getListCategories.where((category) {
+                final name = category['name'].toString().toLowerCase();
+                final searchLower = query.toLowerCase();
+                return name.contains(searchLower);
+              }).toList();
+            }
+          });
+        }
+
+        // 🔍 FUNCIÓN: Filtrar causas
+        void filterCauses(String query) {
+          setState(() {
+            if (query.isEmpty) {
+              filteredCauses = causesByCategory;
+            } else {
+              filteredCauses = causesByCategory.where((cause) {
+                final causeName = cause['cause'].toString().toLowerCase();
+                final variable = cause['variable']?.toString().toLowerCase() ?? '';
+                final searchLower = query.toLowerCase();
+                return causeName.contains(searchLower) || variable.contains(searchLower);
+              }).toList();
+            }
+          });
+        }
+
+        // Inicializar listas filtradas
+        if (filteredApprentices.isEmpty && myReactController.getListApprentices.isNotEmpty) {
+          filteredApprentices = myReactController.getListApprentices;
+        }
+        if (filteredCategories.isEmpty && myReactController.getListCategories.isNotEmpty) {
+          filteredCategories = myReactController.getListCategories;
+        }
         
         // FUNCIÓN: Cargar causas existentes del reporte
         Future<void> loadExistingCauses() async {
@@ -180,7 +250,9 @@ modalEditNewReport(context, option, dynamic listItem) {
           setState(() {
             isLoadingCauses = true;
             causesByCategory = [];
+            filteredCauses = [];
             selectedCauseId = null;
+            causeSearchController.clear();
           });
 
           try {
@@ -189,6 +261,7 @@ modalEditNewReport(context, option, dynamic listItem) {
             
             setState(() {
               causesByCategory = causes;
+              filteredCauses = causes;
               isLoadingCauses = false;
             });
             
@@ -217,9 +290,9 @@ modalEditNewReport(context, option, dynamic listItem) {
           try {
             final category = myReactController.getListCategories.firstWhere(
               (cat) => cat['id'].toString() == selectedCategoryId,
-              orElse: () => null,
+              orElse: () => {},
             );
-            return category?['name'] ?? '';
+            return category.isNotEmpty ? (category['name'] ?? '') : '';
           } catch (e) {
             return '';
           }
@@ -239,10 +312,10 @@ modalEditNewReport(context, option, dynamic listItem) {
 
           final cause = causesByCategory.firstWhere(
             (c) => c['id'].toString() == selectedCauseId,
-            orElse: () => null,
+            orElse: () => {},
           );
           
-          if (cause != null) {
+          if (cause != null && cause.isNotEmpty) {
             // Verificar si ya existe
             final exists = selectedCauses.any((c) => c['id'] == cause['id']);
             if (!exists) {
@@ -288,15 +361,23 @@ modalEditNewReport(context, option, dynamic listItem) {
               final categoryId = cause['fkIdCategories'];
               final category = myReactController.getListCategories.firstWhere(
                 (cat) => cat['id'] == categoryId,
-                orElse: () => null,
+                orElse: () => {},
               );
-              return category?['name'] ?? 'N/A';
+              return category.isNotEmpty ? (category['name'] ?? 'N/A') : 'N/A';
             }
             
             return 'N/A';
           } catch (e) {
             return 'N/A';
           }
+        }
+
+        // 📏 FUNCIÓN: Truncar texto largo (solo para el valor seleccionado)
+        String truncateText(String text, int maxLength) {
+          if (text.length <= maxLength) {
+            return text;
+          }
+          return '${text.substring(0, maxLength)}...';
         }
 
         // Función principal para guardar el reporte y las causas
@@ -474,24 +555,22 @@ modalEditNewReport(context, option, dynamic listItem) {
         return Scaffold(
           backgroundColor: const Color(0xFFF5F5F5),
           appBar: AppBar(
-  title: Text(
-    (option == "new") ? 'Nuevo Reporte' : 'Editar Reporte',
-    style: const TextStyle(fontWeight: FontWeight.bold),
-  ),
-  backgroundColor: const Color.fromARGB(255, 7, 25, 83), // Azul oscuro siempre
-  foregroundColor: Colors.white,
-  centerTitle: true,
-),
+            title: Text(
+              (option == "new") ? 'Nuevo Reporte' : 'Editar Reporte',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+            backgroundColor: const Color.fromARGB(255, 7, 25, 83),
+            foregroundColor: Colors.white,
+            centerTitle: true,
+          ),
 
-floatingActionButton: FloatingActionButton.extended(
-  backgroundColor: option == "new"
-      ? Colors.blue // Celeste para crear
-      : Colors.orange,   // Naranja para editar
-  foregroundColor: Colors.white,
-  icon: Icon(option == "new" ? Icons.add : Icons.edit),
-  label: Text(option == "new" ? 'Crear' : 'Guardar'),
-  onPressed: saveReportAndCauses,
-),
+          floatingActionButton: FloatingActionButton.extended(
+            backgroundColor: option == "new" ? Colors.blue : Colors.orange,
+            foregroundColor: Colors.white,
+            icon: Icon(option == "new" ? Icons.add : Icons.edit),
+            label: Text(option == "new" ? 'Crear' : 'Guardar'),
+            onPressed: saveReportAndCauses,
+          ),
 
           body: Padding(
             padding: const EdgeInsets.all(16.0),
@@ -567,7 +646,7 @@ floatingActionButton: FloatingActionButton.extended(
                           ),
                           const SizedBox(height: 10),
 
-                          // Dropdown para Estado
+                          // Dropdown para Estado - BLOQUEADO en modo "new"
                           DropdownButtonFormField<String>(
                             value: selectedState,
                             decoration: customDropdownDecoration(
@@ -594,7 +673,7 @@ floatingActionButton: FloatingActionButton.extended(
                                 child: Text('Desertado'),
                               ),
                             ],
-                            onChanged: (String? newValue) {
+                            onChanged: option == "new" ? null : (String? newValue) {
                               setState(() {
                                 selectedState = newValue;
                                 stateController.text = newValue ?? '';
@@ -605,7 +684,38 @@ floatingActionButton: FloatingActionButton.extended(
                           ),
                           const SizedBox(height: 10),
 
-                          // Dropdown para Aprendiz
+                          // 🔍 BUSCADOR DE APRENDICES (solo en modo "new")
+                          if (option == "new") ...[
+                            TextField(
+                              controller: apprenticeSearchController,
+                              decoration: InputDecoration(
+                                labelText: 'Buscar aprendiz',
+                                prefixIcon: Icon(Icons.search, color: Colors.indigo),
+                                suffixIcon: apprenticeSearchController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(Icons.clear, size: 20),
+                                        onPressed: () {
+                                          setState(() {
+                                            apprenticeSearchController.clear();
+                                            filterApprentices('');
+                                          });
+                                        },
+                                      )
+                                    : null,
+                                filled: true,
+                                fillColor: Colors.blue[50],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                              ),
+                              onChanged: filterApprentices,
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+
+                          // 🎯 Dropdown para Aprendiz - TEXTO COMPLETO EN MENÚ, TRUNCADO CUANDO ESTÁ SELECCIONADO
                           DropdownButtonFormField<String>(
                             value: selectedApprenticeId,
                             decoration: customDropdownDecoration(
@@ -614,14 +724,25 @@ floatingActionButton: FloatingActionButton.extended(
                               iconColor: Colors.indigo,
                             ),
                             hint: Text('Seleccione un aprendiz'),
-                            items: myReactController.getListApprentices
+                            isExpanded: true,
+                            selectedItemBuilder: (BuildContext context) {
+                              // TEXTO TRUNCADO para el valor seleccionado en el formulario
+                              return (option == "new" ? filteredApprentices : myReactController.getListApprentices)
+                                  .map<Widget>((apprentice) {
+                                final fullText = "${apprentice['firtsName']} ${apprentice['lastName']} - ${apprentice['document']}";
+                                return Text(
+                                  truncateText(fullText, 35),
+                                  overflow: TextOverflow.ellipsis,
+                                );
+                              }).toList();
+                            },
+                            items: (option == "new" ? filteredApprentices : myReactController.getListApprentices)
                                 .map<DropdownMenuItem<String>>((apprentice) {
+                              // TEXTO COMPLETO en el menú desplegable
+                              final fullText = "${apprentice['firtsName']} ${apprentice['lastName']} - ${apprentice['document']}";
                               return DropdownMenuItem<String>(
                                 value: apprentice['id'].toString(),
-                                child: Text(
-                                  "${apprentice['firtsName']} ${apprentice['lastName']} - ${apprentice['document']}",
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                child: Text(fullText), // Sin truncar
                               );
                             }).toList(),
                             onChanged: (String? newValue) {
@@ -672,7 +793,36 @@ floatingActionButton: FloatingActionButton.extended(
                           ),
                           const SizedBox(height: 16),
 
-                          // Dropdown para Categorías
+                          // 🔍 BUSCADOR DE CATEGORÍAS
+                          TextField(
+                            controller: categorySearchController,
+                            decoration: InputDecoration(
+                              labelText: 'Buscar categoría',
+                              prefixIcon: Icon(Icons.search, color: Colors.pink),
+                              suffixIcon: categorySearchController.text.isNotEmpty
+                                  ? IconButton(
+                                      icon: Icon(Icons.clear, size: 20),
+                                      onPressed: () {
+                                        setState(() {
+                                          categorySearchController.clear();
+                                          filterCategories('');
+                                        });
+                                      },
+                                    )
+                                  : null,
+                              filled: true,
+                              fillColor: Colors.pink[50],
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(10),
+                                borderSide: BorderSide.none,
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                            ),
+                            onChanged: filterCategories,
+                          ),
+                          const SizedBox(height: 8),
+
+                          // 🎯 Dropdown para Categorías - TEXTO COMPLETO EN MENÚ, TRUNCADO CUANDO ESTÁ SELECCIONADO
                           DropdownButtonFormField<String>(
                             value: selectedCategoryId,
                             decoration: customDropdownDecoration(
@@ -681,14 +831,21 @@ floatingActionButton: FloatingActionButton.extended(
                               iconColor: Colors.pink,
                             ),
                             hint: Text('Seleccione una categoría para filtrar causas'),
-                            items: myReactController.getListCategories
+                            isExpanded: true,
+                            selectedItemBuilder: (BuildContext context) {
+                              // TEXTO TRUNCADO para el valor seleccionado en el formulario
+                              return filteredCategories.map<Widget>((category) {
+                                return Text(
+                                  truncateText(category['name'], 40),overflow: TextOverflow.ellipsis,
+                                );
+                              }).toList();
+                            },
+                            items: filteredCategories
                                 .map<DropdownMenuItem<String>>((category) {
+                              // TEXTO COMPLETO en el menú desplegable
                               return DropdownMenuItem<String>(
                                 value: category['id'].toString(),
-                                child: Text(
-                                  category['name'],
-                                  overflow: TextOverflow.ellipsis,
-                                ),
+                                child: Text(category['name']), // Sin truncar
                               );
                             }).toList(),
                             onChanged: (String? newValue) {
@@ -696,6 +853,8 @@ floatingActionButton: FloatingActionButton.extended(
                                 selectedCategoryId = newValue;
                                 selectedCauseId = null;
                                 causesByCategory = [];
+                                filteredCauses = [];
+                                causeSearchController.clear();
                               });
                               if (newValue != null && newValue.isNotEmpty) {
                                 loadCausesByCategory(newValue);
@@ -704,7 +863,38 @@ floatingActionButton: FloatingActionButton.extended(
                           ),
                           const SizedBox(height: 10),
 
-                          // Dropdown para Causas
+                          // 🔍 BUSCADOR DE CAUSAS
+                          if (selectedCategoryId != null && causesByCategory.isNotEmpty) ...[
+                            TextField(
+                              controller: causeSearchController,
+                              decoration: InputDecoration(
+                                labelText: 'Buscar causa',
+                                prefixIcon: Icon(Icons.search, color: Colors.red),
+                                suffixIcon: causeSearchController.text.isNotEmpty
+                                    ? IconButton(
+                                        icon: Icon(Icons.clear, size: 20),
+                                        onPressed: () {
+                                          setState(() {
+                                            causeSearchController.clear();
+                                            filterCauses('');
+                                          });
+                                        },
+                                      )
+                                    : null,
+                                filled: true,
+                                fillColor: Colors.red[50],
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(10),
+                                  borderSide: BorderSide.none,
+                                ),
+                                contentPadding: const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
+                              ),
+                              onChanged: filterCauses,
+                            ),
+                            const SizedBox(height: 8),
+                          ],
+
+                          // 🎯 Dropdown para Causas - TEXTO COMPLETO EN MENÚ, TRUNCADO CUANDO ESTÁ SELECCIONADO
                           if (selectedCategoryId != null) ...[
                             DropdownButtonFormField<String>(
                               value: selectedCauseId,
@@ -715,18 +905,28 @@ floatingActionButton: FloatingActionButton.extended(
                               ),
                               hint: isLoadingCauses 
                                   ? Text('Cargando causas...')
-                                  : causesByCategory.isEmpty
+                                  : filteredCauses.isEmpty
                                       ? Text('No hay causas disponibles')
                                       : Text('Seleccione una causa'),
+                              isExpanded: true,
+                              selectedItemBuilder: (BuildContext context) {
+                                // TEXTO TRUNCADO para el valor seleccionado en el formulario
+                                return isLoadingCauses
+                                    ? [Text('Cargando...')]
+                                    : filteredCauses.map<Widget>((cause) {
+                                        return Text(
+                                          truncateText(cause['cause'] ?? 'Sin descripción', 35),
+                                          overflow: TextOverflow.ellipsis,
+                                        );
+                                      }).toList();
+                              },
                               items: isLoadingCauses
                                   ? [DropdownMenuItem(value: null, child: Text('Cargando...'))]
-                                  : causesByCategory.map<DropdownMenuItem<String>>((cause) {
+                                  : filteredCauses.map<DropdownMenuItem<String>>((cause) {
+                                      // TEXTO COMPLETO en el menú desplegable
                                       return DropdownMenuItem<String>(
                                         value: cause['id'].toString(),
-                                        child: Text(
-                                          cause['cause'] ?? 'Sin descripción',
-                                          overflow: TextOverflow.ellipsis,
-                                        ),
+                                        child: Text(cause['cause'] ?? 'Sin descripción'), // Sin truncar
                                       );
                                     }).toList(),
                               onChanged: isLoadingCauses ? null : (String? newValue) {
@@ -739,7 +939,7 @@ floatingActionButton: FloatingActionButton.extended(
                           ],
 
                           // Botón para agregar causa
-                          if (selectedCategoryId != null && causesByCategory.isNotEmpty && selectedCauseId != null) ...[
+                          if (selectedCategoryId != null && filteredCauses.isNotEmpty && selectedCauseId != null) ...[
                             ElevatedButton(
                               onPressed: addCause,
                               style: ElevatedButton.styleFrom(
@@ -873,7 +1073,7 @@ floatingActionButton: FloatingActionButton.extended(
                                                     ),
                                                   ),
                                                   title: Text(
-                                                    cause['cause'] ?? 'Sin descripción',
+                                                    truncateText(cause['cause'] ?? 'Sin descripción', 50),
                                                     style: TextStyle(fontSize: 13),
                                                     maxLines: 2,
                                                     overflow: TextOverflow.ellipsis,
@@ -882,12 +1082,12 @@ floatingActionButton: FloatingActionButton.extended(
                                                     crossAxisAlignment: CrossAxisAlignment.start,
                                                     children: [
                                                       Text(
-                                                        'Categoría: $categoryName',
+                                                        'Categoría: ${truncateText(categoryName, 30)}',
                                                         style: TextStyle(fontSize: 11),
                                                       ),
                                                       if (cause['variable'] != null)
                                                         Text(
-                                                          'Variable: ${cause['variable']}',
+                                                          'Variable: ${truncateText(cause['variable'], 25)}',
                                                           style: TextStyle(
                                                             fontSize: 10,
                                                             color: Colors.grey[600],

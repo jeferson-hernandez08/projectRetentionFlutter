@@ -100,12 +100,12 @@ viewItemIntervention(context, itemList) async {
                   _buildDetailCard(
                     icon: Icons.school,
                     title: 'Aprendiz',
-                    value: "${itemList['report']?['apprentice']?['firtsName'] ?? ''} "
-                                "${itemList['report']?['apprentice']?['lastName'] ?? ''}"
-                            .trim()
-                            .isNotEmpty
-                        ? "${itemList['report']?['apprentice']?['firtsName'] ?? ''} ${itemList['report']?['apprentice']?['lastName'] ?? ''}"
-                        : 'No disponible',
+                    value:
+                        "${itemList['report']?['apprentice']?['firtsName'] ?? ''} ${itemList['report']?['apprentice']?['lastName'] ?? ''}"
+                                .trim()
+                                .isNotEmpty
+                            ? "${itemList['report']?['apprentice']?['firtsName'] ?? ''} ${itemList['report']?['apprentice']?['lastName'] ?? ''}"
+                            : 'No disponible',
                     color: Colors.pinkAccent,
                   ),
                   _buildDetailCard(
@@ -165,7 +165,7 @@ Widget _buildDetailCard({
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start, // 👈 Para alinear texto alto
         children: [
           Container(
             decoration: BoxDecoration(
@@ -199,7 +199,7 @@ Widget _buildDetailCard({
                     fontSize: 15,
                     color: Colors.black87,
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  softWrap: true, // 👈 Permite salto de línea automático
                 ),
               ],
             ),
