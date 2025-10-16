@@ -128,6 +128,7 @@ viewItemReport(context, itemList) async {
                         title: 'Descripción',
                         value: itemList['description'] ?? 'No disponible',
                         color: Colors.purple,
+                        showFullText: true,
                       ),
                       
                       _buildDetailCard(
@@ -358,6 +359,7 @@ Widget _buildDetailCard({
   required String title,
   required String value,
   required Color color,
+  bool showFullText = false, // 👈 nuevo parámetro opcional
 }) {
   return Card(
     elevation: 2,
@@ -368,7 +370,8 @@ Widget _buildDetailCard({
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment:
+            showFullText ? CrossAxisAlignment.start : CrossAxisAlignment.center,
         children: [
           Container(
             decoration: BoxDecoration(
@@ -402,7 +405,9 @@ Widget _buildDetailCard({
                     fontSize: 15,
                     color: Colors.black87,
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  softWrap: true, // 👈 permite saltos de línea
+                  overflow:
+                      showFullText ? TextOverflow.visible : TextOverflow.ellipsis,
                 ),
               ],
             ),

@@ -1,7 +1,8 @@
 import 'package:app_projectretention_711_v1/main.dart';
 import 'package:flutter/material.dart';
-import 'package:app_projectretention_711_v1/api/apiRetention.dart'; // Importa tu API
+import 'package:app_projectretention_711_v1/api/apiRetention.dart';
 
+// Importa tu API
 viewItemCause(context, itemList) async {
   // Cargar categorías si no están disponibles
   if (myReactController.getListCategories.isEmpty) {
@@ -17,7 +18,6 @@ viewItemCause(context, itemList) async {
       (cat) => cat['id'] == fkIdCategories,
       orElse: () => {'name': 'Categoría no encontrada'},
     );
-
     return category['name'] ?? 'Categoría no encontrada';
   }
 
@@ -69,23 +69,25 @@ viewItemCause(context, itemList) async {
                     color: Colors.blueAccent,
                   ),
 
-                  // Campo Causa
+                  // Campo Causa (texto completo)
                   _buildDetailCard(
                     icon: Icons.warning_amber_rounded,
                     title: 'Causa',
                     value: itemList['cause'] ?? 'No disponible',
                     color: Colors.orangeAccent,
+                    showFullText: true,
                   ),
 
-                  // Campo Variable
+                  // Campo Variable (texto completo)
                   _buildDetailCard(
                     icon: Icons.scatter_plot_outlined,
                     title: 'Variable',
                     value: itemList['variable'] ?? 'No disponible',
                     color: Colors.deepPurple,
+                    showFullText: true,
                   ),
 
-                  // Campo Categoría (con nombre desde la relación)
+                  // Campo Categoría
                   _buildDetailCard(
                     icon: Icons.layers,
                     title: 'Categoría',
@@ -95,7 +97,7 @@ viewItemCause(context, itemList) async {
                     color: Colors.teal,
                   ),
 
-                  // Campo Descripción Categoría
+                  // Campo Descripción Categoría (texto completo)
                   _buildDetailCard(
                     icon: Icons.description_outlined,
                     title: 'Descripción Categoría',
@@ -103,6 +105,7 @@ viewItemCause(context, itemList) async {
                         ? itemList['category']['description'] ?? 'No disponible'
                         : 'No disponible',
                     color: Colors.redAccent,
+                    showFullText: true,
                   ),
 
                   const SizedBox(height: 20),
@@ -122,6 +125,7 @@ Widget _buildDetailCard({
   required String title,
   required String value,
   required Color color,
+  bool showFullText = false, // 👈 nueva opción para mostrar texto completo
 }) {
   return Card(
     elevation: 2,
@@ -132,7 +136,7 @@ Widget _buildDetailCard({
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
@@ -166,7 +170,9 @@ Widget _buildDetailCard({
                     fontSize: 15,
                     color: Colors.black87,
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  softWrap: true, // 👈 permite saltos de línea
+                  overflow:
+                      showFullText ? TextOverflow.visible : TextOverflow.ellipsis,
                 ),
               ],
             ),

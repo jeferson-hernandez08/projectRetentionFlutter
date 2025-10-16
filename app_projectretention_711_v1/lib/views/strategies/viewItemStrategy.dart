@@ -66,12 +66,16 @@ viewItemStrategy(context, itemList) async {
                     value: itemList['id'].toString(),
                     color: Colors.blueAccent,
                   ),
+
+                  // Estrategia → mostrar texto completo
                   _buildDetailCard(
                     icon: Icons.lightbulb,
                     title: 'Estrategia',
                     value: itemList['strategy'] ?? 'No disponible',
                     color: Colors.teal,
+                    showFullText: true,
                   ),
+
                   _buildDetailCard(
                     icon: Icons.category,
                     title: 'Categoría',
@@ -84,13 +88,17 @@ viewItemStrategy(context, itemList) async {
                     value: itemList['category']?['name'] ?? 'No disponible',
                     color: Colors.deepPurple,
                   ),
+
+                  // Descripción → mostrar texto completo
                   _buildDetailCard(
                     icon: Icons.description,
                     title: 'Descripción de la Categoría',
                     value:
                         itemList['category']?['description'] ?? 'No disponible',
                     color: Colors.orangeAccent,
+                    showFullText: true,
                   ),
+
                   _buildDetailCard(
                     icon: Icons.account_circle,
                     title: 'Responsable',
@@ -116,6 +124,7 @@ Widget _buildDetailCard({
   required String title,
   required String value,
   required Color color,
+  bool showFullText = false, // 👈 nuevo parámetro
 }) {
   return Card(
     elevation: 2,
@@ -126,7 +135,7 @@ Widget _buildDetailCard({
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             decoration: BoxDecoration(
@@ -160,7 +169,9 @@ Widget _buildDetailCard({
                     fontSize: 15,
                     color: Colors.black87,
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  softWrap: true, // 👈 permite saltos de línea
+                  overflow:
+                      showFullText ? TextOverflow.visible : TextOverflow.ellipsis,
                 ),
               ],
             ),
