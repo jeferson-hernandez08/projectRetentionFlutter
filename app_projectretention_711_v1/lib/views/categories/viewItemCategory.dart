@@ -71,6 +71,7 @@ viewItemCategory(context, itemList) async {
                     title: 'Descripción',
                     value: formatText(itemList['description']),
                     color: Colors.deepPurple,
+                    isLongText: true, // 🔹 Indicamos que puede ser texto largo
                   ),
                   _buildDetailCard(
                     icon: Icons.directions,
@@ -116,6 +117,7 @@ Widget _buildDetailCard({
   required String title,
   required String value,
   required Color color,
+  bool isLongText = false, // 🔹 Nuevo parámetro opcional
 }) {
   return Card(
     elevation: 2,
@@ -126,7 +128,7 @@ Widget _buildDetailCard({
     child: Padding(
       padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 12),
       child: Row(
-        crossAxisAlignment: CrossAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start, // 🔹 Cambiado para texto largo
         children: [
           Container(
             decoration: BoxDecoration(
@@ -160,7 +162,9 @@ Widget _buildDetailCard({
                     fontSize: 15,
                     color: Colors.black87,
                   ),
-                  overflow: TextOverflow.ellipsis,
+                  softWrap: true,
+                  overflow:
+                      isLongText ? TextOverflow.visible : TextOverflow.ellipsis, // 🔹 Aquí el cambio
                 ),
               ],
             ),

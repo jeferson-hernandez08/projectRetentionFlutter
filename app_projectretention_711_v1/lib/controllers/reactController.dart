@@ -202,5 +202,4 @@ class ReactController extends GetxController  {
     
     print('🧹 Todos los datos han sido limpiados');
   }
- 
 }

@@ -116,18 +116,6 @@ viewItemApprentice(context, itemList) async {
                     value: getGroupName(itemList['fkIdGroups']),
                     color: Colors.amber,
                   ),
-                  _buildDetailCard(
-                    icon: Icons.calendar_today,
-                    title: 'Fecha de Creación',
-                    value: itemList['createdAt']?.toString() ?? 'No disponible',
-                    color: Colors.deepOrange,
-                  ),
-                  _buildDetailCard(
-                    icon: Icons.update,
-                    title: 'Fecha de Actualización',
-                    value: itemList['updatedAt']?.toString() ?? 'No disponible',
-                    color: Colors.lightGreen,
-                  ),
 
                   const SizedBox(height: 20),
                 ],
