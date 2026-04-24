@@ -1,5 +1,5 @@
 <div align="center">
-<img src="assets/images/logoSenaProyect.png" alt="SENA Contigo Logo" width="220"/>
+<img src="assets/images/logoSenaContigo.png" alt="SENA Contigo Logo" width="220"/>
 # 🎓 SENA Contigo
 ### Plataforma de Apoyo y Retención de Aprendices
  
